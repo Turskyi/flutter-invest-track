@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/Turskyi/flutter-invest-track/graph/badge.svg?token=MBRYB1UFQM)](https://codecov.io/gh/Turskyi/flutter-invest-track)
 [![Code Quality](https://github.com/Turskyi/flutter-invest-track/actions/workflows/code_quality_tests.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/code_quality_tests.yml)
 [![Upload Android build to App Tester.](https://github.com/Turskyi/flutter-invest-track/actions/workflows/flutter_android_ci.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/flutter_android_ci.yml)
+[![Codemagic build status](https://api.codemagic.io/apps/6775c76403822966ad61431e/6775c76403822966ad61431d/status_badge.svg)](https://codemagic.io/app/6775c76403822966ad61431e/6775c76403822966ad61431d/latest_build)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/flutter-invest-track">
 
 # InvestTrack (Flutter Version).

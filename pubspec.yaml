@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.4+4
+version: 1.0.5+5
 
 environment:
   sdk: ^3.5.3
@@ -43,24 +43,24 @@ dependencies:
   flutter_email_sender: ^6.0.3
   flutter_markdown: ^0.7.4+3
   flutter_translate: ^4.1.0
-  fluttertoast: ^8.2.8
+  fluttertoast: ^8.2.10
   formz: ^0.8.0
-  get_it: ^8.0.2
+  get_it: ^8.0.3
   injectable: ^2.5.0
   #  cannot upgrade due to conflicts
   injectable_generator: ^2.6.2
   intl: any
   json_annotation: ^4.9.0
   meta: any
-  mockito: ^5.4.4
+  mockito: ^5.4.5
   models:
     path: core/models
   nested: ^1.0.0
-  package_info_plus: ^8.1.1
+  package_info_plus: ^8.1.2
   path_provider: ^2.1.5
-  retrofit: ^4.4.1
-  retrofit_generator: ^9.1.5
-  shared_preferences: ^2.3.3
+  retrofit: ^4.4.2
+  retrofit_generator: ^9.1.7
+  shared_preferences: ^2.3.5
   shimmer: ^3.0.0
   url_launcher: ^6.3.1
   url_launcher_android: ^6.3.14
@@ -69,7 +69,7 @@ dependencies:
   yahoo_finance_data_reader: ^1.0.11
 
 dev_dependencies:
-  build_runner: ^2.4.13
+  build_runner: ^2.4.14
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -78,7 +78,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  json_serializable: ^6.9.0
+  json_serializable: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

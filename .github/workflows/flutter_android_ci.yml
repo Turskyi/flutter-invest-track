@@ -15,6 +15,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Write google-services.json file
         run: |
           cd android/app
