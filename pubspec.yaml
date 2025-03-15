@@ -54,15 +54,13 @@ dependencies:
   flutter_email_sender: ^7.0.0
   flutter_markdown: ^0.7.6+2
   flutter_translate: ^4.1.0
-  fluttertoast: ^8.2.12
   formz: ^0.8.0
   get_it: ^8.0.3
   injectable: ^2.5.0
-  #  cannot upgrade due to conflicts
   injectable_generator: ^2.7.0
   intl: any
   json_annotation: ^4.9.0
-  meta: any
+  meta: ^1.16.0
   mockito: ^5.4.5
   models:
     path: core/models
