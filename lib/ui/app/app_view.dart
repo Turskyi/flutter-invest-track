@@ -1,7 +1,6 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
@@ -294,12 +293,11 @@ class _AppViewState extends State<AppView> {
                 );
                 if (status.message.isNotEmpty) {
                   final String message = status.message;
-                  Fluttertoast.showToast(
-                    msg: message,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    fontSize: 16.0,
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(message),
+                      duration: const Duration(seconds: 1),
+                    ),
                   );
                 }
               case UnknownAuthenticationStatus():

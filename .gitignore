@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -52,8 +54,6 @@ env.g.dart
 /android/keystore/private_key.pepk
 /android/keystore/
 /ios/Podfile.lock
-/coverage/
-coverage/lcov.info
 coverage
 /ios/Runner/GoogleService-Info.plist
 ios/Runner/GoogleService-Info.plist
@@ -62,3 +62,5 @@ ios/Runner/GoogleService-Info.plist
 /android/google-play-store.json
 /ios/fastlane/screenshots
 /ios/app_store_connect.json
+android/app/.cxx
+/.firebase/

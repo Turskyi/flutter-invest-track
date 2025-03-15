@@ -1,8 +1,12 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Turskyi/flutter-invest-track)
 [![codecov](https://codecov.io/gh/Turskyi/flutter-invest-track/graph/badge.svg?token=MBRYB1UFQM)](https://codecov.io/gh/Turskyi/flutter-invest-track)
 [![Code Quality](https://github.com/Turskyi/flutter-invest-track/actions/workflows/code_quality_tests.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/code_quality_tests.yml)
 [![Upload Android build to App Tester.](https://github.com/Turskyi/flutter-invest-track/actions/workflows/flutter_android_ci.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/flutter_android_ci.yml)
+[![Codemagic build status](https://api.codemagic.io/apps/6775c76403822966ad61431e/6775c76403822966ad61431d/status_badge.svg)](https://codemagic.io/app/6775c76403822966ad61431e/6775c76403822966ad61431d/latest_build)
+[![Deploy to Firebase Hosting on PR](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-pull-request.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-pull-request.yml)
+[![Deploy to Firebase Hosting on merge](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/flutter-invest-track">
 
 # InvestTrack (Flutter Version).
@@ -10,7 +14,7 @@
 InvestTrack is a cross-platform Flutter application that helps users track
 their stock portfolios in real-time. It fetches live stock prices, displays
 investment performance, and calculates gains or losses in multiple
-currencies.    
+currencies.  
 The app is primarily designed for Web, iOS, and Android, but it includes
 support for Linux, macOS, and Windows, with potential for future testing
 and official support on these platforms. Perfect for anyone looking to monitor
@@ -435,4 +439,3 @@ For any inquiries, please contact support@turskyi.com.
 <a href="https://play.google.com/store/apps/details?id=com.turskyi.investtrack" target="_blank">
 <img src="https://play.google.com/intl/en_gb/badges/static/images/badges/en_badge_web_generic.png" width=240  alt="google play badge"/>
 </a>
-

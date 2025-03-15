@@ -1,9 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.turskyi.investtrack"
+    tools:ignore="MissingVersion">
 
+    <!--suppress AndroidDomInspection -->
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="InvestTrack">
+        <!--suppress AndroidDomInspection -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -55,6 +60,7 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
+
         <intent>
             <action android:name="android.intent.action.SENDTO" />
             <data android:scheme="mailto" />

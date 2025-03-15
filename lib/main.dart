@@ -76,7 +76,7 @@ Future<void> main() async {
       localizationDelegate,
       BetterFeedback(
         feedbackBuilder: (
-          BuildContext context,
+          _,
           OnSubmit onSubmit,
           ScrollController? scrollController,
         ) =>

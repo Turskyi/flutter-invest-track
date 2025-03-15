@@ -15,6 +15,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Write google-services.json file
         run: |
           cd android/app
@@ -49,10 +50,19 @@ jobs:
         with:
           java-version: '17'
 
-      - uses: subosito/flutter-action@v1
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
+
+      - name: Remove Flutter Pub Cache
+        run: rm -rf ~/.pub-cache/hosted
+
+      - name: Clean Flutter Project
+        run: flutter clean
+
+      - name: Flutter pub get
+        run: flutter pub get
 
       - run: flutter build apk --release
       - name: Upload APK

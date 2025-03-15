@@ -26,7 +26,7 @@ def signingKeyReleaseKey = keyProperties.getProperty('production.SIGNING_KEY_REL
 def signingKeyReleaseKeyPassword = keyProperties.getProperty('production.SIGNING_KEY_RELEASE_KEY_PASSWORD') ?: rootProject.SIGNING_KEY_RELEASE_KEY_PASSWORD
 
 android {
-    namespace = "com.turskyi.investtrack"
+    namespace = rootProject.applicationId
     compileSdk = flutter.compileSdkVersion
     //TODO: change back to dynamic "flutter.ndkVersion" version, when the
     // error "One or more plugins require a higher Android NDK version." is
@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.turskyi.investtrack"
+        applicationId = rootProject.applicationId
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -94,6 +94,10 @@ android {
 
     buildTypes {
         release {
+            // Enabling minification to obfuscate code, shrink APK size, and
+            // optimize performance.
+            // This helps protect the code from reverse engineering and
+            // improves the app's efficiency.
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
