@@ -55,6 +55,9 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Delete packages in .pub-cache folder.
+        run: flutter pub cache clean
+
       - name: Flutter pub get
         run: flutter pub get
 
