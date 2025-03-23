@@ -25,6 +25,7 @@ their investments on the go.
 Join our testing program and provide valuable feedback:
 
 - [Android App Distribution Tester Invite](https://appdistribution.firebase.dev/i/052c3e006f2c8352)
+- [iOS TestFlight Tester Invite](https://testflight.apple.com/join/GxB2Hzq7)
 
 ## Features
 
