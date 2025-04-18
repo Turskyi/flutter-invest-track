@@ -44,6 +44,7 @@ class _AppViewState extends State<AppView> {
     const Color primaryBlue = Color(0xFF0D47A1);
     const Color secondaryGold = Color(0xFFC79100);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: constants.appName,
       initialRoute: AppRoute.signIn.path,
       routes: widget.routeMap,
