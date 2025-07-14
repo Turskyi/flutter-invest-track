@@ -97,7 +97,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
                 // Check if the errors list is not empty and its first element
                 // is a `Map`.
                 if (errorsList.isNotEmpty) {
-                  final Object? firstObject = errorsList.first;
+                  final Object? firstObject = errorsList.firstOrNull;
                   if (firstObject is Map<String, Object?>) {
                     final Map<String, Object?> firstError = firstObject;
 
