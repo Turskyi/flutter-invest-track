@@ -14,8 +14,8 @@ part 'authentication_state.dart';
 /// authentication state (exposed by the [AuthenticationRepository]) and will
 /// emit states we can react to in the ui component.
 /// The [AuthenticationBloc] will be reacting to two different events:
-/// • [AuthenticationSubscriptionRequested]: initial event that notifies the bloc
-/// to subscribe to the [AuthenticationStatus] stream
+/// • [AuthenticationSubscriptionRequested]: initial event that notifies the
+/// bloc to subscribe to the [AuthenticationStatus] stream
 /// • AuthenticationLogoutPressed: notifies the bloc of a user logout action.
 /// The [AuthenticationBloc] manages the authentication state of the application
 /// which is used to determine things like whether or not to start the user at
