@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:investtrack/ui/sign_in/email_input.dart';
 import 'package:investtrack/ui/sign_in/password_input.dart';
 import 'package:investtrack/ui/sign_in/sign_up_prompt.dart';
 import 'package:investtrack/ui/widgets/input_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// The [SignInForm] handles notifying the [SignInBloc] of user events and
 /// also responds to state changes using [BlocBuilder] and [BlocListener].
@@ -43,21 +45,7 @@ class _SignInFormState extends State<SignInForm>
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignInBloc, SignInState>(
-      listener: (BuildContext context, SignInState state) {
-        if (state.status.isFailure || state is SignInErrorState) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(
-                  state is SignInErrorState
-                      ? state.errorMessage
-                      : 'Authentication Failure',
-                ),
-              ),
-            );
-        }
-      },
+      listener: _signInStateListener,
       builder: (BuildContext context, SignInState state) {
         return SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24.0, 120, 24, 24),
@@ -165,5 +153,59 @@ class _SignInFormState extends State<SignInForm>
 
   void _launchPrivacyPolicy() {
     Navigator.pushNamed(context, AppRoute.privacyPolity.path);
+  }
+
+  void _signInStateListener(BuildContext context, SignInState state) {
+    if (state.status.isFailure || state is SignInErrorState) {
+      Widget contentWidget;
+      const String officialWebsiteUrl = constants.website;
+      if (kIsWeb) {
+        contentWidget = SelectableText.rich(
+          TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              const TextSpan(
+                text: 'Sign in is not available here. Please use our official '
+                    'website: ',
+                style: TextStyle(color: Colors.black),
+              ),
+              TextSpan(
+                text: officialWebsiteUrl,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () async {
+                    final Uri url = Uri.parse(officialWebsiteUrl);
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url, webOnlyWindowName: '_blank');
+                    } else {
+                      debugPrint('Could not launch $officialWebsiteUrl');
+                    }
+                  },
+              ),
+            ],
+          ),
+        );
+      } else {
+        String errorMessage;
+        if (state is SignInErrorState) {
+          errorMessage = state.errorMessage;
+        } else {
+          errorMessage = 'Authentication Failure';
+        }
+        contentWidget = SelectableText(errorMessage);
+      }
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: contentWidget,
+            duration: const Duration(seconds: 10),
+          ),
+        );
+    }
   }
 }

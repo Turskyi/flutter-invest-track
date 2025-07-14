@@ -10,8 +10,8 @@ environment:
 dependencies:
   models:
     path: ../../models
-  shared_preferences: ^2.5.2
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
-  lints: ^5.1.1
-  test: ^1.25.15
+  lints: ^6.0.0
+  test: ^1.26.2

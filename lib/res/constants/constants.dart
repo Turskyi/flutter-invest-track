@@ -1,3 +1,5 @@
+const String domain = 'investtracks.com';
+const String website = 'https://$domain';
 const String baseUrl = 'https://invest.turskyi.com/';
 const String apiBaseUrl = '${baseUrl}api/';
 const String supportEmail = 'support@$companyDomain';

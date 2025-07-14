@@ -80,15 +80,41 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         emit(state.copyWith(status: FormzSubmissionStatus.success));
       } catch (e) {
         if (e is DioException) {
-          final dynamic data = e.response?.data;
+          final Object? data = e.response?.data;
           const String errorsKey = 'errors';
           const String messageKey = 'message';
-          final String errorMessage = (data != null &&
-                  data.containsKey(errorsKey) &&
-                  data[errorsKey].isNotEmpty &&
-                  data[errorsKey].first.containsKey(messageKey))
-              ? data[errorsKey][0][messageKey]
-              : 'Unknown error';
+
+          String errorMessage = 'Unknown error';
+
+          // Check if data is a Map.
+          if (data is Map<String, Object?>) {
+            // Check if 'errors' key exists and its value is a List.
+            if (data.containsKey(errorsKey)) {
+              final Object? errors = data[errorsKey];
+              if (errors is List<Object?>) {
+                final List<Object?> errorsList = errors;
+
+                // Check if the errors list is not empty and its first element is
+                // a Map.
+                if (errorsList.isNotEmpty) {
+                  final Object? firstObject = errorsList.first;
+                  if (firstObject is Map<String, Object?>) {
+                    final Map<String, Object?> firstError = firstObject;
+
+                    // Check if the 'message' key exists in the first error and its
+                    // value is a String.
+                    if (firstError.containsKey(messageKey)) {
+                      final Object? message = firstError[messageKey];
+                      if (message is String) {
+                        errorMessage = message;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
           emit(
             SignInErrorState(
               status: FormzSubmissionStatus.failure,
