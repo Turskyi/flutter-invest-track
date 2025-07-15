@@ -152,6 +152,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  clerk_auth:
+    dependency: "direct main"
+    description:
+      name: clerk_auth
+      sha256: "98b762546a82c438e0ce4e9814b109af10a7ec7258d6fc4709df92fbb2865259"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.10-beta"
   clock:
     dependency: transitive
     description:
@@ -232,6 +240,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  envied:
+    dependency: transitive
+    description:
+      name: envied
+      sha256: a4e2b1d0caa479b5d61332ae516518c175a6d09328a35a0bc0a53894cc5d7e4d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   equatable:
     dependency: "direct main"
     description:

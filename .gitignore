@@ -64,3 +64,4 @@ ios/Runner/GoogleService-Info.plist
 /ios/app_store_connect.json
 android/app/.cxx
 /.firebase/
+core/repositories/authentication_repository/build/

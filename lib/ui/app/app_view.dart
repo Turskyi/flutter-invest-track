@@ -7,6 +7,7 @@ import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/investments/investments_page.dart';
 import 'package:investtrack/ui/not_found_page.dart';
 import 'package:investtrack/ui/sign_in/sign_in_page.dart';
+import 'package:investtrack/ui/sign_up/code_page.dart';
 
 /// [AppView] is a [StatefulWidget] because it maintains a [GlobalKey] which is
 /// used to access the [NavigatorState]. By default, [AppView] will render the
@@ -272,42 +273,52 @@ class _AppViewState extends State<AppView> {
       navigatorKey: _navigatorKey,
       builder: (BuildContext context, Widget? child) {
         return BlocListener<AuthenticationBloc, AuthenticationState>(
-          listener: (BuildContext context, AuthenticationState state) {
-            final AuthenticationStatus status = state.status;
-
-            switch (status) {
-              case DeletingAuthenticatedUserStatus():
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Account deletion in progress...'),
-                  ),
-                );
-              case AuthenticatedStatus():
-                _navigator?.pushAndRemoveUntil<void>(
-                  InvestmentsPage.route(widget.authenticationBloc),
-                  (Route<void> route) => false,
-                );
-              case UnauthenticatedStatus():
-                _navigator?.pushAndRemoveUntil<void>(
-                  SignInPage.route(),
-                  (Route<void> route) => false,
-                );
-                if (status.message.isNotEmpty) {
-                  final String message = status.message;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                      duration: const Duration(seconds: 1),
-                    ),
-                  );
-                }
-              case UnknownAuthenticationStatus():
-                break;
-            }
-          },
+          listener: _authenticationStateListener,
           child: child,
         );
       },
     );
+  }
+
+  void _authenticationStateListener(
+    BuildContext context,
+    AuthenticationState state,
+  ) {
+    final AuthenticationStatus status = state.status;
+
+    switch (status) {
+      case CodeAuthenticationStatus():
+        _navigator?.pushAndRemoveUntil<void>(
+          CodePage.route(email: status.email),
+          (Route<Object?> _) => false,
+        );
+      case DeletingAuthenticatedUserStatus():
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account deletion in progress...'),
+          ),
+        );
+      case AuthenticatedStatus():
+        _navigator?.pushAndRemoveUntil<void>(
+          InvestmentsPage.route(widget.authenticationBloc),
+          (Route<void> route) => false,
+        );
+      case UnauthenticatedStatus():
+        _navigator?.pushAndRemoveUntil<void>(
+          SignInPage.route(),
+          (Route<void> route) => false,
+        );
+        if (status.message.isNotEmpty) {
+          final String message = status.message;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        }
+      case UnknownAuthenticationStatus():
+        break;
+    }
   }
 }

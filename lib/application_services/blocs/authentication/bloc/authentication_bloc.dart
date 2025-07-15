@@ -47,11 +47,11 @@ class AuthenticationBloc
   final UserRepository _userRepository;
 
   /// `emit.onEach` creates a stream subscription internally and takes care of
-  /// canceling it when either AuthenticationBloc or the status stream is
+  /// canceling it when either [AuthenticationBloc] or the status stream is
   /// closed.
-  /// If the status stream emits an error, addError forwards the error and
-  /// stackTrace to any BlocObserver listening.
-  /// If onError is omitted, any errors on the status stream are considered
+  /// If the status stream emits an error, `addError` forwards the error and
+  /// stackTrace to any [BlocObserver] listening.
+  /// If `onError` is omitted, any errors on the status stream are considered
   /// unhandled, and will be thrown by onEach. As a result, the subscription
   /// to the status stream will be canceled.
   /// When the status stream emits [AuthenticationStatus.unknown] or
@@ -72,10 +72,12 @@ class AuthenticationBloc
             final User user = _getUser();
 
             return emit(
-              user.isNotEmpty
+              user.isNotAnonymous
                   ? AuthenticationState.authenticated(user)
                   : const AuthenticationState.unauthenticated(),
             );
+          case CodeAuthenticationStatus():
+            return emit(AuthenticationState.code(status.email));
           case UnknownAuthenticationStatus():
             return emit(const AuthenticationState.unknown());
           case DeletingAuthenticatedUserStatus():
