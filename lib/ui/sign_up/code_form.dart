@@ -69,11 +69,30 @@ class CodeForm extends StatelessWidget {
             const Padding(padding: EdgeInsets.all(12)),
             const Text('Didn\'t receive a code?'),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {
-                context.read<SignUpBloc>().add(const ResendCode());
+            BlocBuilder<SignUpBloc, SignUpState>(
+              builder: (BuildContext context, SignUpState state) {
+                final bool isLoading = state is SignUpProgressState;
+
+                return ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context.read<SignUpBloc>().add(const ResendCode());
+                        },
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Text('Resend'),
+                );
               },
-              child: const Text('Resend'),
             ),
             const Padding(padding: EdgeInsets.all(24)),
             const CodeContinueButton(),

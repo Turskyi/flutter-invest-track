@@ -99,8 +99,10 @@ class AuthenticationRepository {
   }
 
   Future<void> verify(String code) async {
-    final String signUpId =
-        _preferences.getString(StorageKeys.signUpId.key) ?? '';
+    final String signUpId = _preferences.getString(
+          StorageKeys.signUpId.key,
+        ) ??
+        '';
 
     if (signUpId.isNotEmpty) {
       await _authInit();

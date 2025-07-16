@@ -103,6 +103,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           email: state.email.value,
           password: state.password.value,
         );
+
         emit(state.copyWith(status: FormzSubmissionStatus.success));
       } on ApiException catch (e) {
         _handleError(error: e, emitter: emit);
