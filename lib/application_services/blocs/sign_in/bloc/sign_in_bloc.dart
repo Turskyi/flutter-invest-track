@@ -2,6 +2,7 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:formz/formz.dart';
 import 'package:models/models.dart';
 
@@ -113,6 +114,24 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
                 }
               }
             }
+          } else if (data == null) {
+            debugPrint(
+              'DioException caught, but response.data is null.\n'
+              'Error: $e\n'
+              'DioException type: ${e.type}\n'
+              'Response status code: ${e.response?.statusCode}\n'
+              'Response status message: ${e.response?.statusMessage}',
+            );
+          } else {
+            debugPrint(
+              'DioException caught, '
+              'and `response.data` is not the expected Map<String, Object?>.\n'
+              'Actual data type: ${data.runtimeType}\n'
+              'Actual data value: $data\n'
+              'DioException type: ${e.type}\n'
+              'Response status code: ${e.response?.statusCode}\n'
+              'Response status message: ${e.response?.statusMessage}',
+            );
           }
 
           emit(
