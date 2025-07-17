@@ -65,3 +65,4 @@ ios/Runner/GoogleService-Info.plist
 android/app/.cxx
 /.firebase/
 core/repositories/authentication_repository/build/
+android/.kotlin/sessions/

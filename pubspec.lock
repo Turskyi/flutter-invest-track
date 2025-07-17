@@ -767,10 +767,10 @@ packages:
     dependency: "direct main"
     description:
       name: retrofit_generator
-      sha256: bf8c5fc06d92de0cc79ace127a620af6dcbabaf7426da91e308a5bc3a0266c3e
+      sha256: "9abcf21acb95bf7040546eafff87f60cf0aee20b05101d71f99876fc4df1f522"
       url: "https://pub.dev"
     source: hosted
-    version: "10.0.0"
+    version: "9.7.0"
   sembast:
     dependency: transitive
     description:
