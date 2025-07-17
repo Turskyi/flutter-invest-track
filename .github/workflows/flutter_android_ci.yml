@@ -23,6 +23,14 @@ jobs:
         env:
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
 
+      - name: Write .env file to nested directory
+        run: |
+          mkdir -p core/repositories/authentication_repository
+          echo "$ENV" | base64 -d > core/repositories/authentication_repository/.env
+        shell: bash
+        env:
+          ENV: ${{ secrets.ENV }}
+
       - name: Write key.properties file
         run: |
           echo $KEY_PROPERTIES | base64 -d > android/key.properties
@@ -55,11 +63,11 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Remove Flutter Pub Cache
-        run: rm -rf ~/.pub-cache/hosted
-
-      - name: Clean Flutter Project
-        run: flutter clean
+      - name: Write env.g.dart file
+        run: |
+          cd core/repositories/authentication_repository
+          dart run build_runner build --delete-conflicting-outputs
+        shell: bash
 
       - name: Flutter pub get
         run: flutter pub get
@@ -86,8 +94,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: apk-build
-      - name: Display structure of downloaded files
-        run: ls -R
+
       - name: Upload Artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
