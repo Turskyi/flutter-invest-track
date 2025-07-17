@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
@@ -53,7 +54,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     if (userId.isEmpty) {
       emit(
         const UnauthenticatedInvestmentsAccessState(
-          error: 'User ID not found.',
+          errorMessage: 'User ID not found.',
         ),
       );
       return;
@@ -158,7 +159,27 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       );
     } catch (error, stackTrace) {
       debugPrint('Stacktrace for an error in $runtimeType: $stackTrace.');
-      emit(InvestmentsError(error: error.toString()));
+
+      if (error is DioException) {
+        final int? statusCode = error.response?.statusCode;
+
+        if (statusCode == 429) {
+          emit(
+            const InvestmentsError(
+              errorMessage: 'Too many requests - please try again shortly.',
+            ),
+          );
+          return;
+        }
+
+        emit(
+          InvestmentsError(
+            errorMessage: 'HTTP ${statusCode ?? 'Error'}: ${error.message}',
+          ),
+        );
+      } else {
+        emit(InvestmentsError(errorMessage: error.toString()));
+      }
     }
   }
 
@@ -174,7 +195,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       if (userId.isEmpty) {
         emit(
           const UnauthenticatedInvestmentsAccessState(
-            error: 'User ID not found',
+            errorMessage: 'User ID not found',
           ),
         );
         return;
@@ -205,7 +226,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           'Error while loading more.\n'
           'Stacktrace for an error in $runtimeType: $stackTrace.',
         );
-        emit(InvestmentsError(error: error.toString()));
+        emit(InvestmentsError(errorMessage: error.toString()));
       }
     }
   }
@@ -534,7 +555,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     if (userId.isEmpty) {
       emit(
         const UnauthenticatedInvestmentsAccessState(
-          error: 'User ID not found.',
+          errorMessage: 'User ID not found.',
         ),
       );
       return;

@@ -15,15 +15,15 @@ final class InvestmentsLoading extends InvestmentsState {
 
 final class InvestmentsError extends InvestmentsState {
   const InvestmentsError({
-    required this.error,
+    required this.errorMessage,
     super.investments,
   });
 
-  final String error;
+  final String errorMessage;
 }
 
 final class UnauthenticatedInvestmentsAccessState extends InvestmentsError {
-  const UnauthenticatedInvestmentsAccessState({required super.error});
+  const UnauthenticatedInvestmentsAccessState({required super.errorMessage});
 }
 
 final class InvestmentsLoaded extends InvestmentsState {

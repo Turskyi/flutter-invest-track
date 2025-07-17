@@ -87,13 +87,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         ),
       ),
       drawer: BlocListener<MenuBloc, MenuState>(
-        listener: (_, MenuState state) {
-          if (state is FeedbackState) {
-            _showFeedbackUi();
-          } else if (state is FeedbackSent) {
-            _notifyFeedbackSent();
-          }
-        },
+        listener: _menuStateListener,
         child: const AppDrawer(),
       ),
       body: BlocConsumer<InvestmentsBloc, InvestmentsState>(
@@ -103,7 +97,29 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
             //TODO: replace with shimmer.
             return const Center(child: CircularProgressIndicator());
           } else if (state is InvestmentsError) {
-            return Center(child: Text('Error: ${state.error}'));
+            final bool isRateLimit = state.errorMessage.contains('429');
+
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    isRateLimit
+                        ? 'Too many requests. Please wait a moment and try '
+                            'again.'
+                        : 'Error: ${state.errorMessage}',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<InvestmentsBloc>().add(
+                          const LoadInvestments(),
+                        ),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
           } else if (state.investments.isEmpty) {
             final ThemeData themeData = Theme.of(context);
             return Center(
@@ -163,23 +179,15 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
             return NotificationListener<ScrollNotification>(
               onNotification: (ScrollNotification scrollInfo) {
-                if (scrollInfo.metrics.pixels ==
-                        scrollInfo.metrics.maxScrollExtent &&
-                    !state.isLoadingMore &&
-                    !state.hasReachedMax) {
-                  context
-                      .read<InvestmentsBloc>()
-                      .add(const LoadMoreInvestments());
-                }
-                return false;
+                return _handleScrollNotification(
+                  scrollInfo: scrollInfo,
+                  state: state,
+                );
               },
               child: RefreshIndicator(
-                onRefresh: () async {
-                  // Trigger event to load investments again.
-                  context.read<InvestmentsBloc>().add(
-                        const LoadInvestments(),
-                      );
-                },
+                onRefresh: () async => context.read<InvestmentsBloc>().add(
+                      const LoadInvestments(),
+                    ),
                 child: ListView.builder(
                   padding: const EdgeInsets.fromLTRB(
                     16.0,
@@ -192,7 +200,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                       : allInvestments.length +
                           // Add extra item for loader.
                           (state.hasReachedMax ? 0 : 1),
-                  itemBuilder: (_, int index) {
+                  itemBuilder: (BuildContext _, int index) {
                     if (state is CreatingInvestment &&
                         index == allInvestments.length) {
                       return const ShimmerInvestment();
@@ -250,8 +258,9 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
   void _showFeedbackUi() {
     _feedbackController?.show(
-      (UserFeedback feedback) =>
-          context.read<MenuBloc>().add(SubmitFeedbackEvent(feedback)),
+      (UserFeedback feedback) {
+        context.read<MenuBloc>().add(SubmitFeedbackEvent(feedback));
+      },
     );
     _feedbackController?.addListener(_onFeedbackChanged);
   }
@@ -284,5 +293,25 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         ),
       ),
     );
+  }
+
+  void _menuStateListener(BuildContext _, MenuState state) {
+    if (state is FeedbackState) {
+      _showFeedbackUi();
+    } else if (state is FeedbackSent) {
+      _notifyFeedbackSent();
+    }
+  }
+
+  bool _handleScrollNotification({
+    required ScrollNotification scrollInfo,
+    required InvestmentsLoaded state,
+  }) {
+    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+        !state.isLoadingMore &&
+        !state.hasReachedMax) {
+      context.read<InvestmentsBloc>().add(const LoadMoreInvestments());
+    }
+    return false;
   }
 }

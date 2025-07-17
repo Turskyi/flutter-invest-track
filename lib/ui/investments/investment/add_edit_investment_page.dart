@@ -253,7 +253,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                             // Show a snackbar with the error message.
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(state.error),
+                                content: Text(state.errorMessage),
                                 backgroundColor: Colors.red,
                               ),
                             );

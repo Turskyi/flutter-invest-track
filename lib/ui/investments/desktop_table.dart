@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:models/models.dart';
 
+//TODO: maybe use this eventually for desktop.
 class DesktopTable extends StatelessWidget {
   const DesktopTable({this.investments = const <Investment>[], super.key});
 
