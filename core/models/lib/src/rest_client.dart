@@ -22,7 +22,7 @@ abstract interface class RestClient {
 
   //TODO: remove due to it is not used.
   /// The [RegisterResponse.id] will be used to call
-  /// https://clerk.invest.turskyi.com/v1/client/sign_ups/
+  /// https://clerk.${constants.domain}/v1/client/sign_ups/
   /// [RegisterResponse.id]/prepare_verification?_clerk_js_version=5.15.0
   @Deprecated('There is no replacement at this moment.')
   Future<CodeResponse> prepare(

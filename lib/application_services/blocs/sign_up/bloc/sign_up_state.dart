@@ -75,3 +75,30 @@ final class SignUpErrorState extends SignUpState {
         errorMessage,
       ];
 }
+
+final class SignUpProgressState extends SignUpState {
+  const SignUpProgressState({
+    super.status = FormzSubmissionStatus.inProgress,
+    super.email,
+    super.password,
+    super.code,
+    super.isValid,
+  });
+
+  @override
+  SignUpProgressState copyWith({
+    FormzSubmissionStatus? status,
+    EmailAddress? email,
+    Password? password,
+    Code? code,
+    bool? isValid,
+  }) {
+    return SignUpProgressState(
+      status: status ?? this.status,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      code: code ?? this.code,
+      isValid: isValid ?? this.isValid,
+    );
+  }
+}

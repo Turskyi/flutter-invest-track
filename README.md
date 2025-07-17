@@ -20,11 +20,22 @@ support for Linux, macOS, and Windows, with potential for future testing
 and official support on these platforms. Perfect for anyone looking to monitor
 their investments on the go.
 
+### Accessing the application:
+
+- [Official Web Version](https://investtracks.com): This is the primary web
+  version of **InvestTrack**, built with Next.js. It shares the same backend as
+  this Flutter application and also provides links to the mobile apps.
+- [Flutter Web Version](https://invest-track-application.web.app/):
+  This is a web build of the Flutter application, demonstrating the
+  cross-platform capabilities of Flutter by running the same codebase on
+  the web.
+
 ### Testing the App:
 
 Join our testing program and provide valuable feedback:
 
 - [Android App Distribution Tester Invite](https://appdistribution.firebase.dev/i/052c3e006f2c8352)
+- [iOS TestFlight Tester Invite](https://testflight.apple.com/join/GxB2Hzq7)
 
 ## Features
 

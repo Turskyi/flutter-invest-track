@@ -5,11 +5,8 @@ import 'package:investtrack/application_services/blocs/authentication/bloc/authe
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/ui/app/app_view.dart';
 import 'package:nested/nested.dart';
-import 'package:user_repository/user_repository.dart';
 
-/// We are injecting a single instance of the [AuthenticationRepository] and
-/// [UserRepository] into the [App] widget
-/// It contains the root [App] widget for the entire application.
+/// The root [App] widget for the entire application.
 /// [App] is responsible for creating/providing the [AuthenticationBloc] which
 /// will be consumed by the [AppView]. This decoupling will enable us to
 /// easily test both the [App] and [AppView] widgets.

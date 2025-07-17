@@ -55,20 +55,23 @@ Future<void> main() async {
   final MenuBloc menuBloc = GetIt.I.get<MenuBloc>();
 
   final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
-    AppRoute.investments.path: (_) => BlocProvider<InvestmentsBloc>(
-          create: (_) => InvestmentsBloc(
+    AppRoute.investments.path: (BuildContext _) =>
+        BlocProvider<InvestmentsBloc>(
+          create: (BuildContext _) => InvestmentsBloc(
             investmentsRepository,
             exchangeRateRepository,
             authenticationBloc,
           )..add(const LoadInvestments()),
           child: const InvestmentsPage(),
         ),
-    AppRoute.signIn.path: (_) => const SignInPage(),
-    AppRoute.privacyPolity.path: (_) => const PrivacyPolicyPage(),
-    AppRoute.addInvestment.path: (_) => BlocProvider<InvestmentsBloc>(
-          create: (_) => GetIt.I.get<InvestmentsBloc>(),
-          child: const AddEditInvestmentPage(),
-        ),
+    AppRoute.signIn.path: (BuildContext _) => const SignInPage(),
+    AppRoute.privacyPolity.path: (BuildContext _) => const PrivacyPolicyPage(),
+    AppRoute.addInvestment.path: (BuildContext _) {
+      return BlocProvider<InvestmentsBloc>(
+        create: (BuildContext _) => GetIt.I.get<InvestmentsBloc>(),
+        child: const AddEditInvestmentPage(),
+      );
+    },
   };
 
   runApp(
@@ -76,14 +79,15 @@ Future<void> main() async {
       localizationDelegate,
       BetterFeedback(
         feedbackBuilder: (
-          _,
+          BuildContext _,
           OnSubmit onSubmit,
           ScrollController? scrollController,
-        ) =>
-            FeedbackForm(
-          onSubmit: onSubmit,
-          scrollController: scrollController,
-        ),
+        ) {
+          return FeedbackForm(
+            onSubmit: onSubmit,
+            scrollController: scrollController,
+          );
+        },
         child: App(
           routeMap: routeMap,
           authenticationRepository: authenticationRepository,

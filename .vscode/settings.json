@@ -1,0 +1,30 @@
+{
+  "prettier.singleQuote": true,
+  "editor.formatOnSave": true,
+  "prettier.trailingComma": "all",
+  "editor.rulers": [80],
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "spellright.language": ["en"],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext",
+    "javascript",
+    "Log",
+    "properties",
+    "typescriptreact",
+    "typescript",
+    "xml",
+    "jsonc"
+  ],
+  "spellright.parserByClass": {
+    "Log": {
+      "parser": "code"
+    },
+    "properties": {
+      "parser": "plain"
+    }
+  }
+}

@@ -1,6 +1,8 @@
-const String baseUrl = 'https://invest.turskyi.com/';
+const String domain = 'investtracks.com';
+const String website = 'https://$domain';
+const String baseUrl = 'https://investtracks.com/';
 const String apiBaseUrl = '${baseUrl}api/';
-const String supportEmail = 'support@$companyDomain';
+const String supportEmail = 'support@$domain';
 const String companyDomain = 'turskyi.com';
 const String appName = 'InvestTrack';
 const String authServiceLink = 'https://clerk.com';

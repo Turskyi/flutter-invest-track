@@ -1,7 +1,7 @@
 enum StorageKeys {
   authToken('auth_token'),
   signUpId('sign_up_id'),
-  userId('sign_up_id'),
+  userId('user_id'),
   email('email'),
   languageIsoCode('language_iso_code');
 
