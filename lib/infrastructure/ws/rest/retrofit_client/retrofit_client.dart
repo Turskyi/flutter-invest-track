@@ -12,6 +12,7 @@ import 'package:investtrack/infrastructure/ws/models/responses/investments_respo
 import 'package:investtrack/infrastructure/ws/models/responses/price_change_response/price_change_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/sign_out_response/sign_out_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/updated_investment_response/updated_investment_response.dart';
+import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -24,14 +25,14 @@ abstract class RetrofitClient implements RestClient {
 
   @override
   @POST(
-    'https://clerk.invest.turskyi.com/v1/client/sign_ins?_clerk_js_version=5.20.0',
+    'https://clerk.${constants.domain}/v1/client/sign_ins?_clerk_js_version=5.20.0',
   )
   @FormUrlEncoded()
   Future<SignInResponse> signEmail(@Field('identifier') String identifier);
 
   @override
   @POST(
-    'https://clerk.invest.turskyi.com/v1/client/sign_ins?_clerk_js_version=5.14.0',
+    'https://clerk.${constants.domain}/v1/client/sign_ins?_clerk_js_version=5.14.0',
   )
   @FormUrlEncoded()
   Future<SignInResponse> signIn(
@@ -43,7 +44,7 @@ abstract class RetrofitClient implements RestClient {
 
   @override
   @GET(
-    'https://clerk.invest.turskyi.com/v1/environment?_clerk_js_version=5.14.0',
+    'https://clerk.${constants.domain}/v1/environment?_clerk_js_version=5.14.0',
   )
   Future<SignOutResponse> signOut();
 
@@ -51,7 +52,7 @@ abstract class RetrofitClient implements RestClient {
   @Deprecated('There is no replacement at this moment.')
   @override
   @POST(
-    'https://clerk.invest.turskyi.com/v1/client/sign_ups?_clerk_js_version=5.17.0',
+    'https://clerk.${constants.domain}/v1/client/sign_ups?_clerk_js_version=5.17.0',
   )
   @FormUrlEncoded()
   Future<SignUpResponse> signUp(
@@ -61,14 +62,14 @@ abstract class RetrofitClient implements RestClient {
 
   //TODO: remove due to it is not used.
   /// The [RegisterResponse.id] will be used to call
-  /// `https://clerk.invest.turskyi.com/v1/client/sign_ups/[RegisterResponse.id]/
+  /// `https://clerk.${constants.domain}/v1/client/sign_ups/[RegisterResponse.id]/
   /// prepare_verification?_clerk_js_version=5.15.0`
   /// it will send a 6 digits code to the `emailAddress` from the
   /// [signUp] form.
   @Deprecated('There is no replacement at this moment.')
   @override
   @POST(
-    'https://clerk.invest.turskyi.com/v1/client/sign_ups/{id}/prepare_verification?'
+    'https://clerk.${constants.domain}/v1/client/sign_ups/{id}/prepare_verification?'
     '_clerk_js_version=5.17.0',
   )
   @FormUrlEncoded()
@@ -84,7 +85,7 @@ abstract class RetrofitClient implements RestClient {
   @Deprecated('There is no replacement at this moment.')
   @override
   @POST(
-    'https://clerk.turskyi.com/v1/client/sign_ups/{id}/attempt_verification?'
+    'https://clerk.${constants.domain}/v1/client/sign_ups/{id}/attempt_verification?'
     '_clerk_js_version=5.15.0',
   )
   @FormUrlEncoded()

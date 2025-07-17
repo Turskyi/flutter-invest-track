@@ -22,7 +22,7 @@ their investments on the go.
 
 ### Accessing the application:
 
-- [Official Web Version](https://invest.turskyi.com): This is the primary web
+- [Official Web Version](https://investtracks.com): This is the primary web
   version of **InvestTrack**, built with Next.js. It shares the same backend as
   this Flutter application and also provides links to the mobile apps.
 - [Flutter Web Version](https://invest-track-application.web.app/):
