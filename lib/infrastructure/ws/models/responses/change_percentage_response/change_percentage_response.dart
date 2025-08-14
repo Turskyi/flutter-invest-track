@@ -22,9 +22,7 @@ class ChangePercentageResponse implements ChangePercentage {
 
   Map<String, dynamic> toJson() => _$ChangePercentageResponseToJson(this);
 
-  ChangePercentageResponse copyWith({
-    double? changePercentage,
-  }) {
+  ChangePercentageResponse copyWith({double? changePercentage}) {
     return ChangePercentageResponse(
       changePercentage: changePercentage ?? this.changePercentage,
     );

@@ -80,8 +80,9 @@ class OrganizationSettings {
     return OrganizationSettings(
       enabled: json['enabled'],
       maxAllowedMemberships: json['max_allowed_memberships'],
-      actions:
-          json['actions'] != null ? Actions.fromJson(json['actions']) : null,
+      actions: json['actions'] != null
+          ? Actions.fromJson(json['actions'])
+          : null,
       creatorRole: json['creator_role'],
     );
   }
@@ -120,24 +121,16 @@ class OrganizationSettings {
 
 /// admin_delete : true
 class Actions {
-  const Actions({
-    this.adminDelete,
-  });
+  const Actions({this.adminDelete});
 
   factory Actions.fromJson(Map<String, dynamic> json) {
-    return Actions(
-      adminDelete: json['admin_delete'],
-    );
+    return Actions(adminDelete: json['admin_delete']);
   }
 
   final bool? adminDelete;
 
-  Actions copyWith({
-    bool? adminDelete,
-  }) {
-    return Actions(
-      adminDelete: adminDelete ?? this.adminDelete,
-    );
+  Actions copyWith({bool? adminDelete}) {
+    return Actions(adminDelete: adminDelete ?? this.adminDelete);
   }
 
   Map<String, dynamic> toJson() {
@@ -175,8 +168,9 @@ class UserSettings {
       usernameSettings: json['username_settings'] != null
           ? UsernameSettings.fromJson(json['username_settings'])
           : null,
-      actions:
-          json['actions'] != null ? Actions.fromJson(json['actions']) : null,
+      actions: json['actions'] != null
+          ? Actions.fromJson(json['actions'])
+          : null,
       attackProtection: json['attack_protection'] != null
           ? AttackProtection.fromJson(json['attack_protection'])
           : null,
@@ -273,9 +267,7 @@ class UserSettings {
 /// enabled : false
 
 class Saml {
-  Saml({
-    bool? enabled,
-  }) {
+  Saml({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -285,12 +277,7 @@ class Saml {
 
   bool? _enabled;
 
-  Saml copyWith({
-    bool? enabled,
-  }) =>
-      Saml(
-        enabled: enabled ?? _enabled,
-      );
+  Saml copyWith({bool? enabled}) => Saml(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -377,21 +364,20 @@ class PasswordSettings {
     int? minZxcvbnStrength,
     bool? enforceHibpOnSignIn,
     String? allowedSpecialCharacters,
-  }) =>
-      PasswordSettings(
-        disableHibp: disableHibp ?? _disableHibp,
-        minLength: minLength ?? _minLength,
-        maxLength: maxLength ?? _maxLength,
-        requireSpecialChar: requireSpecialChar ?? _requireSpecialChar,
-        requireNumbers: requireNumbers ?? _requireNumbers,
-        requireUppercase: requireUppercase ?? _requireUppercase,
-        requireLowercase: requireLowercase ?? _requireLowercase,
-        showZxcvbn: showZxcvbn ?? _showZxcvbn,
-        minZxcvbnStrength: minZxcvbnStrength ?? _minZxcvbnStrength,
-        enforceHibpOnSignIn: enforceHibpOnSignIn ?? _enforceHibpOnSignIn,
-        allowedSpecialCharacters:
-            allowedSpecialCharacters ?? _allowedSpecialCharacters,
-      );
+  }) => PasswordSettings(
+    disableHibp: disableHibp ?? _disableHibp,
+    minLength: minLength ?? _minLength,
+    maxLength: maxLength ?? _maxLength,
+    requireSpecialChar: requireSpecialChar ?? _requireSpecialChar,
+    requireNumbers: requireNumbers ?? _requireNumbers,
+    requireUppercase: requireUppercase ?? _requireUppercase,
+    requireLowercase: requireLowercase ?? _requireLowercase,
+    showZxcvbn: showZxcvbn ?? _showZxcvbn,
+    minZxcvbnStrength: minZxcvbnStrength ?? _minZxcvbnStrength,
+    enforceHibpOnSignIn: enforceHibpOnSignIn ?? _enforceHibpOnSignIn,
+    allowedSpecialCharacters:
+        allowedSpecialCharacters ?? _allowedSpecialCharacters,
+  );
 
   bool? get disableHibp => _disableHibp;
 
@@ -441,9 +427,7 @@ Social socialFromJson(String str) => Social.fromJson(json.decode(str));
 String socialToJson(Social data) => json.encode(data.toJson());
 
 class Social {
-  Social({
-    OauthGoogle? oauthGoogle,
-  }) {
+  Social({OauthGoogle? oauthGoogle}) {
     _oauthGoogle = oauthGoogle;
   }
 
@@ -455,12 +439,8 @@ class Social {
 
   OauthGoogle? _oauthGoogle;
 
-  Social copyWith({
-    OauthGoogle? oauthGoogle,
-  }) =>
-      Social(
-        oauthGoogle: oauthGoogle ?? _oauthGoogle,
-      );
+  Social copyWith({OauthGoogle? oauthGoogle}) =>
+      Social(oauthGoogle: oauthGoogle ?? _oauthGoogle);
 
   OauthGoogle? get oauthGoogle => _oauthGoogle;
 
@@ -531,17 +511,15 @@ class OauthGoogle {
     String? strategy,
     bool? notSelectable,
     bool? deprecated,
-  }) =>
-      OauthGoogle(
-        enabled: enabled ?? _enabled,
-        required: required ?? _required,
-        authenticatable: authenticatable ?? _authenticatable,
-        blockEmailSubaddresses:
-            blockEmailSubaddresses ?? _blockEmailSubaddresses,
-        strategy: strategy ?? _strategy,
-        notSelectable: notSelectable ?? _notSelectable,
-        deprecated: deprecated ?? _deprecated,
-      );
+  }) => OauthGoogle(
+    enabled: enabled ?? _enabled,
+    required: required ?? _required,
+    authenticatable: authenticatable ?? _authenticatable,
+    blockEmailSubaddresses: blockEmailSubaddresses ?? _blockEmailSubaddresses,
+    strategy: strategy ?? _strategy,
+    notSelectable: notSelectable ?? _notSelectable,
+    deprecated: deprecated ?? _deprecated,
+  );
 
   bool? get enabled => _enabled;
 
@@ -580,10 +558,7 @@ String passkeySettingsToJson(PasskeySettings data) =>
     json.encode(data.toJson());
 
 class PasskeySettings {
-  PasskeySettings({
-    bool? allowAutofill,
-    bool? showSignInButton,
-  }) {
+  PasskeySettings({bool? allowAutofill, bool? showSignInButton}) {
     _allowAutofill = allowAutofill;
     _showSignInButton = showSignInButton;
   }
@@ -596,10 +571,7 @@ class PasskeySettings {
   bool? _allowAutofill;
   bool? _showSignInButton;
 
-  PasskeySettings copyWith({
-    bool? allowAutofill,
-    bool? showSignInButton,
-  }) =>
+  PasskeySettings copyWith({bool? allowAutofill, bool? showSignInButton}) =>
       PasskeySettings(
         allowAutofill: allowAutofill ?? _allowAutofill,
         showSignInButton: showSignInButton ?? _showSignInButton,
@@ -628,11 +600,7 @@ String attackProtectionToJson(AttackProtection data) =>
     json.encode(data.toJson());
 
 class AttackProtection {
-  AttackProtection({
-    UserLockout? userLockout,
-    Pii? pii,
-    EmailLink? emailLink,
-  }) {
+  AttackProtection({UserLockout? userLockout, Pii? pii, EmailLink? emailLink}) {
     _userLockout = userLockout;
     _pii = pii;
     _emailLink = emailLink;
@@ -656,12 +624,11 @@ class AttackProtection {
     UserLockout? userLockout,
     Pii? pii,
     EmailLink? emailLink,
-  }) =>
-      AttackProtection(
-        userLockout: userLockout ?? _userLockout,
-        pii: pii ?? _pii,
-        emailLink: emailLink ?? _emailLink,
-      );
+  }) => AttackProtection(
+    userLockout: userLockout ?? _userLockout,
+    pii: pii ?? _pii,
+    emailLink: emailLink ?? _emailLink,
+  );
 
   UserLockout? get userLockout => _userLockout;
 
@@ -691,9 +658,7 @@ EmailLink emailLinkFromJson(String str) => EmailLink.fromJson(json.decode(str));
 String emailLinkToJson(EmailLink data) => json.encode(data.toJson());
 
 class EmailLink {
-  EmailLink({
-    bool? requireSameClient,
-  }) {
+  EmailLink({bool? requireSameClient}) {
     _requireSameClient = requireSameClient;
   }
 
@@ -703,12 +668,8 @@ class EmailLink {
 
   bool? _requireSameClient;
 
-  EmailLink copyWith({
-    bool? requireSameClient,
-  }) =>
-      EmailLink(
-        requireSameClient: requireSameClient ?? _requireSameClient,
-      );
+  EmailLink copyWith({bool? requireSameClient}) =>
+      EmailLink(requireSameClient: requireSameClient ?? _requireSameClient);
 
   bool? get requireSameClient => _requireSameClient;
 
@@ -726,9 +687,7 @@ Pii piiFromJson(String str) => Pii.fromJson(json.decode(str));
 String piiToJson(Pii data) => json.encode(data.toJson());
 
 class Pii {
-  Pii({
-    bool? enabled,
-  }) {
+  Pii({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -738,12 +697,7 @@ class Pii {
 
   bool? _enabled;
 
-  Pii copyWith({
-    bool? enabled,
-  }) =>
-      Pii(
-        enabled: enabled ?? _enabled,
-      );
+  Pii copyWith({bool? enabled}) => Pii(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -764,11 +718,7 @@ UserLockout userLockoutFromJson(String str) =>
 String userLockoutToJson(UserLockout data) => json.encode(data.toJson());
 
 class UserLockout {
-  UserLockout({
-    bool? enabled,
-    int? maxAttempts,
-    int? durationInMinutes,
-  }) {
+  UserLockout({bool? enabled, int? maxAttempts, int? durationInMinutes}) {
     _enabled = enabled;
     _maxAttempts = maxAttempts;
     _durationInMinutes = durationInMinutes;
@@ -788,12 +738,11 @@ class UserLockout {
     bool? enabled,
     int? maxAttempts,
     int? durationInMinutes,
-  }) =>
-      UserLockout(
-        enabled: enabled ?? _enabled,
-        maxAttempts: maxAttempts ?? _maxAttempts,
-        durationInMinutes: durationInMinutes ?? _durationInMinutes,
-      );
+  }) => UserLockout(
+    enabled: enabled ?? _enabled,
+    maxAttempts: maxAttempts ?? _maxAttempts,
+    durationInMinutes: durationInMinutes ?? _durationInMinutes,
+  );
 
   bool? get enabled => _enabled;
 
@@ -820,10 +769,7 @@ String usernameSettingsToJson(UsernameSettings data) =>
     json.encode(data.toJson());
 
 class UsernameSettings {
-  UsernameSettings({
-    int? minLength,
-    int? maxLength,
-  }) {
+  UsernameSettings({int? minLength, int? maxLength}) {
     _minLength = minLength;
     _maxLength = maxLength;
   }
@@ -836,10 +782,7 @@ class UsernameSettings {
   int? _minLength;
   int? _maxLength;
 
-  UsernameSettings copyWith({
-    int? minLength,
-    int? maxLength,
-  }) =>
+  UsernameSettings copyWith({int? minLength, int? maxLength}) =>
       UsernameSettings(
         minLength: minLength ?? _minLength,
         maxLength: maxLength ?? _maxLength,
@@ -891,16 +834,16 @@ class Restrictions {
         : null;
     _blockDisposableEmailDomains =
         json['block_disposable_email_domains'] != null
-            ? BlockDisposableEmailDomains.fromJson(
-                json['block_disposable_email_domains'],
-              )
-            : null;
+        ? BlockDisposableEmailDomains.fromJson(
+            json['block_disposable_email_domains'],
+          )
+        : null;
     _ignoreDotsForGmailAddresses =
         json['ignore_dots_for_gmail_addresses'] != null
-            ? IgnoreDotsForGmailAddresses.fromJson(
-                json['ignore_dots_for_gmail_addresses'],
-              )
-            : null;
+        ? IgnoreDotsForGmailAddresses.fromJson(
+            json['ignore_dots_for_gmail_addresses'],
+          )
+        : null;
   }
 
   Allowlist? _allowlist;
@@ -915,17 +858,15 @@ class Restrictions {
     BlockEmailSubaddresses? blockEmailSubaddresses,
     BlockDisposableEmailDomains? blockDisposableEmailDomains,
     IgnoreDotsForGmailAddresses? ignoreDotsForGmailAddresses,
-  }) =>
-      Restrictions(
-        allowlist: allowlist ?? _allowlist,
-        blocklist: blocklist ?? _blocklist,
-        blockEmailSubaddresses:
-            blockEmailSubaddresses ?? _blockEmailSubaddresses,
-        blockDisposableEmailDomains:
-            blockDisposableEmailDomains ?? _blockDisposableEmailDomains,
-        ignoreDotsForGmailAddresses:
-            ignoreDotsForGmailAddresses ?? _ignoreDotsForGmailAddresses,
-      );
+  }) => Restrictions(
+    allowlist: allowlist ?? _allowlist,
+    blocklist: blocklist ?? _blocklist,
+    blockEmailSubaddresses: blockEmailSubaddresses ?? _blockEmailSubaddresses,
+    blockDisposableEmailDomains:
+        blockDisposableEmailDomains ?? _blockDisposableEmailDomains,
+    ignoreDotsForGmailAddresses:
+        ignoreDotsForGmailAddresses ?? _ignoreDotsForGmailAddresses,
+  );
 
   Allowlist? get allowlist => _allowlist;
 
@@ -947,12 +888,12 @@ class Restrictions {
       map['block_email_subaddresses'] = _blockEmailSubaddresses?.toJson();
     }
     if (_blockDisposableEmailDomains != null) {
-      map['block_disposable_email_domains'] =
-          _blockDisposableEmailDomains?.toJson();
+      map['block_disposable_email_domains'] = _blockDisposableEmailDomains
+          ?.toJson();
     }
     if (_ignoreDotsForGmailAddresses != null) {
-      map['ignore_dots_for_gmail_addresses'] =
-          _ignoreDotsForGmailAddresses?.toJson();
+      map['ignore_dots_for_gmail_addresses'] = _ignoreDotsForGmailAddresses
+          ?.toJson();
     }
     return map;
   }
@@ -967,9 +908,7 @@ String ignoreDotsForGmailAddressesToJson(IgnoreDotsForGmailAddresses data) =>
     json.encode(data.toJson());
 
 class IgnoreDotsForGmailAddresses {
-  IgnoreDotsForGmailAddresses({
-    bool? enabled,
-  }) {
+  IgnoreDotsForGmailAddresses({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -979,12 +918,8 @@ class IgnoreDotsForGmailAddresses {
 
   bool? _enabled;
 
-  IgnoreDotsForGmailAddresses copyWith({
-    bool? enabled,
-  }) =>
-      IgnoreDotsForGmailAddresses(
-        enabled: enabled ?? _enabled,
-      );
+  IgnoreDotsForGmailAddresses copyWith({bool? enabled}) =>
+      IgnoreDotsForGmailAddresses(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -1004,9 +939,7 @@ String blockDisposableEmailDomainsToJson(BlockDisposableEmailDomains data) =>
     json.encode(data.toJson());
 
 class BlockDisposableEmailDomains {
-  BlockDisposableEmailDomains({
-    bool? enabled,
-  }) {
+  BlockDisposableEmailDomains({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -1016,12 +949,8 @@ class BlockDisposableEmailDomains {
 
   bool? _enabled;
 
-  BlockDisposableEmailDomains copyWith({
-    bool? enabled,
-  }) =>
-      BlockDisposableEmailDomains(
-        enabled: enabled ?? _enabled,
-      );
+  BlockDisposableEmailDomains copyWith({bool? enabled}) =>
+      BlockDisposableEmailDomains(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -1041,9 +970,7 @@ String blockEmailSubaddressesToJson(BlockEmailSubaddresses data) =>
     json.encode(data.toJson());
 
 class BlockEmailSubaddresses {
-  BlockEmailSubaddresses({
-    bool? enabled,
-  }) {
+  BlockEmailSubaddresses({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -1053,12 +980,8 @@ class BlockEmailSubaddresses {
 
   bool? _enabled;
 
-  BlockEmailSubaddresses copyWith({
-    bool? enabled,
-  }) =>
-      BlockEmailSubaddresses(
-        enabled: enabled ?? _enabled,
-      );
+  BlockEmailSubaddresses copyWith({bool? enabled}) =>
+      BlockEmailSubaddresses(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -1076,9 +999,7 @@ Blocklist blocklistFromJson(String str) => Blocklist.fromJson(json.decode(str));
 String blocklistToJson(Blocklist data) => json.encode(data.toJson());
 
 class Blocklist {
-  Blocklist({
-    bool? enabled,
-  }) {
+  Blocklist({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -1088,12 +1009,8 @@ class Blocklist {
 
   bool? _enabled;
 
-  Blocklist copyWith({
-    bool? enabled,
-  }) =>
-      Blocklist(
-        enabled: enabled ?? _enabled,
-      );
+  Blocklist copyWith({bool? enabled}) =>
+      Blocklist(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -1112,9 +1029,7 @@ String allowlistToJson(Allowlist data) => json.encode(data.toJson());
 
 @JsonSerializable()
 class Allowlist {
-  Allowlist({
-    bool? enabled,
-  }) {
+  Allowlist({bool? enabled}) {
     _enabled = enabled;
   }
 
@@ -1124,12 +1039,8 @@ class Allowlist {
 
   bool? _enabled;
 
-  Allowlist copyWith({
-    bool? enabled,
-  }) =>
-      Allowlist(
-        enabled: enabled ?? _enabled,
-      );
+  Allowlist copyWith({bool? enabled}) =>
+      Allowlist(enabled: enabled ?? _enabled);
 
   bool? get enabled => _enabled;
 
@@ -1185,14 +1096,13 @@ class SignUp {
     bool? customActionRequired,
     bool? progressive,
     bool? inviteOnlyEnabled,
-  }) =>
-      SignUp(
-        captchaEnabled: captchaEnabled ?? _captchaEnabled,
-        captchaWidgetType: captchaWidgetType ?? _captchaWidgetType,
-        customActionRequired: customActionRequired ?? _customActionRequired,
-        progressive: progressive ?? _progressive,
-        inviteOnlyEnabled: inviteOnlyEnabled ?? _inviteOnlyEnabled,
-      );
+  }) => SignUp(
+    captchaEnabled: captchaEnabled ?? _captchaEnabled,
+    captchaWidgetType: captchaWidgetType ?? _captchaWidgetType,
+    customActionRequired: customActionRequired ?? _customActionRequired,
+    progressive: progressive ?? _progressive,
+    inviteOnlyEnabled: inviteOnlyEnabled ?? _inviteOnlyEnabled,
+  );
 
   bool? get captchaEnabled => _captchaEnabled;
 
@@ -1222,9 +1132,7 @@ SignIn signInFromJson(String str) => SignIn.fromJson(json.decode(str));
 String signInToJson(SignIn data) => json.encode(data.toJson());
 
 class SignIn {
-  SignIn({
-    SecondFactor? secondFactor,
-  }) {
+  SignIn({SecondFactor? secondFactor}) {
     _secondFactor = secondFactor;
   }
 
@@ -1236,12 +1144,8 @@ class SignIn {
 
   SecondFactor? _secondFactor;
 
-  SignIn copyWith({
-    SecondFactor? secondFactor,
-  }) =>
-      SignIn(
-        secondFactor: secondFactor ?? _secondFactor,
-      );
+  SignIn copyWith({SecondFactor? secondFactor}) =>
+      SignIn(secondFactor: secondFactor ?? _secondFactor);
 
   SecondFactor? get secondFactor => _secondFactor;
 
@@ -1262,9 +1166,7 @@ SecondFactor secondFactorFromJson(String str) =>
 String secondFactorToJson(SecondFactor data) => json.encode(data.toJson());
 
 class SecondFactor {
-  SecondFactor({
-    bool? required,
-  }) {
+  SecondFactor({bool? required}) {
     _required = required;
   }
 
@@ -1274,12 +1176,8 @@ class SecondFactor {
 
   bool? _required;
 
-  SecondFactor copyWith({
-    bool? required,
-  }) =>
-      SecondFactor(
-        required: required ?? _required,
-      );
+  SecondFactor copyWith({bool? required}) =>
+      SecondFactor(required: required ?? _required);
 
   bool? get required => _required;
 
@@ -1522,55 +1420,53 @@ class DisplayConfig {
     String? captchaWidgetType,
     String? captchaPublicKeyInvisible,
     String? captchaProvider,
-  }) =>
-      DisplayConfig(
-        object: object ?? _object,
-        id: id ?? _id,
-        instanceEnvironmentType:
-            instanceEnvironmentType ?? _instanceEnvironmentType,
-        applicationName: applicationName ?? _applicationName,
-        theme: theme ?? _theme,
-        preferredSignInStrategy:
-            preferredSignInStrategy ?? _preferredSignInStrategy,
-        logoImageUrl: logoImageUrl ?? _logoImageUrl,
-        faviconImageUrl: faviconImageUrl ?? _faviconImageUrl,
-        homeUrl: homeUrl ?? _homeUrl,
-        signInUrl: signInUrl ?? _signInUrl,
-        signUpUrl: signUpUrl ?? _signUpUrl,
-        userProfileUrl: userProfileUrl ?? _userProfileUrl,
-        afterSignInUrl: afterSignInUrl ?? _afterSignInUrl,
-        afterSignUpUrl: afterSignUpUrl ?? _afterSignUpUrl,
-        afterSignOutOneUrl: afterSignOutOneUrl ?? _afterSignOutOneUrl,
-        afterSignOutAllUrl: afterSignOutAllUrl ?? _afterSignOutAllUrl,
-        afterSwitchSessionUrl: afterSwitchSessionUrl ?? _afterSwitchSessionUrl,
-        organizationProfileUrl:
-            organizationProfileUrl ?? _organizationProfileUrl,
-        createOrganizationUrl: createOrganizationUrl ?? _createOrganizationUrl,
-        afterLeaveOrganizationUrl:
-            afterLeaveOrganizationUrl ?? _afterLeaveOrganizationUrl,
-        afterCreateOrganizationUrl:
-            afterCreateOrganizationUrl ?? _afterCreateOrganizationUrl,
-        logoLinkUrl: logoLinkUrl ?? _logoLinkUrl,
-        supportEmail: supportEmail ?? _supportEmail,
-        branded: branded ?? _branded,
-        experimentalForceOauthFirst:
-            experimentalForceOauthFirst ?? _experimentalForceOauthFirst,
-        clerkJsVersion: clerkJsVersion ?? _clerkJsVersion,
-        showDevmodeWarning: showDevmodeWarning ?? _showDevmodeWarning,
-        googleOneTapClientId: googleOneTapClientId ?? _googleOneTapClientId,
-        helpUrl: helpUrl ?? _helpUrl,
-        privacyPolicyUrl: privacyPolicyUrl ?? _privacyPolicyUrl,
-        termsUrl: termsUrl ?? _termsUrl,
-        logoUrl: logoUrl ?? _logoUrl,
-        faviconUrl: faviconUrl ?? _faviconUrl,
-        logoImage: logoImage ?? _logoImage,
-        faviconImage: faviconImage ?? _faviconImage,
-        captchaPublicKey: captchaPublicKey ?? _captchaPublicKey,
-        captchaWidgetType: captchaWidgetType ?? _captchaWidgetType,
-        captchaPublicKeyInvisible:
-            captchaPublicKeyInvisible ?? _captchaPublicKeyInvisible,
-        captchaProvider: captchaProvider ?? _captchaProvider,
-      );
+  }) => DisplayConfig(
+    object: object ?? _object,
+    id: id ?? _id,
+    instanceEnvironmentType:
+        instanceEnvironmentType ?? _instanceEnvironmentType,
+    applicationName: applicationName ?? _applicationName,
+    theme: theme ?? _theme,
+    preferredSignInStrategy:
+        preferredSignInStrategy ?? _preferredSignInStrategy,
+    logoImageUrl: logoImageUrl ?? _logoImageUrl,
+    faviconImageUrl: faviconImageUrl ?? _faviconImageUrl,
+    homeUrl: homeUrl ?? _homeUrl,
+    signInUrl: signInUrl ?? _signInUrl,
+    signUpUrl: signUpUrl ?? _signUpUrl,
+    userProfileUrl: userProfileUrl ?? _userProfileUrl,
+    afterSignInUrl: afterSignInUrl ?? _afterSignInUrl,
+    afterSignUpUrl: afterSignUpUrl ?? _afterSignUpUrl,
+    afterSignOutOneUrl: afterSignOutOneUrl ?? _afterSignOutOneUrl,
+    afterSignOutAllUrl: afterSignOutAllUrl ?? _afterSignOutAllUrl,
+    afterSwitchSessionUrl: afterSwitchSessionUrl ?? _afterSwitchSessionUrl,
+    organizationProfileUrl: organizationProfileUrl ?? _organizationProfileUrl,
+    createOrganizationUrl: createOrganizationUrl ?? _createOrganizationUrl,
+    afterLeaveOrganizationUrl:
+        afterLeaveOrganizationUrl ?? _afterLeaveOrganizationUrl,
+    afterCreateOrganizationUrl:
+        afterCreateOrganizationUrl ?? _afterCreateOrganizationUrl,
+    logoLinkUrl: logoLinkUrl ?? _logoLinkUrl,
+    supportEmail: supportEmail ?? _supportEmail,
+    branded: branded ?? _branded,
+    experimentalForceOauthFirst:
+        experimentalForceOauthFirst ?? _experimentalForceOauthFirst,
+    clerkJsVersion: clerkJsVersion ?? _clerkJsVersion,
+    showDevmodeWarning: showDevmodeWarning ?? _showDevmodeWarning,
+    googleOneTapClientId: googleOneTapClientId ?? _googleOneTapClientId,
+    helpUrl: helpUrl ?? _helpUrl,
+    privacyPolicyUrl: privacyPolicyUrl ?? _privacyPolicyUrl,
+    termsUrl: termsUrl ?? _termsUrl,
+    logoUrl: logoUrl ?? _logoUrl,
+    faviconUrl: faviconUrl ?? _faviconUrl,
+    logoImage: logoImage ?? _logoImage,
+    faviconImage: faviconImage ?? _faviconImage,
+    captchaPublicKey: captchaPublicKey ?? _captchaPublicKey,
+    captchaWidgetType: captchaWidgetType ?? _captchaWidgetType,
+    captchaPublicKeyInvisible:
+        captchaPublicKeyInvisible ?? _captchaPublicKeyInvisible,
+    captchaProvider: captchaProvider ?? _captchaProvider,
+  );
 
   String? get object => _object;
 
@@ -1711,11 +1607,7 @@ FaviconImage faviconImageFromJson(String str) =>
 String faviconImageToJson(FaviconImage data) => json.encode(data.toJson());
 
 class FaviconImage {
-  FaviconImage({
-    String? object,
-    String? id,
-    String? publicUrl,
-  }) {
+  FaviconImage({String? object, String? id, String? publicUrl}) {
     _object = object;
     _id = id;
     _publicUrl = publicUrl;
@@ -1731,11 +1623,7 @@ class FaviconImage {
   String? _id;
   String? _publicUrl;
 
-  FaviconImage copyWith({
-    String? object,
-    String? id,
-    String? publicUrl,
-  }) =>
+  FaviconImage copyWith({String? object, String? id, String? publicUrl}) =>
       FaviconImage(
         object: object ?? _object,
         id: id ?? _id,
@@ -1766,11 +1654,7 @@ LogoImage logoImageFromJson(String str) => LogoImage.fromJson(json.decode(str));
 String logoImageToJson(LogoImage data) => json.encode(data.toJson());
 
 class LogoImage {
-  LogoImage({
-    String? object,
-    String? id,
-    String? publicUrl,
-  }) {
+  LogoImage({String? object, String? id, String? publicUrl}) {
     _object = object;
     _id = id;
     _publicUrl = publicUrl;
@@ -1786,11 +1670,7 @@ class LogoImage {
   String? _id;
   String? _publicUrl;
 
-  LogoImage copyWith({
-    String? object,
-    String? id,
-    String? publicUrl,
-  }) =>
+  LogoImage copyWith({String? object, String? id, String? publicUrl}) =>
       LogoImage(
         object: object ?? _object,
         id: id ?? _id,
@@ -1821,34 +1701,29 @@ Theme themeFromJson(String str) => Theme.fromJson(json.decode(str));
 String themeToJson(Theme data) => json.encode(data.toJson());
 
 class Theme {
-  Theme({
-    Buttons? buttons,
-    General? general,
-    Accounts? accounts,
-  }) {
+  Theme({Buttons? buttons, General? general, Accounts? accounts}) {
     _buttons = buttons;
     _general = general;
     _accounts = accounts;
   }
 
   Theme.fromJson(dynamic json) {
-    _buttons =
-        json['buttons'] != null ? Buttons.fromJson(json['buttons']) : null;
-    _general =
-        json['general'] != null ? General.fromJson(json['general']) : null;
-    _accounts =
-        json['accounts'] != null ? Accounts.fromJson(json['accounts']) : null;
+    _buttons = json['buttons'] != null
+        ? Buttons.fromJson(json['buttons'])
+        : null;
+    _general = json['general'] != null
+        ? General.fromJson(json['general'])
+        : null;
+    _accounts = json['accounts'] != null
+        ? Accounts.fromJson(json['accounts'])
+        : null;
   }
 
   Buttons? _buttons;
   General? _general;
   Accounts? _accounts;
 
-  Theme copyWith({
-    Buttons? buttons,
-    General? general,
-    Accounts? accounts,
-  }) =>
+  Theme copyWith({Buttons? buttons, General? general, Accounts? accounts}) =>
       Theme(
         buttons: buttons ?? _buttons,
         general: general ?? _general,
@@ -1883,9 +1758,7 @@ Accounts accountsFromJson(String str) => Accounts.fromJson(json.decode(str));
 String accountsToJson(Accounts data) => json.encode(data.toJson());
 
 class Accounts {
-  Accounts({
-    String? backgroundColor,
-  }) {
+  Accounts({String? backgroundColor}) {
     _backgroundColor = backgroundColor;
   }
 
@@ -1895,12 +1768,8 @@ class Accounts {
 
   String? _backgroundColor;
 
-  Accounts copyWith({
-    String? backgroundColor,
-  }) =>
-      Accounts(
-        backgroundColor: backgroundColor ?? _backgroundColor,
-      );
+  Accounts copyWith({String? backgroundColor}) =>
+      Accounts(backgroundColor: backgroundColor ?? _backgroundColor);
 
   String? get backgroundColor => _backgroundColor;
 
@@ -1974,17 +1843,16 @@ class General {
     String? borderRadius,
     String? backgroundColor,
     String? labelFontWeight,
-  }) =>
-      General(
-        color: color ?? _color,
-        padding: padding ?? _padding,
-        boxShadow: boxShadow ?? _boxShadow,
-        fontColor: fontColor ?? _fontColor,
-        fontFamily: fontFamily ?? _fontFamily,
-        borderRadius: borderRadius ?? _borderRadius,
-        backgroundColor: backgroundColor ?? _backgroundColor,
-        labelFontWeight: labelFontWeight ?? _labelFontWeight,
-      );
+  }) => General(
+    color: color ?? _color,
+    padding: padding ?? _padding,
+    boxShadow: boxShadow ?? _boxShadow,
+    fontColor: fontColor ?? _fontColor,
+    fontFamily: fontFamily ?? _fontFamily,
+    borderRadius: borderRadius ?? _borderRadius,
+    backgroundColor: backgroundColor ?? _backgroundColor,
+    labelFontWeight: labelFontWeight ?? _labelFontWeight,
+  );
 
   String? get color => _color;
 
@@ -2025,11 +1893,7 @@ Buttons buttonsFromJson(String str) => Buttons.fromJson(json.decode(str));
 String buttonsToJson(Buttons data) => json.encode(data.toJson());
 
 class Buttons {
-  Buttons({
-    String? fontColor,
-    String? fontFamily,
-    String? fontWeight,
-  }) {
+  Buttons({String? fontColor, String? fontFamily, String? fontWeight}) {
     _fontColor = fontColor;
     _fontFamily = fontFamily;
     _fontWeight = fontWeight;
@@ -2049,12 +1913,11 @@ class Buttons {
     String? fontColor,
     String? fontFamily,
     String? fontWeight,
-  }) =>
-      Buttons(
-        fontColor: fontColor ?? _fontColor,
-        fontFamily: fontFamily ?? _fontFamily,
-        fontWeight: fontWeight ?? _fontWeight,
-      );
+  }) => Buttons(
+    fontColor: fontColor ?? _fontColor,
+    fontFamily: fontFamily ?? _fontFamily,
+    fontWeight: fontWeight ?? _fontWeight,
+  );
 
   String? get fontColor => _fontColor;
 

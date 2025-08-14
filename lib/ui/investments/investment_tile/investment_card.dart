@@ -12,10 +12,7 @@ import 'package:investtrack/utils/price_utils.dart';
 import 'package:models/models.dart';
 
 class InvestmentCard extends StatelessWidget {
-  const InvestmentCard({
-    required this.investment,
-    super.key,
-  });
+  const InvestmentCard({required this.investment, super.key});
 
   final Investment investment;
 
@@ -23,7 +20,7 @@ class InvestmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final String purchaseDateTimestamp =
         investment.purchaseDate?.toLocal().toString().split(' ').firstOrNull ??
-            '';
+        '';
     final int quantity = investment.quantity;
     final ThemeData themeData = Theme.of(context);
     final double? currentPrice = investment.currentPrice;
@@ -88,7 +85,7 @@ class InvestmentCard extends StatelessWidget {
                               // Use the color mapping.
                               backgroundColor:
                                   types.investmentTypeColors[investment.type] ??
-                                      Colors.grey,
+                                  Colors.grey,
                               child: Text(
                                 investment.type,
                                 style: TextStyle(
@@ -124,17 +121,18 @@ class InvestmentCard extends StatelessWidget {
               if (quantity > 0)
                 InvestmentDetail(
                   label: 'Gain/Loss (USD)',
-                  value: '${formatPrice(price: gainOrLoss)} '
+                  value:
+                      '${formatPrice(price: gainOrLoss)} '
                       '(${gainOrLossPercentage.toStringAsFixed(2)}%)',
                   icon: gainOrLoss != null
                       ? gainOrLoss >= 0
-                          ? Icons.trending_up
-                          : Icons.trending_down
+                            ? Icons.trending_up
+                            : Icons.trending_down
                       : Icons.question_mark,
                   valueColor: gainOrLoss != null
                       ? gainOrLoss >= 0
-                          ? Colors.green
-                          : Colors.red
+                            ? Colors.green
+                            : Colors.red
                       : Colors.grey,
                 ),
               InvestmentDetail(
@@ -158,10 +156,7 @@ class InvestmentCard extends StatelessWidget {
                       purchaseDateTimestamp.isNotEmpty && quantity > 0
                           ? 'Purchased: $purchaseDateTimestamp'
                           : 'Not yet purchased',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(width: 8),
                     Icon(

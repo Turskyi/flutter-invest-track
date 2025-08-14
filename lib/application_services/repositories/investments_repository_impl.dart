@@ -68,10 +68,7 @@ class InvestmentsRepositoryImpl implements InvestmentsRepository {
   Future<MessageResponse> delete(Investment investment) {
     final String userId = _preferences.getString(StorageKeys.userId.key) ?? '';
     if (userId.isNotEmpty || userId == investment.userId) {
-      return _restClient.deleteInvestment(
-        userId,
-        investment.id,
-      );
+      return _restClient.deleteInvestment(userId, investment.id);
     } else {
       throw const InvestTrackException(
         'You do not have permission to delete this investment.',
@@ -120,15 +117,15 @@ class InvestmentsRepositoryImpl implements InvestmentsRepository {
 
   @override
   Future<double> fetchPriceChange(String ticker) {
-    return _restClient.fetchPriceChange(ticker).then(
-          (PriceChange response) => response.priceChange,
-        );
+    return _restClient
+        .fetchPriceChange(ticker)
+        .then((PriceChange response) => response.priceChange);
   }
 
   @override
   Future<double> fetchChangePercentage(String ticker) {
-    return _restClient.fetchChangePercentage(ticker).then(
-          (ChangePercentage response) => response.changePercentage,
-        );
+    return _restClient
+        .fetchChangePercentage(ticker)
+        .then((ChangePercentage response) => response.changePercentage);
   }
 }

@@ -16,15 +16,11 @@ part 'menu_event.dart';
 part 'menu_state.dart';
 
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
-  MenuBloc(
-    this._settingsRepository,
-  ) : super(const LoadingMenuState()) {
-    on<LoadingInitialMenuStateEvent>(
-      (_, Emitter<MenuState> emit) {
-        final Language savedLanguage = _settingsRepository.getLanguage();
-        emit(MenuInitial(language: savedLanguage));
-      },
-    );
+  MenuBloc(this._settingsRepository) : super(const LoadingMenuState()) {
+    on<LoadingInitialMenuStateEvent>((_, Emitter<MenuState> emit) {
+      final Language savedLanguage = _settingsRepository.getLanguage();
+      emit(MenuInitial(language: savedLanguage));
+    });
     on<BugReportPressedEvent>(_onFeedbackRequested);
     on<ClosingFeedbackEvent>(_onFeedbackDialogDismissed);
     on<SubmitFeedbackEvent>(_sendUserFeedback);
@@ -50,9 +46,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     SubmitFeedbackEvent event,
     Emitter<MenuState> emit,
   ) async {
-    emit(
-      LoadingMenuState(language: state.language),
-    );
+    emit(LoadingMenuState(language: state.language));
     final UserFeedback feedback = event.feedback;
     try {
       final String screenshotFilePath = await _writeImageToStorage(
@@ -67,8 +61,10 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
       // Construct the feedback text with details from `extra'.
       final StringBuffer feedbackBody = StringBuffer()
-        ..writeln('${type is FeedbackType ? translate('feedback.type') : ''}:'
-            ' ${type is FeedbackType ? type.value : ''}')
+        ..writeln(
+          '${type is FeedbackType ? translate('feedback.type') : ''}:'
+          ' ${type is FeedbackType ? type.value : ''}',
+        )
         ..writeln()
         ..writeln(feedback.text)
         ..writeln()
@@ -77,13 +73,15 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         ..writeln('${translate('buildNumber')}: ${packageInfo.buildNumber}')
         ..writeln()
         ..writeln(
-            '${rating is FeedbackRating ? translate('feedback.rating') : ''}'
-            '${rating is FeedbackRating ? ':' : ''}'
-            ' ${rating is FeedbackRating ? rating.value : ''}');
+          '${rating is FeedbackRating ? translate('feedback.rating') : ''}'
+          '${rating is FeedbackRating ? ':' : ''}'
+          ' ${rating is FeedbackRating ? rating.value : ''}',
+        );
 
       final Email email = Email(
         body: feedbackBody.toString(),
-        subject: '${translate('feedback.appFeedback')}: '
+        subject:
+            '${translate('feedback.appFeedback')}: '
             '${packageInfo.appName}',
         recipients: <String>[constants.supportEmail],
         attachmentPaths: <String>[screenshotFilePath],
@@ -104,9 +102,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       );
       add(ErrorEvent(translate('error.unexpectedError')));
     }
-    emit(
-      MenuInitial(language: state.language),
-    );
+    emit(MenuInitial(language: state.language));
   }
 
   Future<String> _writeImageToStorage(Uint8List feedbackScreenshot) async {

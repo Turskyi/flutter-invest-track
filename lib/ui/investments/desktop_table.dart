@@ -10,12 +10,7 @@ class DesktopTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        16.0,
-        80,
-        16,
-        80,
-      ),
+      padding: const EdgeInsets.fromLTRB(16.0, 80, 16, 80),
       child: DataTable(
         columns: const <DataColumn>[
           DataColumn(label: Text('Company')),

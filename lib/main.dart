@@ -41,15 +41,15 @@ Future<void> main() async {
   // Initialize dependency injection and wait for `SharedPreferences`.
   await injectDependencies();
 
-  final LocalizationDelegate localizationDelegate =
-      await localization.getLocalizationDelegate();
+  final LocalizationDelegate localizationDelegate = await localization
+      .getLocalizationDelegate();
 
   final AuthenticationRepository authenticationRepository =
       GetIt.instance<AuthenticationRepository>();
-  final InvestmentsRepository investmentsRepository =
-      GetIt.I.get<InvestmentsRepository>();
-  final ExchangeRateRepository exchangeRateRepository =
-      GetIt.I.get<ExchangeRateRepository>();
+  final InvestmentsRepository investmentsRepository = GetIt.I
+      .get<InvestmentsRepository>();
+  final ExchangeRateRepository exchangeRateRepository = GetIt.I
+      .get<ExchangeRateRepository>();
   final AuthenticationBloc authenticationBloc =
       GetIt.instance<AuthenticationBloc>();
   final MenuBloc menuBloc = GetIt.I.get<MenuBloc>();
@@ -78,16 +78,17 @@ Future<void> main() async {
     LocalizedApp(
       localizationDelegate,
       BetterFeedback(
-        feedbackBuilder: (
-          BuildContext _,
-          OnSubmit onSubmit,
-          ScrollController? scrollController,
-        ) {
-          return FeedbackForm(
-            onSubmit: onSubmit,
-            scrollController: scrollController,
-          );
-        },
+        feedbackBuilder:
+            (
+              BuildContext _,
+              OnSubmit onSubmit,
+              ScrollController? scrollController,
+            ) {
+              return FeedbackForm(
+                onSubmit: onSubmit,
+                scrollController: scrollController,
+              );
+            },
         child: App(
           routeMap: routeMap,
           authenticationRepository: authenticationRepository,

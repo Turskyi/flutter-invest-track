@@ -25,11 +25,11 @@ class _RetrofitClient implements RetrofitClient {
     final _data = {'identifier': identifier};
     final _options = _setStreamType<SignInResponse>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             'https://clerk.investtracks.com/v1/client/sign_ins?_clerk_js_version=5.20.0',
@@ -65,11 +65,11 @@ class _RetrofitClient implements RetrofitClient {
     };
     final _options = _setStreamType<SignInResponse>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             'https://clerk.investtracks.com/v1/client/sign_ins?_clerk_js_version=5.14.0',
@@ -124,11 +124,11 @@ class _RetrofitClient implements RetrofitClient {
     final _data = {'email_address': emailAddress, 'password': password};
     final _options = _setStreamType<SignUpResponse>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             'https://clerk.investtracks.com/v1/client/sign_ups?_clerk_js_version=5.17.0',
@@ -159,11 +159,11 @@ class _RetrofitClient implements RetrofitClient {
     final _data = {'strategy': strategy};
     final _options = _setStreamType<PrepareVerificationResponse>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             'https://clerk.investtracks.com/v1/client/sign_ups/${id}/prepare_verification?_clerk_js_version=5.17.0',
@@ -195,11 +195,11 @@ class _RetrofitClient implements RetrofitClient {
     final _data = {'code': code, 'strategy': strategy};
     final _options = _setStreamType<VerificationResponse>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             'https://clerk.investtracks.com/v1/client/sign_ups/${id}/attempt_verification?_clerk_js_version=5.15.0',

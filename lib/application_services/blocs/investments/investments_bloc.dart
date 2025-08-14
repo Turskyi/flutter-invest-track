@@ -62,10 +62,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
     try {
       // Fetch the first batch of investments using the user ID.
-      final Investments investments =
-          await _investmentsRepository.getInvestments(
-        userId: userId,
-      );
+      final Investments investments = await _investmentsRepository
+          .getInvestments(userId: userId);
 
       final List<Investment> investmentBatch = investments.investments;
       final int currentPage = investments.currentPage;
@@ -82,22 +80,22 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       // Fetch purchase prices asynchronously.
       final List<Investment> updatedInvestmentsWithPurchasePrices =
           await Future.wait(
-        investmentBatch.map((Investment investment) async {
-          if (investment.isPurchased) {
-            final YahooFinanceResponse response =
-                await const YahooFinanceDailyReader().getDailyDTOs(
-              investment.ticker,
-              startDate: investment.purchaseDate,
-            );
-            final double purchasePrice =
-                response.candlesData.firstOrNull?.close ?? 0;
+            investmentBatch.map((Investment investment) async {
+              if (investment.isPurchased) {
+                final YahooFinanceResponse response =
+                    await const YahooFinanceDailyReader().getDailyDTOs(
+                      investment.ticker,
+                      startDate: investment.purchaseDate,
+                    );
+                final double purchasePrice =
+                    response.candlesData.firstOrNull?.close ?? 0;
 
-            return investment.copyWith(purchasePrice: purchasePrice);
-          } else {
-            return investment;
-          }
-        }).toList(),
-      );
+                return investment.copyWith(purchasePrice: purchasePrice);
+              } else {
+                return investment;
+              }
+            }).toList(),
+          );
 
       // Emit updated investments with current prices.
       emit(
@@ -110,17 +108,19 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       // Fetch current prices asynchronously.
       final List<Investment> updatedInvestmentsWithCurrentPrices =
           await Future.wait(
-        updatedInvestmentsWithPurchasePrices.map((Investment investment) async {
-          final YahooFinanceResponse response =
-              await const YahooFinanceDailyReader().getDailyDTOs(
-            investment.ticker,
-          );
-          final double currentPrice =
-              response.candlesData.lastOrNull?.close ?? 0;
+            updatedInvestmentsWithPurchasePrices.map((
+              Investment investment,
+            ) async {
+              final YahooFinanceResponse response =
+                  await const YahooFinanceDailyReader().getDailyDTOs(
+                    investment.ticker,
+                  );
+              final double currentPrice =
+                  response.candlesData.lastOrNull?.close ?? 0;
 
-          return investment.copyWith(currentPrice: currentPrice);
-        }).toList(),
-      );
+              return investment.copyWith(currentPrice: currentPrice);
+            }).toList(),
+          );
 
       // Emit updated investments with current prices.
       emit(
@@ -131,8 +131,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       );
 
       // Fetch gain or loss asynchronously.
-      final List<Investment> updatedInvestmentsWithGainOrLoss =
-          await Future.wait(
+      final List<Investment>
+      updatedInvestmentsWithGainOrLoss = await Future.wait(
         updatedInvestmentsWithCurrentPrices.map((Investment investment) async {
           final double? currentPrice = investment.currentPrice;
           final double? purchasePrice = investment.purchasePrice;
@@ -205,7 +205,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       try {
         final int nextPage =
             (currentState.investments.length ~/ constants.itemsPerPage) +
-                constants.pageOffset;
+            constants.pageOffset;
 
         final Investments result = await _investmentsRepository.getInvestments(
           userId: userId,
@@ -257,9 +257,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     final String ticker = investment.ticker;
 
     final YahooFinanceResponse currentValue =
-        await const YahooFinanceDailyReader().getDailyDTOs(
-      ticker,
-    );
+        await const YahooFinanceDailyReader().getDailyDTOs(ticker);
 
     final double currentPrice = currentValue.candlesData.lastOrNull?.close ?? 0;
 
@@ -275,11 +273,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     }
 
     if (investment.isPurchased) {
-      final double cadExchangeRate =
-          await _exchangeRateRepository.getExchangeRate(
-        fromCurrency: 'USD',
-        toCurrency: 'CAD',
-      );
+      final double cadExchangeRate = await _exchangeRateRepository
+          .getExchangeRate(fromCurrency: 'USD', toCurrency: 'CAD');
       if (state is InvestmentsLoaded) {
         emit(
           ExchangeRateLoaded(
@@ -294,9 +289,9 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
       final YahooFinanceResponse purchaseValue =
           await const YahooFinanceDailyReader().getDailyDTOs(
-        ticker,
-        startDate: investment.purchaseDate,
-      );
+            ticker,
+            startDate: investment.purchaseDate,
+          );
       final double purchasePrice =
           purchaseValue.candlesData.firstOrNull?.close ?? 0;
 
@@ -321,9 +316,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     );
 
     if (state is InvestmentUpdated) {
-      emit(
-        (state as InvestmentUpdated).copyWith(priceChange: priceChange),
-      );
+      emit((state as InvestmentUpdated).copyWith(priceChange: priceChange));
     } else if (state is InvestmentsLoaded) {
       emit(
         InvestmentUpdated(
@@ -335,10 +328,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         ),
       );
     }
-    final double changePercentage =
-        await _investmentsRepository.fetchChangePercentage(
-      ticker,
-    );
+    final double changePercentage = await _investmentsRepository
+        .fetchChangePercentage(ticker);
     if (state is InvestmentUpdated) {
       emit(
         (state as InvestmentUpdated).copyWith(
@@ -372,9 +363,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       final String ticker = createdInvestment.ticker;
       final DateTime? purchaseDate = createdInvestment.purchaseDate;
       final YahooFinanceResponse currentValue =
-          await const YahooFinanceDailyReader().getDailyDTOs(
-        ticker,
-      );
+          await const YahooFinanceDailyReader().getDailyDTOs(ticker);
 
       final double currentPrice =
           currentValue.candlesData.lastOrNull?.close ?? 0;
@@ -401,13 +390,13 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       } catch (e) {
         if (state is InvestmentsLoaded && purchaseDate != null) {
           // Format the purchaseDate in a user-friendly format.
-          final String formattedDate =
-              DateFormat('MMM dd, yyyy hh:mm a').format(
-            purchaseDate,
-          );
+          final String formattedDate = DateFormat(
+            'MMM dd, yyyy hh:mm a',
+          ).format(purchaseDate);
           emitter(
             InvestmentError(
-              errorMessage: 'Unable to fetch historical data for ticker: '
+              errorMessage:
+                  'Unable to fetch historical data for ticker: '
                   '"$ticker" on $formattedDate.',
               investment: createdInvestment,
               investments: investments,
@@ -490,10 +479,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       }
 
       try {
-        final Investment updatedInvestment =
-            await _investmentsRepository.update(
-          investment,
-        );
+        final Investment updatedInvestment = await _investmentsRepository
+            .update(investment);
 
         // Update the createdInvestment in the existing list of investments.
         final int index = investments.indexWhere(
@@ -565,8 +552,9 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       investment.copyWith(userId: userId),
     );
     // Remove the investment from the existing list of investments.
-    final List<Investment> updatedInvestments =
-        List<Investment>.from(state.investments)..remove(investment);
+    final List<Investment> updatedInvestments = List<Investment>.from(
+      state.investments,
+    )..remove(investment);
 
     if (state is InvestmentsLoaded) {
       // Emit the new state with the updated list of investments.

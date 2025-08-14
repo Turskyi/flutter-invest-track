@@ -48,10 +48,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<InvestmentsBloc, InvestmentsState>(
-      listener: (
-        BuildContext context,
-        InvestmentsState state,
-      ) {
+      listener: (BuildContext context, InvestmentsState state) {
         if (state is InvestmentsError) {
           // Show a snackbar with the error message.
           ScaffoldMessenger.of(context).showSnackBar(
@@ -135,11 +132,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
           body: FadeTransition(
             opacity: _fadeAnimation,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                top: 112,
-                right: 16,
-              ),
+              padding: const EdgeInsets.only(left: 16.0, top: 112, right: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -206,7 +199,8 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                   if (isPurchased)
                     InfoRow(
                       label: 'Purchase Date',
-                      value: investment.purchaseDate
+                      value:
+                          investment.purchaseDate
                               ?.toIso8601String()
                               .split('T')
                               .firstOrNull ??
@@ -236,29 +230,31 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                   if (state is InvestmentUpdated && isPurchased)
                     InfoRow(
                       label: 'Gain/Loss (USD)',
-                      value: '${formatPrice(
-                        price: gainOrLoss,
-                      )} '
+                      value:
+                          '${formatPrice(price: gainOrLoss)} '
                           '(${gainOrLossPercentage.toStringAsFixed(2)}%)',
                       icon: gainOrLoss >= 0
                           ? Icons.trending_up
                           : Icons.trending_down,
-                      valueColor:
-                          gainOrLoss >= 0 ? Colors.greenAccent : Colors.red,
+                      valueColor: gainOrLoss >= 0
+                          ? Colors.greenAccent
+                          : Colors.red,
                     )
                   else if (isPurchased)
                     const CircularProgressIndicator(),
                   if (state is InvestmentUpdated && isPurchased)
                     InfoRow(
                       label: 'Gain/Loss CAD',
-                      value: '${gainOrLossCad.toStringAsFixed(2)} '
+                      value:
+                          '${gainOrLossCad.toStringAsFixed(2)} '
                           '(${gainOrLossPercentageCad.toStringAsFixed(2)}'
                           '%)',
                       icon: gainOrLossCad >= 0
                           ? Icons.trending_up
                           : Icons.trending_down,
-                      valueColor:
-                          gainOrLossCad >= 0 ? Colors.greenAccent : Colors.red,
+                      valueColor: gainOrLossCad >= 0
+                          ? Colors.greenAccent
+                          : Colors.red,
                     )
                   else if (isPurchased)
                     const CircularProgressIndicator(),

@@ -7,13 +7,9 @@ part of 'delete_investment_response.dart';
 // **************************************************************************
 
 DeleteInvestmentResponse _$DeleteInvestmentResponseFromJson(
-        Map<String, dynamic> json) =>
-    DeleteInvestmentResponse(
-      message: json['message'] as String,
-    );
+  Map<String, dynamic> json,
+) => DeleteInvestmentResponse(message: json['message'] as String);
 
 Map<String, dynamic> _$DeleteInvestmentResponseToJson(
-        DeleteInvestmentResponse instance) =>
-    <String, dynamic>{
-      'message': instance.message,
-    };
+  DeleteInvestmentResponse instance,
+) => <String, dynamic>{'message': instance.message};

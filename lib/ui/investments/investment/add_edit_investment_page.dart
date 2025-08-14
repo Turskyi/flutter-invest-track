@@ -28,8 +28,9 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
   late TextEditingController _companyLogoUrlController;
   late TextEditingController _quantityController;
   late TextEditingController _descriptionController;
-  final ValueNotifier<bool> _formStateChangedNotifier =
-      ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _formStateChangedNotifier = ValueNotifier<bool>(
+    false,
+  );
   DateTime? _purchaseDate;
   String? _investmentType;
   String? _stockExchange;
@@ -38,11 +39,11 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
   @override
   void initState() {
     super.initState();
-    _tickerController = TextEditingController(
-      text: widget.investment?.ticker ?? '',
-    )..addListener(() {
-        _formStateChangedNotifier.value = !_formStateChangedNotifier.value;
-      });
+    _tickerController =
+        TextEditingController(text: widget.investment?.ticker ?? '')
+          ..addListener(() {
+            _formStateChangedNotifier.value = !_formStateChangedNotifier.value;
+          });
 
     _companyNameController = TextEditingController(
       text: widget.investment?.companyName ?? '',
@@ -51,11 +52,12 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
       text: widget.investment?.companyLogoUrl ?? '',
     );
 
-    _quantityController = TextEditingController(
-      text: widget.investment?.quantity.toString() ?? '',
-    )..addListener(() {
-        _formStateChangedNotifier.value = !_formStateChangedNotifier.value;
-      });
+    _quantityController =
+        TextEditingController(
+          text: widget.investment?.quantity.toString() ?? '',
+        )..addListener(() {
+          _formStateChangedNotifier.value = !_formStateChangedNotifier.value;
+        });
 
     _descriptionController = TextEditingController(
       text: widget.investment?.description ?? '',
@@ -162,7 +164,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
               const SizedBox(height: 16),
               ValueListenableBuilder<TextEditingValue>(
                 valueListenable: _quantityController,
-                builder: (_, TextEditingValue value, __) {
+                builder: (BuildContext _, TextEditingValue value, Widget? _) {
                   final String text = value.text;
                   final int? quantity = int.tryParse(text);
                   final bool isQuantityValid =
@@ -230,135 +232,34 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                   ValueListenableBuilder<bool>(
                     valueListenable: _formStateChangedNotifier,
                     child: const Text('Submit'),
-                    builder: (
-                      _,
-                      __,
-                      Widget? submitText,
-                    ) {
+                    builder: (BuildContext _, bool _, Widget? submitText) {
                       return BlocConsumer<InvestmentsBloc, InvestmentsState>(
-                        listener: (
-                          BuildContext context,
-                          InvestmentsState state,
-                        ) {
-                          if (state is InvestmentSubmitted) {
-                            if (widget.investment != null) {
-                              context
-                                  .read<InvestmentsBloc>()
-                                  .add(LoadInvestment(state.investment));
-                            }
-
-                            // Close the screen.
-                            Navigator.of(context).pop(true);
-                          } else if (state is InvestmentsError) {
-                            // Show a snackbar with the error message.
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(state.errorMessage),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          } else if (state is InvestmentError) {
-                            final String errorMessage = state.errorMessage;
-
-                            // Check if the error message indicates an invalid
-                            // ticker.
-                            if (errorMessage.contains(
-                                  'Unable to fetch historical data',
-                                ) &&
-                                errorMessage.contains('ticker:')) {
-                              // Show a modal dialog instead of a snackbar.
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text('Invalid Ticker'),
-                                    content: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        const Text(
-                                          'It looks like the input you entered '
-                                          'is invalid. The issue could be with '
-                                          'the ticker or the date.',
-                                        ),
-                                        const SizedBox(height: 8),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            const String url =
-                                                'https://finance.yahoo.com/markets/stocks';
-                                            if (await canLaunch(url)) {
-                                              await launch(url);
-                                            } else {
-                                              throw 'Could not launch $url';
-                                            }
-                                          },
-                                          child: const Text(
-                                            'Find valid tickers here',
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                              decoration:
-                                                  TextDecoration.underline,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        const Text(
-                                          'Please note: This link will open a '
-                                          'browser and is not part of the app.',
-                                        ),
-                                      ],
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            } else {
-                              // Otherwise, show the error message as a snackbar
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(errorMessage),
-                                  backgroundColor: Colors.red,
-                                  duration: const Duration(seconds: 4),
-                                ),
-                              );
-                            }
-                          } else if (state is InvestmentDeleted) {
-                            Navigator.pushReplacementNamed(
-                              context,
-                              AppRoute.investments.path,
-                            );
-                          }
-                        },
+                        listener: _investmentsStateListener,
                         builder: (_, InvestmentsState state) {
                           final bool isSubmitting =
                               state is UpdatingInvestment ||
-                                  state is CreatingInvestment;
+                              state is CreatingInvestment;
 
                           const double progressIndicatorSize = 24.0;
 
                           final String tickerValue = _tickerController.text;
-                          final int? quantity =
-                              int.tryParse(_quantityController.text);
+                          final int? quantity = int.tryParse(
+                            _quantityController.text,
+                          );
                           final bool isQuantityValid =
                               quantity != null && quantity > 0;
                           final bool isPurchaseDateValid =
                               _purchaseDate != null &&
-                                  _purchaseDate!.isBefore(DateTime.now());
+                              _purchaseDate!.isBefore(DateTime.now());
 
-                          final bool isFormValid = tickerValue.isNotEmpty &&
+                          final bool isFormValid =
+                              tickerValue.isNotEmpty &&
                               (!isQuantityValid || isPurchaseDateValid);
 
                           return ElevatedButton(
-                            onPressed:
-                                (isSubmitting || !isFormValid) ? null : _submit,
+                            onPressed: (isSubmitting || !isFormValid)
+                                ? null
+                                : _submit,
                             child: isSubmitting
                                 ? const SizedBox(
                                     width: progressIndicatorSize,
@@ -395,26 +296,116 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
     super.dispose();
   }
 
+  void _investmentsStateListener(BuildContext context, InvestmentsState state) {
+    if (state is InvestmentSubmitted) {
+      if (widget.investment != null) {
+        context.read<InvestmentsBloc>().add(LoadInvestment(state.investment));
+      }
+
+      // Close the screen.
+      Navigator.of(context).pop(true);
+    } else if (state is InvestmentsError) {
+      // Show a snackbar with the error message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (state is InvestmentError) {
+      final String errorMessage = state.errorMessage;
+
+      // Check if the error message indicates an invalid
+      // ticker.
+      if (errorMessage.contains('Unable to fetch historical data') &&
+          errorMessage.contains('ticker:')) {
+        // Show a modal dialog instead of a snackbar.
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Invalid Ticker'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'It looks like the input you entered '
+                    'is invalid. The issue could be with '
+                    'the ticker or the date.',
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () async {
+                      const String url =
+                          'https://finance.yahoo.com/markets/stocks';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    child: const Text(
+                      'Find valid tickers here',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Please note: This link will open a '
+                    'browser and is not part of the app.',
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Otherwise, show the error message as a snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } else if (state is InvestmentDeleted) {
+      Navigator.pushReplacementNamed(context, AppRoute.investments.path);
+    }
+  }
+
   Future<void> _submit() async {
     final FormState? formState = _formKey.currentState;
     if (formState != null && formState.validate()) {
       final Investment? investment = widget.investment;
       if (investment != null) {
         context.read<InvestmentsBloc>().add(
-              UpdateInvestmentEvent(
-                investment.copyWith(
-                  ticker: _tickerController.text,
-                  companyName: _companyNameController.text,
-                  companyLogoUrl: _companyLogoUrlController.text,
-                  type: _investmentType ?? '',
-                  stockExchange: _stockExchange ?? '',
-                  currency: _currency ?? '',
-                  quantity: int.tryParse(_quantityController.text),
-                  purchaseDate: _purchaseDate,
-                  description: _descriptionController.text,
-                ),
-              ),
-            );
+          UpdateInvestmentEvent(
+            investment.copyWith(
+              ticker: _tickerController.text,
+              companyName: _companyNameController.text,
+              companyLogoUrl: _companyLogoUrlController.text,
+              type: _investmentType ?? '',
+              stockExchange: _stockExchange ?? '',
+              currency: _currency ?? '',
+              quantity: int.tryParse(_quantityController.text),
+              purchaseDate: _purchaseDate,
+              description: _descriptionController.text,
+            ),
+          ),
+        );
       } else {
         // Collect form data and create the investment object.
         final Investment newInvestment = Investment.base(
@@ -430,12 +421,12 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
         );
 
         // Dispatch the event to create the investment.
-        context
-            .read<InvestmentsBloc>()
-            .add(CreateInvestmentEvent(investment: newInvestment));
+        context.read<InvestmentsBloc>().add(
+          CreateInvestmentEvent(investment: newInvestment),
+        );
       }
     } else {
-// Handle invalid form case.
+      // Handle invalid form case.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill out all required fields correctly.'),
@@ -467,7 +458,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
           'extensions: .png, .jpg, .jpeg, .webp. You can also leave this field '
           'empty if no image is provided.';
     }
-// URL is valid.
+    // URL is valid.
     return null;
   }
 }

@@ -28,10 +28,7 @@ class DropdownField extends StatelessWidget {
       ),
       value: value?.isEmpty == true ? null : value,
       items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(item),
-        );
+        return DropdownMenuItem<String>(value: item, child: Text(item));
       }).toList(),
       onChanged: onChanged,
       validator: validator,

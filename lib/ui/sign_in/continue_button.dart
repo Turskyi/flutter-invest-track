@@ -19,18 +19,16 @@ class ContinueButton extends StatelessWidget {
 
     if (isInProgressOrSuccess) return const CircularProgressIndicator();
 
-    final bool isValid =
-        context.select((SignInBloc bloc) => bloc.state.isValid);
+    final bool isValid = context.select(
+      (SignInBloc bloc) => bloc.state.isValid,
+    );
 
     return ElevatedButton(
       key: const Key('signInForm_continue_raisedButton'),
       onPressed: isValid ? onPressed : null,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 50,
-          vertical: 15,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
       ),
       child: const Text('Continue'),
     );

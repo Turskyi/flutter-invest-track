@@ -11,26 +11,17 @@ class NotFoundPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GradientBackgroundScaffold(
-      appBar: const BlurredAppBar(
-        title: Text('Page Not Found'),
-      ),
+      appBar: const BlurredAppBar(title: Text('Page Not Found')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.error_outline,
-              size: 100,
-              color: Colors.red.shade400,
-            ),
+            Icon(Icons.error_outline, size: 100, color: Colors.red.shade400),
             const SizedBox(height: 20),
             const Text(
               'Oops! The page you were looking for does not exist.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             const Text(

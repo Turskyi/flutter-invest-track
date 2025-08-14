@@ -39,11 +39,10 @@ class SignUpErrorResponse implements SignUpResponse {
   SignUpErrorResponse copyWith({
     List<ErrorResponse>? errors,
     String? clerkTraceId,
-  }) =>
-      SignUpErrorResponse(
-        errors: errors ?? this.errors,
-        clerkTraceId: clerkTraceId ?? this.clerkTraceId,
-      );
+  }) => SignUpErrorResponse(
+    errors: errors ?? this.errors,
+    clerkTraceId: clerkTraceId ?? this.clerkTraceId,
+  );
 
   @override
   bool operator ==(Object other) {

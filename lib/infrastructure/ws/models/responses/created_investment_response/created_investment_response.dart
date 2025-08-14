@@ -22,12 +22,8 @@ class CreatedInvestmentResponse implements InvestmentResult {
 
   Map<String, dynamic> toJson() => _$CreatedInvestmentResponseToJson(this);
 
-  CreatedInvestmentResponse copyWith({
-    InvestmentResponse? investment,
-  }) {
-    return CreatedInvestmentResponse(
-      investment: investment ?? this.investment,
-    );
+  CreatedInvestmentResponse copyWith({InvestmentResponse? investment}) {
+    return CreatedInvestmentResponse(investment: investment ?? this.investment);
   }
 
   @override

@@ -22,10 +22,9 @@ part 'sign_in_state.dart';
 /// form is valid, the bloc makes a call to `signIn` and updates the status
 /// based on the outcome of the request.
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
-  SignInBloc({
-    required AuthenticationRepository authenticationRepository,
-  })  : _authenticationRepository = authenticationRepository,
-        super(const SignInState()) {
+  SignInBloc({required AuthenticationRepository authenticationRepository})
+    : _authenticationRepository = authenticationRepository,
+      super(const SignInState()) {
     on<SignInEmailChanged>(_onEmailChanged);
     on<SignInPasswordChanged>(_onPasswordChanged);
     on<SignInSubmitted>(_onSubmitted);
@@ -33,10 +32,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
 
   final AuthenticationRepository _authenticationRepository;
 
-  void _onEmailChanged(
-    SignInEmailChanged event,
-    Emitter<SignInState> emit,
-  ) {
+  void _onEmailChanged(SignInEmailChanged event, Emitter<SignInState> emit) {
     final EmailAddress email = EmailAddress.dirty(event.email);
     emit(
       SignInState(
@@ -60,9 +56,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       SignInState(
         email: state.email,
         password: password,
-        isValid: Formz.validate(
-          <FormzInput<String, ValidationError>>[password, state.email],
-        ),
+        isValid: Formz.validate(<FormzInput<String, ValidationError>>[
+          password,
+          state.email,
+        ]),
       ),
     );
   }
@@ -74,11 +71,26 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     if (state.isValid) {
       emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
       try {
-        await _authenticationRepository.signIn(
+        final User user = await _authenticationRepository.signIn(
           email: state.email.value,
           password: state.password.value,
         );
-        emit(state.copyWith(status: FormzSubmissionStatus.success));
+
+        if (user.isNotAnonymous) {
+          emit(state.copyWith(status: FormzSubmissionStatus.success));
+        } else {
+          emit(
+            SignInErrorState(
+              status: FormzSubmissionStatus.failure,
+              email: state.email,
+              password: state.password,
+              isValid: state.isValid,
+              errorMessage:
+                  'Something went wrong, '
+                  'please try our web version at https://investtracks.com.',
+            ),
+          );
+        }
       } catch (e) {
         if (e is DioException) {
           final Object? data = e.response?.data;

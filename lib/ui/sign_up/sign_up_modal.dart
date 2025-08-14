@@ -49,9 +49,9 @@ class _SignUpModalState extends State<SignUpModal> {
                         TextSpan(
                           text: 'Learn more.',
                           style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary, // Using theme color for link
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary, // Using theme color for link
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
@@ -102,11 +102,9 @@ class _SignUpModalState extends State<SignUpModal> {
   }
 
   void _launchPrivacyPolicy(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const PrivacyPolicyPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const PrivacyPolicyPage()));
   }
 
   void _showErrorSnackbar(BuildContext context, Uri url) {
@@ -129,9 +127,9 @@ class _SignUpModalState extends State<SignUpModal> {
               TextSpan(
                 text: url.toString(),
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary, // Using theme color for link
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary, // Using theme color for link
                   decoration: TextDecoration.underline,
                 ),
                 recognizer: TapGestureRecognizer()

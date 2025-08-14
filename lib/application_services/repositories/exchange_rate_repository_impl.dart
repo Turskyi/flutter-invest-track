@@ -13,14 +13,14 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     required String fromCurrency,
     String toCurrency = 'CAD',
   }) {
-    return _restClient.getExchangeRate(fromCurrency).then(
-      (ExchangeRate exchangeRate) {
-        final Rates rates = exchangeRate.rates;
+    return _restClient.getExchangeRate(fromCurrency).then((
+      ExchangeRate exchangeRate,
+    ) {
+      final Rates rates = exchangeRate.rates;
 
-        final Map<String, double> currencyMap = rates.toJson();
+      final Map<String, double> currencyMap = rates.toJson();
 
-        return currencyMap[toCurrency.toUpperCase()] ?? 0;
-      },
-    );
+      return currencyMap[toCurrency.toUpperCase()] ?? 0;
+    });
   }
 }

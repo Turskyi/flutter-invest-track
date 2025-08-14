@@ -71,17 +71,22 @@ class _SignInFormState extends State<SignInForm>
                 child: Text(
                   constants.appName,
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: Theme.of(
+                      context,
+                    ).textTheme.headlineLarge?.fontSize,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Welcome to InvestTrack - your companion in smart investments.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 20),
               const InputField(
@@ -129,8 +134,8 @@ class _SignInFormState extends State<SignInForm>
               ContinueButton(
                 onPressed: _isConsentGiven
                     ? () => context.read<SignInBloc>().add(
-                          const SignInSubmitted(),
-                        )
+                        const SignInSubmitted(),
+                      )
                     : null,
               ),
               const SizedBox(height: 20),
@@ -165,7 +170,8 @@ class _SignInFormState extends State<SignInForm>
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               const TextSpan(
-                text: 'Sign in is not available here. Please use our official '
+                text:
+                    'Sign in is not available here. Please use our official '
                     'website: ',
                 style: TextStyle(color: Colors.black),
               ),
@@ -195,17 +201,76 @@ class _SignInFormState extends State<SignInForm>
         } else {
           errorMessage = 'Authentication Failure';
         }
-        contentWidget = SelectableText(errorMessage);
-      }
-
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: contentWidget,
-            duration: const Duration(seconds: 10),
+        contentWidget = SelectableText.rich(
+          TextSpan(
+            style: Theme.of(context).textTheme.bodyMedium,
+            children: _buildErrorTextSpans(errorMessage, context),
           ),
         );
+      }
+
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: contentWidget,
+            actions: <Widget>[
+              TextButton(
+                onPressed: Navigator.of(dialogContext).pop,
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
+  }
+
+  List<InlineSpan> _buildErrorTextSpans(
+    String errorMessage,
+    BuildContext context,
+  ) {
+    final List<InlineSpan> spans = <InlineSpan>[];
+    final RegExp urlRegExp = RegExp(
+      r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(?<![.,!?;:])',
+      // (?<![.,!?;:]) is a negative lookbehind.
+      // It asserts that the character immediately preceding the current
+      // position (i.e., the last character matched by the main URL part)
+      // is NOT one of the characters inside the square brackets: '.', ',',
+      // '!', '?', ';', ':'.
+    );
+
+    final Iterable<RegExpMatch> matches = urlRegExp.allMatches(errorMessage);
+
+    int currentPosition = 0;
+    for (final RegExpMatch match in matches) {
+      if (match.start > currentPosition) {
+        spans.add(
+          TextSpan(text: errorMessage.substring(currentPosition, match.start)),
+        );
+      }
+      final String url = match.group(0) ?? '';
+
+      spans.add(
+        TextSpan(
+          text: url,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            decoration: TextDecoration.underline,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
+            },
+        ),
+      );
+      currentPosition = match.end;
+    }
+
+    if (currentPosition < errorMessage.length) {
+      spans.add(TextSpan(text: errorMessage.substring(currentPosition)));
+    }
+    return spans;
   }
 }

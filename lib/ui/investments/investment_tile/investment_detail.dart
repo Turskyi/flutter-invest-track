@@ -28,10 +28,7 @@ class InvestmentDetail extends StatelessWidget {
               color: valueColor ?? themeData.iconTheme.color,
             ),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: themeData.textTheme.bodyLarge,
-            ),
+            Text(label, style: themeData.textTheme.bodyLarge),
           ],
         ),
         Text(

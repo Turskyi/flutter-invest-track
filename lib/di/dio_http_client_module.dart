@@ -5,9 +5,7 @@ import 'package:investtrack/infrastructure/ws/rest/interceptors/logging_intercep
 @module
 abstract class DioHttpClientModule {
   @preResolve
-  Future<Dio> getDioHttpClient(
-    LoggingInterceptor loggingInterceptor,
-  ) async {
+  Future<Dio> getDioHttpClient(LoggingInterceptor loggingInterceptor) async {
     final Dio dio = Dio()
       ..interceptors.addAll(<Interceptor>[loggingInterceptor])
       ..options.connectTimeout = const Duration(minutes: 1)

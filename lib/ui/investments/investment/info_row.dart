@@ -24,10 +24,7 @@ class InfoRow extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(
-                icon,
-                color: valueColor ?? themeData.iconTheme.color,
-              ),
+              Icon(icon, color: valueColor ?? themeData.iconTheme.color),
               const SizedBox(width: 8),
               Text(
                 label,

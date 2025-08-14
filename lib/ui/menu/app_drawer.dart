@@ -33,15 +33,11 @@ class AppDrawer extends StatelessWidget {
                 final String email = state.user.email;
                 return Text(
                   email.isNotEmpty ? email : 'No Email',
-                  style: TextStyle(
-                    color: theme.colorScheme.onPrimary,
-                  ),
+                  style: TextStyle(color: theme.colorScheme.onPrimary),
                 );
               },
             ),
-            currentAccountPicture: Image.asset(
-              'assets/images/logo.png',
-            ),
+            currentAccountPicture: Image.asset('assets/images/logo.png'),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: <Color>[
@@ -70,9 +66,9 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Sign out'),
-            onTap: () => context
-                .read<AuthenticationBloc>()
-                .add(const AuthenticationSignOutPressed()),
+            onTap: () => context.read<AuthenticationBloc>().add(
+              const AuthenticationSignOutPressed(),
+            ),
           ),
           const Divider(height: 16),
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -100,13 +96,11 @@ class AppDrawer extends StatelessWidget {
                     ? null
                     : () async {
                         final bool? confirmed =
-                            await _showDeleteAccountConfirmationDialog(
-                          context,
-                        );
+                            await _showDeleteAccountConfirmationDialog(context);
                         if (context.mounted && confirmed == true) {
                           context.read<AuthenticationBloc>().add(
-                                const AuthenticationAccountDeletionRequested(),
-                              );
+                            const AuthenticationAccountDeletionRequested(),
+                          );
                         }
                       },
               );

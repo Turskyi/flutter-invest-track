@@ -6,10 +6,7 @@ import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 
 class SignUpEmailInput extends StatefulWidget {
-  const SignUpEmailInput({
-    required this.initialValue,
-    super.key,
-  });
+  const SignUpEmailInput({required this.initialValue, super.key});
 
   final String initialValue;
 

@@ -5,10 +5,7 @@ import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc
 import 'package:investtrack/ui/sign_up/code_form.dart';
 
 class CodePage extends StatelessWidget {
-  const CodePage({
-    required this.email,
-    super.key,
-  });
+  const CodePage({required this.email, super.key});
 
   final String email;
 

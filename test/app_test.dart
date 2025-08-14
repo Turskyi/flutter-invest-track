@@ -34,30 +34,32 @@ void main() {
 
   final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
     AppRoute.investments.path: (_) => BlocProvider<InvestmentsBloc>(
-          create: (_) => InvestmentsBloc(
-            investmentsRepository,
-            exchangeRateRepository,
-            authenticationBloc,
-          )..add(const LoadInvestments()),
-          child: const InvestmentsPage(),
-        ),
+      create: (_) => InvestmentsBloc(
+        investmentsRepository,
+        exchangeRateRepository,
+        authenticationBloc,
+      )..add(const LoadInvestments()),
+      child: const InvestmentsPage(),
+    ),
     AppRoute.signIn.path: (_) => const SignInPage(),
     AppRoute.privacyPolity.path: (_) => const PrivacyPolicyPage(),
     AppRoute.addInvestment.path: (_) => BlocProvider<InvestmentsBloc>(
-          create: (_) => GetIt.I.get<InvestmentsBloc>(),
-          child: const AddEditInvestmentPage(),
-        ),
+      create: (_) => GetIt.I.get<InvestmentsBloc>(),
+      child: const AddEditInvestmentPage(),
+    ),
   };
 
   // Register the mock dependencies with GetIt.
-  GetIt.instance
-      .registerSingleton<AuthenticationRepository>(authenticationRepository);
+  GetIt.instance.registerSingleton<AuthenticationRepository>(
+    authenticationRepository,
+  );
   GetIt.instance.registerSingleton<AuthenticationBloc>(authenticationBloc);
   GetIt.instance.registerSingleton<UserRepository>(userRepository);
   GetIt.instance.registerSingleton<MenuBloc>(menuBloc);
 
-  testWidgets('App loads and displays the sign-in page',
-      (WidgetTester tester) async {
+  testWidgets('App loads and displays the sign-in page', (
+    WidgetTester tester,
+  ) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       App(

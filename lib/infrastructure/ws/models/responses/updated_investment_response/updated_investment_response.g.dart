@@ -7,14 +7,13 @@ part of 'updated_investment_response.dart';
 // **************************************************************************
 
 UpdatedInvestmentResponse _$UpdatedInvestmentResponseFromJson(
-        Map<String, dynamic> json) =>
-    UpdatedInvestmentResponse(
-      investment: InvestmentResponse.fromJson(
-          json['updatedInvestment'] as Map<String, dynamic>),
-    );
+  Map<String, dynamic> json,
+) => UpdatedInvestmentResponse(
+  investment: InvestmentResponse.fromJson(
+    json['updatedInvestment'] as Map<String, dynamic>,
+  ),
+);
 
 Map<String, dynamic> _$UpdatedInvestmentResponseToJson(
-        UpdatedInvestmentResponse instance) =>
-    <String, dynamic>{
-      'updatedInvestment': instance.investment,
-    };
+  UpdatedInvestmentResponse instance,
+) => <String, dynamic>{'updatedInvestment': instance.investment};
