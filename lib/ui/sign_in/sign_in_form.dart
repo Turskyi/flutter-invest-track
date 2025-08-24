@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:formz/formz.dart';
 import 'package:investtrack/application_services/blocs/sign_in/bloc/sign_in_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
@@ -47,103 +48,113 @@ class _SignInFormState extends State<SignInForm>
     return BlocConsumer<SignInBloc, SignInState>(
       listener: _signInStateListener,
       builder: (BuildContext context, SignInState state) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24.0, 120, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Hero(
-                tag: hero_tags.appLogo,
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 96,
-                  height: 96,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ScaleTransition(
-                scale: Tween<double>(begin: 0.4, end: 1.0).animate(
-                  CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.elasticOut,
-                  ),
-                ),
-                child: Text(
-                  constants.appName,
-                  style: TextStyle(
-                    fontSize: Theme.of(
-                      context,
-                    ).textTheme.headlineLarge?.fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Welcome to InvestTrack - your companion in smart investments.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const InputField(
-                label: 'Email',
-                icon: Icons.email,
-                child: EmailInput(),
-              ),
-              const SizedBox(height: 20),
-              const InputField(
-                label: 'Password',
-                icon: Icons.lock,
-                child: PasswordInput(),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        final double logoSize = 96.0;
+        final TextTheme textTheme = Theme.of(context).textTheme;
+        return Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: constants.maxWidth),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24.0, 120, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Checkbox(
-                    value: _isConsentGiven,
-                    onChanged: (bool? value) {
-                      setState(() => _isConsentGiven = value ?? false);
-                    },
+                  Hero(
+                    tag: hero_tags.appLogo,
+                    child: Image.asset(
+                      '${constants.imagePath}logo.png',
+                      width: logoSize,
+                      height: logoSize,
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        text: 'I consent to the collection of my data.\n',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        children: <InlineSpan>[
-                          TextSpan(
-                            text: 'Learn more.',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = _launchPrivacyPolicy,
-                          ),
-                        ],
+                  const SizedBox(height: 20),
+                  ScaleTransition(
+                    scale: Tween<double>(begin: 0.4, end: 1.0).animate(
+                      CurvedAnimation(
+                        parent: _controller,
+                        curve: Curves.elasticOut,
+                      ),
+                    ),
+                    child: Text(
+                      constants.appName,
+                      style: TextStyle(
+                        fontSize: textTheme.headlineLarge?.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  Text(
+                    translate('sign_in_form.welcome_message'),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: textTheme.titleMedium?.fontSize,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  InputField(
+                    label: translate('sign_in_form.email_label'),
+                    icon: Icons.email,
+                    child: const EmailInput(),
+                  ),
+                  const SizedBox(height: 20),
+                  InputField(
+                    label: translate('sign_in_form.password_label'),
+                    icon: Icons.lock,
+                    child: const PasswordInput(),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Checkbox(
+                        value: _isConsentGiven,
+                        onChanged: (bool? value) {
+                          setState(() => _isConsentGiven = value ?? false);
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            text:
+                                '${translate('sign_in_form.'
+                                'consent_prompt_data_collection')}\n',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            children: <InlineSpan>[
+                              TextSpan(
+                                text: translate(
+                                  'sign_in_form.consent_learn_more',
+                                ),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = _launchPrivacyPolicy,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ContinueButton(
+                    onPressed: _isConsentGiven
+                        ? () => context.read<SignInBloc>().add(
+                            const SignInSubmitted(),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+                  SignUpPrompt(
+                    email: state.email.value,
+                    password: state.password.value,
+                  ),
                 ],
               ),
-              ContinueButton(
-                onPressed: _isConsentGiven
-                    ? () => context.read<SignInBloc>().add(
-                        const SignInSubmitted(),
-                      )
-                    : null,
-              ),
-              const SizedBox(height: 20),
-              SignUpPrompt(
-                email: state.email.value,
-                password: state.password.value,
-              ),
-            ],
+            ),
           ),
         );
       },
@@ -169,11 +180,9 @@ class _SignInFormState extends State<SignInForm>
           TextSpan(
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              const TextSpan(
-                text:
-                    'Sign in is not available here. Please use our official '
-                    'website: ',
-                style: TextStyle(color: Colors.black),
+              TextSpan(
+                text: translate('sign_in_form.error_sign_in_unavailable_web_1'),
+                style: const TextStyle(color: Colors.black),
               ),
               TextSpan(
                 text: officialWebsiteUrl,
@@ -199,7 +208,7 @@ class _SignInFormState extends State<SignInForm>
         if (state is SignInErrorState) {
           errorMessage = state.errorMessage;
         } else {
-          errorMessage = 'Authentication Failure';
+          errorMessage = translate('sign_in_form.error_authentication_failure');
         }
         contentWidget = SelectableText.rich(
           TextSpan(
@@ -213,12 +222,12 @@ class _SignInFormState extends State<SignInForm>
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Error'),
+            title: Text(translate('sign_in_form.error_dialog_title')),
             content: contentWidget,
             actions: <Widget>[
               TextButton(
                 onPressed: Navigator.of(dialogContext).pop,
-                child: const Text('OK'),
+                child: Text(translate('sign_in_form.error_dialog_ok_button')),
               ),
             ],
           );

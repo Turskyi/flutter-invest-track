@@ -194,26 +194,34 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 onRefresh: () async => context.read<InvestmentsBloc>().add(
                   const LoadInvestments(),
                 ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
-                  itemCount: state is CreatingInvestment
-                      ? allInvestments.length + 1
-                      : allInvestments.length +
-                            // Add extra item for loader.
-                            (state.hasReachedMax ? 0 : 1),
-                  itemBuilder: (BuildContext _, int index) {
-                    if (state is CreatingInvestment &&
-                        index == allInvestments.length) {
-                      return const ShimmerInvestment();
-                    } else if (index == allInvestments.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final Investment investment = allInvestments[index];
-                    return InvestmentTile(investment: investment);
-                  },
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: constants.maxWidth,
+                    ),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+                      itemCount: state is CreatingInvestment
+                          ? allInvestments.length + 1
+                          : allInvestments.length +
+                                // Add extra item for loader.
+                                (state.hasReachedMax ? 0 : 1),
+                      itemBuilder: (BuildContext _, int index) {
+                        if (state is CreatingInvestment &&
+                            index == allInvestments.length) {
+                          return const ShimmerInvestment();
+                        } else if (index == allInvestments.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        final Investment investment = allInvestments[index];
+                        return InvestmentTile(investment: investment);
+                      },
+                    ),
+                  ),
                 ),
               ),
             );

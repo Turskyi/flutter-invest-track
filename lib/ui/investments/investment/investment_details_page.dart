@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
+import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/slide_page_route.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
@@ -131,144 +132,155 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
           ),
           body: FadeTransition(
             opacity: _fadeAnimation,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(left: 16.0, top: 112, right: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: constants.maxWidth),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    top: 112,
+                    right: 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      if (investment.companyLogoUrl.isNotEmpty)
-                        Hero(
-                          tag: '${hero_tags.companyLogo}${investment.id}',
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: ColoredBox(
-                              color: Colors.white,
-                              child: Image.network(
-                                investment.companyLogoUrl,
-                                width: 100,
-                                height: 100,
+                      Row(
+                        children: <Widget>[
+                          if (investment.companyLogoUrl.isNotEmpty)
+                            Hero(
+                              tag: '${hero_tags.companyLogo}${investment.id}',
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: ColoredBox(
+                                  color: Colors.white,
+                                  child: Image.network(
+                                    investment.companyLogoUrl,
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                ),
                               ),
                             ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(investment.companyName),
+                              Text(investment.type),
+                              Text(investment.stockExchange),
+                              Text(currency),
+                            ],
                           ),
-                        ),
-                      const SizedBox(width: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(investment.companyName),
-                          Text(investment.type),
-                          Text(investment.stockExchange),
-                          Text(currency),
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      if (state is ValueLoadingState)
+                        const CircularProgressIndicator()
+                      else
+                        InfoRow(
+                          label: 'Current Price (USD)',
+                          value: formatPrice(price: currentPrice),
+                          icon: Icons.monetization_on,
+                        ),
+                      if (isPurchased)
+                        InfoRow(
+                          label: 'Quantity',
+                          value: investment.quantity.toString(),
+                          icon: Icons.confirmation_number,
+                        ),
+                      if (state is ValueLoadingState)
+                        const CircularProgressIndicator()
+                      else if (isPurchased)
+                        InfoRow(
+                          label: 'Total Value (Current USD)',
+                          value: totalValueCurrent.toStringAsFixed(2),
+                          icon: Icons.attach_money,
+                        ),
+                      if (state is ValueLoadingState)
+                        const CircularProgressIndicator()
+                      else if (isPurchased)
+                        InfoRow(
+                          label: 'Total Value (Current CAD)',
+                          value: totalValueCad.toStringAsFixed(2),
+                          icon: Icons.currency_exchange_sharp,
+                        ),
+                      if (isPurchased)
+                        InfoRow(
+                          label: 'Purchase Date',
+                          value:
+                              investment.purchaseDate
+                                  ?.toIso8601String()
+                                  .split('T')
+                                  .firstOrNull ??
+                              '',
+                          icon: Icons.calendar_today,
+                        ),
+                      if (state is InvestmentUpdated &&
+                          state.purchasePrice != null)
+                        InfoRow(
+                          label: 'Purchase Price',
+                          value: state.purchasePrice!.toStringAsFixed(2),
+                          icon: Icons.price_check,
+                        )
+                      else if (isPurchased)
+                        const CircularProgressIndicator(),
+                      if (isPurchased)
+                        InfoRow(
+                          label: 'Total Value (Purchase USD)',
+                          value: totalValuePurchase.toStringAsFixed(2),
+                          icon: Icons.money,
+                        ),
+                      if (isPurchased)
+                        InfoRow(
+                          label: 'Total Value (Purchase CAD)',
+                          value: totalValuePurchaseCad.toStringAsFixed(2),
+                          icon: Icons.money_rounded,
+                        ),
+                      if (state is InvestmentUpdated && isPurchased)
+                        InfoRow(
+                          label: 'Gain/Loss (USD)',
+                          value:
+                              '${formatPrice(price: gainOrLoss)} '
+                              '(${gainOrLossPercentage.toStringAsFixed(2)}%)',
+                          icon: gainOrLoss >= 0
+                              ? Icons.trending_up
+                              : Icons.trending_down,
+                          valueColor: gainOrLoss >= 0
+                              ? Colors.greenAccent
+                              : Colors.red,
+                        )
+                      else if (isPurchased)
+                        const CircularProgressIndicator(),
+                      if (state is InvestmentUpdated && isPurchased)
+                        InfoRow(
+                          label: 'Gain/Loss CAD',
+                          value:
+                              '${gainOrLossCad.toStringAsFixed(2)} '
+                              '(${gainOrLossPercentageCad.toStringAsFixed(2)}'
+                              '%)',
+                          icon: gainOrLossCad >= 0
+                              ? Icons.trending_up
+                              : Icons.trending_down,
+                          valueColor: gainOrLossCad >= 0
+                              ? Colors.greenAccent
+                              : Colors.red,
+                        )
+                      else if (isPurchased)
+                        const CircularProgressIndicator(),
+                      if (state is InvestmentUpdated)
+                        PriceChangeWidget(
+                          priceChange: state.priceChange,
+                          changePercentage: state.changePercentage,
+                        )
+                      else
+                        const CircularProgressIndicator(),
+                      const SizedBox(height: 20),
+                      if (investment.description.isNotEmpty)
+                        MarkdownWidget(content: investment.description),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  if (state is ValueLoadingState)
-                    const CircularProgressIndicator()
-                  else
-                    InfoRow(
-                      label: 'Current Price (USD)',
-                      value: formatPrice(price: currentPrice),
-                      icon: Icons.monetization_on,
-                    ),
-                  if (isPurchased)
-                    InfoRow(
-                      label: 'Quantity',
-                      value: investment.quantity.toString(),
-                      icon: Icons.confirmation_number,
-                    ),
-                  if (state is ValueLoadingState)
-                    const CircularProgressIndicator()
-                  else if (isPurchased)
-                    InfoRow(
-                      label: 'Total Value (Current USD)',
-                      value: totalValueCurrent.toStringAsFixed(2),
-                      icon: Icons.attach_money,
-                    ),
-                  if (state is ValueLoadingState)
-                    const CircularProgressIndicator()
-                  else if (isPurchased)
-                    InfoRow(
-                      label: 'Total Value (Current CAD)',
-                      value: totalValueCad.toStringAsFixed(2),
-                      icon: Icons.currency_exchange_sharp,
-                    ),
-                  if (isPurchased)
-                    InfoRow(
-                      label: 'Purchase Date',
-                      value:
-                          investment.purchaseDate
-                              ?.toIso8601String()
-                              .split('T')
-                              .firstOrNull ??
-                          '',
-                      icon: Icons.calendar_today,
-                    ),
-                  if (state is InvestmentUpdated && state.purchasePrice != null)
-                    InfoRow(
-                      label: 'Purchase Price',
-                      value: state.purchasePrice!.toStringAsFixed(2),
-                      icon: Icons.price_check,
-                    )
-                  else if (isPurchased)
-                    const CircularProgressIndicator(),
-                  if (isPurchased)
-                    InfoRow(
-                      label: 'Total Value (Purchase USD)',
-                      value: totalValuePurchase.toStringAsFixed(2),
-                      icon: Icons.money,
-                    ),
-                  if (isPurchased)
-                    InfoRow(
-                      label: 'Total Value (Purchase CAD)',
-                      value: totalValuePurchaseCad.toStringAsFixed(2),
-                      icon: Icons.money_rounded,
-                    ),
-                  if (state is InvestmentUpdated && isPurchased)
-                    InfoRow(
-                      label: 'Gain/Loss (USD)',
-                      value:
-                          '${formatPrice(price: gainOrLoss)} '
-                          '(${gainOrLossPercentage.toStringAsFixed(2)}%)',
-                      icon: gainOrLoss >= 0
-                          ? Icons.trending_up
-                          : Icons.trending_down,
-                      valueColor: gainOrLoss >= 0
-                          ? Colors.greenAccent
-                          : Colors.red,
-                    )
-                  else if (isPurchased)
-                    const CircularProgressIndicator(),
-                  if (state is InvestmentUpdated && isPurchased)
-                    InfoRow(
-                      label: 'Gain/Loss CAD',
-                      value:
-                          '${gainOrLossCad.toStringAsFixed(2)} '
-                          '(${gainOrLossPercentageCad.toStringAsFixed(2)}'
-                          '%)',
-                      icon: gainOrLossCad >= 0
-                          ? Icons.trending_up
-                          : Icons.trending_down,
-                      valueColor: gainOrLossCad >= 0
-                          ? Colors.greenAccent
-                          : Colors.red,
-                    )
-                  else if (isPurchased)
-                    const CircularProgressIndicator(),
-                  if (state is InvestmentUpdated)
-                    PriceChangeWidget(
-                      priceChange: state.priceChange,
-                      changePercentage: state.changePercentage,
-                    )
-                  else
-                    const CircularProgressIndicator(),
-                  const SizedBox(height: 20),
-                  if (investment.description.isNotEmpty)
-                    MarkdownWidget(content: investment.description),
-                ],
+                ),
               ),
             ),
           ),

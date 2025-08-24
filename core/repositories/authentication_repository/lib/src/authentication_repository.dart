@@ -42,20 +42,23 @@ class AuthenticationRepository {
     required String password,
   }) async {
     await _authInit();
+    final String trimmedEmail = email.trim();
+    final String trimmedPassword = password.trim();
     await _auth?.attemptSignIn(
       strategy: clerk.Strategy.password,
-      identifier: email,
-      password: password,
+      identifier: trimmedEmail,
+      password: trimmedPassword,
     );
 
     String userId = _auth?.user?.id ?? '';
+
     if (userId.isEmpty) {
       try {
-        await _restClient.signEmail(email);
+        await _restClient.signEmail(trimmedEmail);
 
         final entity.LoginResponse loginResponse = await _restClient.signIn(
-          email,
-          password,
+          trimmedEmail,
+          trimmedPassword,
           Strategy.password.name,
         );
         userId = loginResponse.userId;
@@ -69,9 +72,9 @@ class AuthenticationRepository {
     } else {
       await _saveUserId(userId);
     }
-    await _saveEmail(email);
+    await _saveEmail(trimmedEmail);
     _controller.add(AuthenticationStatus.authenticated());
-    return entity.User(id: userId, email: email);
+    return entity.User(id: userId, email: trimmedEmail);
   }
 
   Future<void> signUp({
@@ -80,11 +83,14 @@ class AuthenticationRepository {
   }) async {
     await _authInit();
 
+    final String trimmedEmail = email.trim();
+    final String trimmedPassword = password.trim();
+
     final clerk.Client? signUpResponse = await _auth?.attemptSignUp(
       strategy: clerk.Strategy.password,
-      emailAddress: email,
-      password: password,
-      passwordConfirmation: password,
+      emailAddress: trimmedEmail,
+      password: trimmedPassword,
+      passwordConfirmation: trimmedPassword,
     );
 
     final String? signUpId = signUpResponse?.id;
@@ -92,10 +98,10 @@ class AuthenticationRepository {
     if (signUpId?.isNotEmpty == true) {
       await _saveSignUpId(signUpId ?? '');
 
-      _controller.add(AuthenticationStatus.code(email));
+      _controller.add(AuthenticationStatus.code(trimmedEmail));
     }
 
-    await _saveEmail(email);
+    await _saveEmail(trimmedEmail);
   }
 
   Future<void> sendCodeToUser() async {
@@ -196,8 +202,9 @@ class AuthenticationRepository {
         entity.StorageKeys.signUpId.key,
       );
 
-  Future<bool> _removeEmail() =>
-      _preferences.remove(entity.StorageKeys.email.key);
+  Future<bool> _removeEmail() {
+    return _preferences.remove(entity.StorageKeys.email.key);
+  }
 
   Future<bool> _removeUserId() =>
       _preferences.remove(entity.StorageKeys.userId.key);

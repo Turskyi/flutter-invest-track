@@ -211,7 +211,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.bold),
                 children: <InlineSpan>[
                   TextSpan(
-                    text: 'privacy@${constants.companyDomain}',
+                    text: 'privacy@${constants.domain}',
                     style: TextStyle(
                       color: linkColor,
                       decoration: TextDecoration.underline,

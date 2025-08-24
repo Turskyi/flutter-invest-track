@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
@@ -48,9 +49,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   ) async {
     emit(const InvestmentsLoading());
 
-    // Access the user ID from the AuthenticationBloc's state.
-    final String userId = _authenticationBloc.state.user.id;
-
+    final String userId = _authenticationBloc.state.userId;
     if (userId.isEmpty) {
       emit(
         const UnauthenticatedInvestmentsAccessState(
@@ -77,27 +76,40 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         ),
       );
 
-      // Fetch purchase prices asynchronously.
+      // --- STEP 1: Ensure purchase prices are cached ---
       final List<Investment> updatedInvestmentsWithPurchasePrices =
-          await Future.wait(
-            investmentBatch.map((Investment investment) async {
-              if (investment.isPurchased) {
-                final YahooFinanceResponse response =
-                    await const YahooFinanceDailyReader().getDailyDTOs(
-                      investment.ticker,
-                      startDate: investment.purchaseDate,
-                    );
-                final double purchasePrice =
-                    response.candlesData.firstOrNull?.close ?? 0;
+          <Investment>[];
+      for (final Investment investment in investmentBatch) {
+        if (investment.isPurchased && investment.purchasePrice == null) {
+          final String investmentTicker = investment.ticker;
+          try {
+            final YahooFinanceResponse response =
+                await const YahooFinanceDailyReader().getDailyDTOs(
+                  investmentTicker,
+                  startDate: investment.purchaseDate,
+                );
 
-                return investment.copyWith(purchasePrice: purchasePrice);
-              } else {
-                return investment;
-              }
-            }).toList(),
-          );
+            final double purchasePrice =
+                response.candlesData.firstOrNull?.close ?? 0;
 
-      // Emit updated investments with current prices.
+            updatedInvestmentsWithPurchasePrices.add(
+              investment.copyWith(purchasePrice: purchasePrice),
+            );
+          } catch (e, stackTrace) {
+            debugPrint(
+              'Error while fetching purchase price for ticker: '
+              '$investmentTicker.\n'
+              'Error: $e\n'
+              'Stacktrace: $stackTrace.',
+            );
+            // Fallback to original.
+            updatedInvestmentsWithPurchasePrices.add(investment);
+          }
+        } else {
+          updatedInvestmentsWithPurchasePrices.add(investment);
+        }
+      }
+
       emit(
         InvestmentsUpdated(
           investments: updatedInvestmentsWithPurchasePrices,
@@ -105,22 +117,36 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         ),
       );
 
-      // Fetch current prices asynchronously.
+      // --- STEP 2: Throttle current price requests ---
       final List<Investment> updatedInvestmentsWithCurrentPrices =
-          await Future.wait(
-            updatedInvestmentsWithPurchasePrices.map((
-              Investment investment,
-            ) async {
-              final YahooFinanceResponse response =
-                  await const YahooFinanceDailyReader().getDailyDTOs(
-                    investment.ticker,
-                  );
-              final double currentPrice =
-                  response.candlesData.lastOrNull?.close ?? 0;
+          <Investment>[];
+      for (final Investment investment
+          in updatedInvestmentsWithPurchasePrices) {
+        final String ticker = investment.ticker;
+        try {
+          // wait 200ms between requests to avoid burst
+          await Future<void>.delayed(const Duration(milliseconds: 200));
 
-              return investment.copyWith(currentPrice: currentPrice);
-            }).toList(),
+          final YahooFinanceResponse response =
+              await const YahooFinanceDailyReader().getDailyDTOs(ticker);
+
+          final double currentPrice =
+              response.candlesData.lastOrNull?.close ?? 0;
+
+          updatedInvestmentsWithCurrentPrices.add(
+            investment.copyWith(currentPrice: currentPrice),
           );
+        } catch (e, stackTrace) {
+          debugPrint(
+            'Error while fetching current price for ticker: '
+            '$ticker.\n'
+            'Error: $e\n'
+            'Stacktrace: $stackTrace.',
+          );
+          // Fallback.
+          updatedInvestmentsWithCurrentPrices.add(investment);
+        }
+      }
 
       // Emit updated investments with current prices.
       emit(
@@ -130,27 +156,26 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         ),
       );
 
-      // Fetch gain or loss asynchronously.
-      final List<Investment>
-      updatedInvestmentsWithGainOrLoss = await Future.wait(
-        updatedInvestmentsWithCurrentPrices.map((Investment investment) async {
-          final double? currentPrice = investment.currentPrice;
-          final double? purchasePrice = investment.purchasePrice;
-          if (investment.isPurchased &&
-              currentPrice != null &&
-              purchasePrice != null) {
-            final int quantity = investment.quantity;
-            final double totalValueCurrent = quantity * currentPrice;
-            final double totalValuePurchase = quantity * purchasePrice;
-            final double gainOrLoss = totalValueCurrent - totalValuePurchase;
-            return investment.copyWith(gainOrLossUsd: gainOrLoss);
-          } else {
-            return investment;
-          }
-        }).toList(),
-      );
+      // --- STEP 3: Calculate gain/loss ---
+      final List<Investment> updatedInvestmentsWithGainOrLoss =
+          updatedInvestmentsWithCurrentPrices.map((Investment investment) {
+            final double? currentPrice = investment.currentPrice;
+            final double? purchasePrice = investment.purchasePrice;
 
-      // Emit updated investments with current prices.
+            if (investment.isPurchased &&
+                currentPrice != null &&
+                purchasePrice != null) {
+              final int quantity = investment.quantity;
+              final double totalValueCurrent = quantity * currentPrice;
+              final double totalValuePurchase = quantity * purchasePrice;
+              final double gainOrLoss = totalValueCurrent - totalValuePurchase;
+
+              return investment.copyWith(gainOrLossUsd: gainOrLoss);
+            } else {
+              return investment;
+            }
+          }).toList();
+
       emit(
         InvestmentsUpdated(
           investments: updatedInvestmentsWithGainOrLoss,
@@ -162,8 +187,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
       if (error is DioException) {
         final int? statusCode = error.response?.statusCode;
-
-        if (statusCode == 429) {
+        if (statusCode == HttpStatus.tooManyRequests) {
           emit(
             const InvestmentsError(
               errorMessage: 'Too many requests - please try again shortly.',
@@ -171,7 +195,6 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           );
           return;
         }
-
         emit(
           InvestmentsError(
             errorMessage: 'HTTP ${statusCode ?? 'Error'}: ${error.message}',

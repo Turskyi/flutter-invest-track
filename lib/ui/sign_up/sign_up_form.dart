@@ -23,36 +23,39 @@ class SignUpForm extends StatelessWidget {
       listener: _signUpStateListener,
       child: Align(
         alignment: const Alignment(0, -1 / 3),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Text(
-                'Create your account',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Welcome! Please fill in the details to get started.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              SignUpEmailInput(initialValue: email),
-              const Padding(padding: EdgeInsets.all(12)),
-              SignUpPasswordInput(initialValue: password),
-              const Padding(padding: EdgeInsets.all(12)),
-              const SignUpContinueButton(),
-              const Padding(padding: EdgeInsets.all(24)),
-              const Text('Already have an account?'),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRoute.signIn.path,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: constants.maxWidth),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  'Create your account',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                child: const Text('Sign in'),
-              ),
-            ],
+                const SizedBox(height: 8),
+                const Text(
+                  'Welcome! Please fill in the details to get started.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                SignUpEmailInput(initialValue: email),
+                const Padding(padding: EdgeInsets.all(12)),
+                SignUpPasswordInput(initialValue: password),
+                const Padding(padding: EdgeInsets.all(12)),
+                const SignUpContinueButton(),
+                const Padding(padding: EdgeInsets.all(24)),
+                const Text('Already have an account?'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushReplacementNamed(
+                    context,
+                    AppRoute.signIn.path,
+                  ),
+                  child: const Text('Sign in'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

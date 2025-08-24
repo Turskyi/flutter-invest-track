@@ -23,5 +23,22 @@
     "unexpectedError": "An unexpected error occurred. Please try again.",
     "oops": "Oops! Something went wrong. Please try again later.",
     "cors": "Error: Local Environment Setup Required\nTo run this application locally on web, please use the following command:\nflutter run -d chrome --web-browser-flag \"--disable-web-security\"\nThis step is necessary to bypass CORS restrictions during local development. Please note that this flag should only be used in a development environment and never in production."
+  },
+  "sign_in_form": {
+    "welcome_message": "Welcome to InvestTrack - your companion in smart investments.",
+    "email_label": "Email",
+    "password_label": "Password",
+    "consent_prompt_data_collection": "I consent to the collection of my data.",
+    "consent_learn_more": "Learn more.",
+    "continue_button": "Continue",
+    "sign_up_prompt_text_1": "Don't have an account? ",
+    "sign_up_prompt_text_2": "Sign up",
+    "error_dialog_title": "Error",
+    "error_dialog_ok_button": "OK",
+    "error_sign_in_unavailable_web_1": "Sign in is not available here. Please use our official website: ",
+    "error_authentication_failure": "Authentication Failure"
+  },
+  "app": {
+    "name": "InvestTrack"
   }
 }

@@ -37,6 +37,8 @@ class AuthenticationState extends Equatable {
   final AuthenticationStatus status;
   final User user;
 
+  String get userId => user.id;
+
   @override
   List<Object> get props => <Object>[status, user];
 }

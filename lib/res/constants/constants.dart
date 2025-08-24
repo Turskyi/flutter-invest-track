@@ -22,3 +22,4 @@ const String imagePath = 'assets/images/';
 
 /// Blur intensity constant.
 const double blurSigma = 3.0;
+const double maxWidth = 700.0;
