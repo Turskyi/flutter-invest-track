@@ -1,6 +1,9 @@
 name: Upload Android Build to App Tester
 
 on:
+  push:
+    branches-ignore:
+      - master
   workflow_run:
     workflows:
       - Code Quality and Tests
