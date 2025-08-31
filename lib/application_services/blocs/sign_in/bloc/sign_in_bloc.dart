@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:formz/formz.dart';
+import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 
 part 'sign_in_event.dart';
@@ -79,21 +80,11 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         if (user.isNotAnonymous) {
           emit(state.copyWith(status: FormzSubmissionStatus.success));
         } else {
-          emit(
-            SignInErrorState(
-              status: FormzSubmissionStatus.failure,
-              email: state.email,
-              password: state.password,
-              isValid: state.isValid,
-              errorMessage:
-                  'Something went wrong, '
-                  'please try our web version at https://investtracks.com.',
-            ),
-          );
+          _emitSignInErrorWithFallbackMessage(emit);
         }
-      } catch (e) {
-        if (e is DioException) {
-          final Object? data = e.response?.data;
+      } catch (error, stackTrace) {
+        if (error is DioException) {
+          final Object? data = error.response?.data;
           const String errorsKey = 'errors';
           const String messageKey = 'message';
 
@@ -128,37 +119,60 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
             }
           } else if (data == null) {
             debugPrint(
-              'DioException caught, but response.data is null.\n'
-              'Error: $e\n'
-              'DioException type: ${e.type}\n'
-              'Response status code: ${e.response?.statusCode}\n'
-              'Response status message: ${e.response?.statusMessage}',
+              '`DioException` caught, but `response.data` is `null`.\n'
+              'Error: $error\n'
+              'StackTrace: $stackTrace\n'
+              'DioException type: ${error.type}\n'
+              'Response status code: ${error.response?.statusCode}\n'
+              'Response status message: ${error.response?.statusMessage}',
             );
+
+            final DioExceptionType exceptionType = error.type;
+
+            if (exceptionType == DioExceptionType.connectionError) {
+              _emitSignInErrorWithFallbackMessage(emit);
+            }
           } else {
             debugPrint(
               'DioException caught, '
               'and `response.data` is not the expected Map<String, Object?>.\n'
+              'Error: $error\n'
+              'StackTrace: $stackTrace\n'
               'Actual data type: ${data.runtimeType}\n'
               'Actual data value: $data\n'
-              'DioException type: ${e.type}\n'
-              'Response status code: ${e.response?.statusCode}\n'
-              'Response status message: ${e.response?.statusMessage}',
+              'DioException type: ${error.type}\n'
+              'Response status code: ${error.response?.statusCode}\n'
+              'Response status message: ${error.response?.statusMessage}',
+            );
+
+            emit(
+              SignInErrorState(
+                status: FormzSubmissionStatus.failure,
+                email: state.email,
+                password: state.password,
+                isValid: state.isValid,
+                errorMessage: errorMessage,
+              ),
             );
           }
-
-          emit(
-            SignInErrorState(
-              status: FormzSubmissionStatus.failure,
-              email: state.email,
-              password: state.password,
-              isValid: state.isValid,
-              errorMessage: errorMessage,
-            ),
-          );
         } else {
           emit(state.copyWith(status: FormzSubmissionStatus.failure));
         }
       }
     }
+  }
+
+  void _emitSignInErrorWithFallbackMessage(Emitter<SignInState> emit) {
+    emit(
+      SignInErrorState(
+        status: FormzSubmissionStatus.failure,
+        email: state.email,
+        password: state.password,
+        isValid: state.isValid,
+        errorMessage:
+            'Something went wrong, '
+            'please try our web version at ${constants.website}.',
+      ),
+    );
   }
 }

@@ -205,6 +205,7 @@ class _SignInFormState extends State<SignInForm>
         );
       } else {
         String errorMessage;
+
         if (state is SignInErrorState) {
           errorMessage = state.errorMessage;
         } else {
@@ -242,12 +243,12 @@ class _SignInFormState extends State<SignInForm>
   ) {
     final List<InlineSpan> spans = <InlineSpan>[];
     final RegExp urlRegExp = RegExp(
-      r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(?<![.,!?;:])',
       // (?<![.,!?;:]) is a negative lookbehind.
       // It asserts that the character immediately preceding the current
       // position (i.e., the last character matched by the main URL part)
       // is NOT one of the characters inside the square brackets: '.', ',',
       // '!', '?', ';', ':'.
+      r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(?<![.,!?;:])',
     );
 
     final Iterable<RegExpMatch> matches = urlRegExp.allMatches(errorMessage);

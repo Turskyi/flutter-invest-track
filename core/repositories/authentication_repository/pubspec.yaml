@@ -8,7 +8,7 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
-  clerk_auth: ^0.0.10-beta
+  clerk_auth: ^0.0.12-beta
   envied: ^1.2.0
   models:
     path: ../../models

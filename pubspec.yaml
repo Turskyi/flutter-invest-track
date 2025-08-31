@@ -27,10 +27,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build
 # suffix.
-version: 1.0.8+8
+version: 1.0.9+9
 
 environment:
-  sdk: ^3.8.0
+  sdk: '>=3.8.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -44,7 +44,7 @@ dependencies:
     path: core/repositories/authentication_repository
   bloc: ^9.0.0
   bloc_test: ^10.0.0
-  clerk_auth: ^0.0.10-beta
+  clerk_auth: ^0.0.12-beta
   collection: ^1.19.1
   dio: ^5.9.0
   equatable: ^2.0.7
