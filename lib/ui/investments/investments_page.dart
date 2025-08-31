@@ -16,7 +16,7 @@ import 'package:investtrack/ui/investments/investment_tile/investment_tile.dart'
 import 'package:investtrack/ui/investments/investment_tile/shimmer_investment.dart';
 import 'package:investtrack/ui/menu/app_drawer.dart';
 import 'package:investtrack/ui/widgets/blurred_app_bar.dart';
-import 'package:investtrack/ui/widgets/blurred_floating_action_button.dart';
+import 'package:investtrack/ui/widgets/blurred_fab_with_border.dart';
 import 'package:investtrack/ui/widgets/gradient_background_scaffold.dart';
 import 'package:models/models.dart';
 
@@ -32,7 +32,7 @@ class InvestmentsPage extends StatefulWidget {
 
   static Route<void> route(AuthenticationBloc authenticationBloc) {
     return PageRouteBuilder<void>(
-      pageBuilder: (_, __, ___) {
+      pageBuilder: (BuildContext _, Animation<double> _, Animation<double> _) {
         return BlocProvider<InvestmentsBloc>(
           create: (_) => InvestmentsBloc(
             GetIt.I.get<InvestmentsRepository>(),
@@ -42,15 +42,23 @@ class InvestmentsPage extends StatefulWidget {
           child: const InvestmentsPage(),
         );
       },
-      transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-        const Offset begin = Offset(1.0, 0.0);
-        const Offset end = Offset.zero;
-        const Curve curve = Curves.easeInOut;
-        final Animatable<Offset> tween = Tween<Offset>(begin: begin, end: end)
-            .chain(CurveTween(curve: curve));
-        final Animation<Offset> offsetAnimation = animation.drive(tween);
-        return SlideTransition(position: offsetAnimation, child: child);
-      },
+      transitionsBuilder:
+          (
+            BuildContext _,
+            Animation<double> animation,
+            Animation<double> _,
+            Widget child,
+          ) {
+            const Offset begin = Offset(1.0, 0.0);
+            const Offset end = Offset.zero;
+            const Curve curve = Curves.easeInOut;
+            final Animatable<Offset> tween = Tween<Offset>(
+              begin: begin,
+              end: end,
+            ).chain(CurveTween(curve: curve));
+            final Animation<Offset> offsetAnimation = animation.drive(tween);
+            return SlideTransition(position: offsetAnimation, child: child);
+          },
     );
   }
 
@@ -106,15 +114,15 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                   Text(
                     isRateLimit
                         ? 'Too many requests. Please wait a moment and try '
-                            'again.'
+                              'again.'
                         : 'Error: ${state.errorMessage}',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context.read<InvestmentsBloc>().add(
-                          const LoadInvestments(),
-                        ),
+                      const LoadInvestments(),
+                    ),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -149,9 +157,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                     Text(
                       'Start tracking your portfolio today.',
                       style: themeData.textTheme.bodyLarge?.copyWith(
-                        color: themeData.colorScheme.onSurface.withOpacity(
-                          0.6,
-                        ),
+                        color: themeData.colorScheme.onSurface.withOpacity(0.6),
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -186,35 +192,36 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               },
               child: RefreshIndicator(
                 onRefresh: () async => context.read<InvestmentsBloc>().add(
-                      const LoadInvestments(),
+                  const LoadInvestments(),
+                ),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: constants.maxWidth,
                     ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(
-                    16.0,
-                    112,
-                    16,
-                    80,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+                      itemCount: state is CreatingInvestment
+                          ? allInvestments.length + 1
+                          : allInvestments.length +
+                                // Add extra item for loader.
+                                (state.hasReachedMax ? 0 : 1),
+                      itemBuilder: (BuildContext _, int index) {
+                        if (state is CreatingInvestment &&
+                            index == allInvestments.length) {
+                          return const ShimmerInvestment();
+                        } else if (index == allInvestments.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        final Investment investment = allInvestments[index];
+                        return InvestmentTile(investment: investment);
+                      },
+                    ),
                   ),
-                  itemCount: state is CreatingInvestment
-                      ? allInvestments.length + 1
-                      : allInvestments.length +
-                          // Add extra item for loader.
-                          (state.hasReachedMax ? 0 : 1),
-                  itemBuilder: (BuildContext _, int index) {
-                    if (state is CreatingInvestment &&
-                        index == allInvestments.length) {
-                      return const ShimmerInvestment();
-                    } else if (index == allInvestments.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-                    final Investment investment = allInvestments[index];
-                    return InvestmentTile(investment: investment);
-                  },
                 ),
               ),
             );
@@ -241,27 +248,22 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
   void _handleInvestmentsState(BuildContext context, InvestmentsState state) {
     if (state is UnauthenticatedInvestmentsAccessState) {
-      context
-          .read<AuthenticationBloc>()
-          .add(const AuthenticationSignOutPressed());
+      context.read<AuthenticationBloc>().add(
+        const AuthenticationSignOutPressed(),
+      );
     } else if (state is InvestmentDeleted) {
       final String message = state.message;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 1),
-        ),
+        SnackBar(content: Text(message), duration: const Duration(seconds: 1)),
       );
     }
   }
 
   void _showFeedbackUi() {
-    _feedbackController?.show(
-      (UserFeedback feedback) {
-        context.read<MenuBloc>().add(SubmitFeedbackEvent(feedback));
-      },
-    );
+    _feedbackController?.show((UserFeedback feedback) {
+      context.read<MenuBloc>().add(SubmitFeedbackEvent(feedback));
+    });
     _feedbackController?.addListener(_onFeedbackChanged);
   }
 

@@ -21,12 +21,8 @@ class DeleteInvestmentResponse implements MessageResponse {
 
   Map<String, dynamic> toJson() => _$DeleteInvestmentResponseToJson(this);
 
-  DeleteInvestmentResponse copyWith({
-    String? message,
-  }) =>
-      DeleteInvestmentResponse(
-        message: message ?? this.message,
-      );
+  DeleteInvestmentResponse copyWith({String? message}) =>
+      DeleteInvestmentResponse(message: message ?? this.message);
 
   @override
   bool operator ==(Object other) {

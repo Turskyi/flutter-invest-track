@@ -7,12 +7,8 @@ part of 'price_change_response.dart';
 // **************************************************************************
 
 PriceChangeResponse _$PriceChangeResponseFromJson(Map<String, dynamic> json) =>
-    PriceChangeResponse(
-      priceChange: (json['priceChange'] as num).toDouble(),
-    );
+    PriceChangeResponse(priceChange: (json['priceChange'] as num).toDouble());
 
 Map<String, dynamic> _$PriceChangeResponseToJson(
-        PriceChangeResponse instance) =>
-    <String, dynamic>{
-      'priceChange': instance.priceChange,
-    };
+  PriceChangeResponse instance,
+) => <String, dynamic>{'priceChange': instance.priceChange};

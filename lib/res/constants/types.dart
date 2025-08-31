@@ -70,5 +70,6 @@ Map<String, Color> generateInvestmentTypeColors(List<String> types) {
   return typeColors;
 }
 
-final Map<String, Color> investmentTypeColors =
-    generateInvestmentTypeColors(investmentTypes);
+final Map<String, Color> investmentTypeColors = generateInvestmentTypeColors(
+  investmentTypes,
+);

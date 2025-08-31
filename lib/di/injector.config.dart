@@ -50,16 +50,12 @@ import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:user_repository/user_repository.dart' as _i164;
 
 extension GetItInjectableX on _i174.GetIt {
-// initializes the registration of main-scope dependencies inside of GetIt
+  // initializes the registration of main-scope dependencies inside of GetIt
   Future<_i174.GetIt> initDependencyInjection({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
   }) async {
-    final gh = _i526.GetItHelper(
-      this,
-      environment,
-      environmentFilter,
-    );
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final sharedPreferencesModule = _$SharedPreferencesModule();
     final userRepositoryModule = _$UserRepositoryModule();
     final dioHttpClientModule = _$DioHttpClientModule();
@@ -71,47 +67,67 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i204.LoggingInterceptor>(
-        () => const _i204.LoggingInterceptor());
-    gh.lazySingleton<_i164.UserRepository>(() =>
-        userRepositoryModule.getUserRepository(gh<_i460.SharedPreferences>()));
+      () => const _i204.LoggingInterceptor(),
+    );
+    gh.lazySingleton<_i164.UserRepository>(
+      () =>
+          userRepositoryModule.getUserRepository(gh<_i460.SharedPreferences>()),
+    );
     await gh.factoryAsync<_i361.Dio>(
       () =>
           dioHttpClientModule.getDioHttpClient(gh<_i204.LoggingInterceptor>()),
       preResolve: true,
     );
     gh.lazySingleton<_i669.RestClient>(
-        () => restClientModule.getRestClient(gh<_i361.Dio>()));
+      () => restClientModule.getRestClient(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i651.RetrofitClient>(
-        () => retrofitHttpClientModule.getRetrofitHttpClient(gh<_i361.Dio>()));
+      () => retrofitHttpClientModule.getRetrofitHttpClient(gh<_i361.Dio>()),
+    );
     gh.factory<_i30.ExchangeRateRepository>(
-        () => _i741.ExchangeRateRepositoryImpl(gh<_i669.RestClient>()));
+      () => _i741.ExchangeRateRepositoryImpl(gh<_i669.RestClient>()),
+    );
     gh.lazySingleton<_i223.AuthenticationRepository>(
-        () => authenticationRepositoryModule.getAuthenticationRepository(
-              gh<_i651.RetrofitClient>(),
-              gh<_i460.SharedPreferences>(),
-            ));
+      () => authenticationRepositoryModule.getAuthenticationRepository(
+        gh<_i651.RetrofitClient>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.factory<_i305.InvestmentsRepository>(
-        () => _i233.InvestmentsRepositoryImpl(
-              gh<_i669.RestClient>(),
-              gh<_i460.SharedPreferences>(),
-            ));
+      () => _i233.InvestmentsRepositoryImpl(
+        gh<_i669.RestClient>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.factory<_i113.SettingsRepository>(
-        () => _i803.SettingsRepositoryImpl(gh<_i460.SharedPreferences>()));
+      () => _i803.SettingsRepositoryImpl(gh<_i460.SharedPreferences>()),
+    );
     gh.factory<_i682.MenuBloc>(
-        () => _i682.MenuBloc(gh<_i113.SettingsRepository>()));
-    gh.factory<_i636.AuthenticationBloc>(() => _i636.AuthenticationBloc(
-          authenticationRepository: gh<_i223.AuthenticationRepository>(),
-          userRepository: gh<_i164.UserRepository>(),
-        ));
-    gh.factory<_i141.SignInBloc>(() => _i141.SignInBloc(
-        authenticationRepository: gh<_i223.AuthenticationRepository>()));
-    gh.factory<_i445.SignUpBloc>(() => _i445.SignUpBloc(
-        authenticationRepository: gh<_i223.AuthenticationRepository>()));
-    gh.factory<_i91.InvestmentsBloc>(() => _i91.InvestmentsBloc(
-          gh<_i305.InvestmentsRepository>(),
-          gh<_i30.ExchangeRateRepository>(),
-          gh<_i636.AuthenticationBloc>(),
-        ));
+      () => _i682.MenuBloc(gh<_i113.SettingsRepository>()),
+    );
+    gh.factory<_i636.AuthenticationBloc>(
+      () => _i636.AuthenticationBloc(
+        authenticationRepository: gh<_i223.AuthenticationRepository>(),
+        userRepository: gh<_i164.UserRepository>(),
+      ),
+    );
+    gh.factory<_i141.SignInBloc>(
+      () => _i141.SignInBloc(
+        authenticationRepository: gh<_i223.AuthenticationRepository>(),
+      ),
+    );
+    gh.factory<_i445.SignUpBloc>(
+      () => _i445.SignUpBloc(
+        authenticationRepository: gh<_i223.AuthenticationRepository>(),
+      ),
+    );
+    gh.factory<_i91.InvestmentsBloc>(
+      () => _i91.InvestmentsBloc(
+        gh<_i305.InvestmentsRepository>(),
+        gh<_i30.ExchangeRateRepository>(),
+        gh<_i636.AuthenticationBloc>(),
+      ),
+    );
     return this;
   }
 }

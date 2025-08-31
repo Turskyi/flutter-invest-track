@@ -2,9 +2,7 @@ part of 'investments_bloc.dart';
 
 @immutable
 sealed class InvestmentsState {
-  const InvestmentsState({
-    this.investments = const <Investment>[],
-  });
+  const InvestmentsState({this.investments = const <Investment>[]});
 
   final List<Investment> investments;
 }
@@ -14,10 +12,7 @@ final class InvestmentsLoading extends InvestmentsState {
 }
 
 final class InvestmentsError extends InvestmentsState {
-  const InvestmentsError({
-    required this.errorMessage,
-    super.investments,
-  });
+  const InvestmentsError({required this.errorMessage, super.investments});
 
   final String errorMessage;
 }
@@ -36,10 +31,9 @@ final class InvestmentsLoaded extends InvestmentsState {
   final bool isLoadingMore;
   final bool hasReachedMax;
 
-  InvestmentsLoaded copyWith({
-    bool? isLoadingMore,
-    bool? hasReachedMax,
-  }) {
+  bool get canLoadMore => !isLoadingMore && !hasReachedMax;
+
+  InvestmentsLoaded copyWith({bool? isLoadingMore, bool? hasReachedMax}) {
     return InvestmentsLoaded(
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,

@@ -21,9 +21,7 @@ class InvestmentTile extends StatelessWidget {
               return Positioned.fill(
                 child: Card(
                   color: Colors.black.withOpacity(0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
               );
             } else {

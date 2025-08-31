@@ -53,8 +53,9 @@ class _AppViewState extends State<AppView> {
         final String routeName = settings.name ?? '';
 
         // Append slash if missing.
-        final String normalizedRouteName =
-            routeName.startsWith('/') ? routeName : '/$routeName';
+        final String normalizedRouteName = routeName.startsWith('/')
+            ? routeName
+            : '/$routeName';
 
         // Handle routes not covered in routeMap
         if (widget.routeMap.containsKey(normalizedRouteName)) {
@@ -92,78 +93,79 @@ class _AppViewState extends State<AppView> {
                 // Text/icon color on surfaces.
                 onSurface: Colors.white,
               ),
-              textTheme: const TextTheme(
-                headlineLarge: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontFamily: 'Roboto',
-                ),
-                bodyLarge: TextStyle(
-                  fontSize: 16.0,
-                  // Use your desired font.
-                  fontFamily: 'OpenSans',
-                  // Adjust color for readability in dark mode.
-                  color: Colors.white,
-                ),
-                bodyMedium: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'OpenSans',
-                  // Adjust color for readability in dark mode.
-                  color: Colors.white,
-                ),
-              ).copyWith(
-                headlineSmall: const TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Roboto',
-                  // Softer white.
-                  color: Colors.white70,
-                ),
-                titleMedium: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Roboto',
-                  color: Colors.white,
-                ),
-              ),
+              textTheme:
+                  const TextTheme(
+                    headlineLarge: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: 'Roboto',
+                    ),
+                    bodyLarge: TextStyle(
+                      fontSize: 16.0,
+                      // Use your desired font.
+                      fontFamily: 'OpenSans',
+                      // Adjust color for readability in dark mode.
+                      color: Colors.white,
+                    ),
+                    bodyMedium: TextStyle(
+                      fontSize: 14.0,
+                      fontFamily: 'OpenSans',
+                      // Adjust color for readability in dark mode.
+                      color: Colors.white,
+                    ),
+                  ).copyWith(
+                    headlineSmall: const TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Roboto',
+                      // Softer white.
+                      color: Colors.white70,
+                    ),
+                    titleMedium: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Roboto',
+                      color: Colors.white,
+                    ),
+                  ),
               progressIndicatorTheme: const ProgressIndicatorThemeData(
                 // Dark golden for the progress indicator.
                 color: secondaryGold,
               ),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.disabled)) {
-                        // Disabled button background color.
-                        return primaryBlue.withOpacity(0.3);
-                      }
-                      // Default background color.
-                      return primaryBlue.withOpacity(0.8);
-                    },
-                  ),
-                  foregroundColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.disabled)) {
-                        // Disabled text color (lighter grey for better
-                        // visibility)
-                        return Colors.grey.shade400;
-                      }
-                      // Default text color for dark mode.
-                      return Colors.white;
-                    },
-                  ),
-                  elevation: MaterialStateProperty.resolveWith<double>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.disabled)) {
-                        // No elevation when disabled.
-                        return 0.0;
-                      }
-                      // Default elevation.
-                      return 5.0;
-                    },
-                  ),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color?>((
+                    Set<MaterialState> states,
+                  ) {
+                    if (states.contains(MaterialState.disabled)) {
+                      // Disabled button background color.
+                      return primaryBlue.withOpacity(0.3);
+                    }
+                    // Default background color.
+                    return primaryBlue.withOpacity(0.8);
+                  }),
+                  foregroundColor: MaterialStateProperty.resolveWith<Color?>((
+                    Set<MaterialState> states,
+                  ) {
+                    if (states.contains(MaterialState.disabled)) {
+                      // Disabled text color (lighter grey for better
+                      // visibility)
+                      return Colors.grey.shade400;
+                    }
+                    // Default text color for dark mode.
+                    return Colors.white;
+                  }),
+                  elevation: MaterialStateProperty.resolveWith<double>((
+                    Set<MaterialState> states,
+                  ) {
+                    if (states.contains(MaterialState.disabled)) {
+                      // No elevation when disabled.
+                      return 0.0;
+                    }
+                    // Default elevation.
+                    return 5.0;
+                  }),
                   padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(
                       vertical: 16.0,
@@ -248,10 +250,7 @@ class _AppViewState extends State<AppView> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
-                bodyLarge: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black87,
-                ),
+                bodyLarge: TextStyle(fontSize: 16.0, color: Colors.black87),
               ),
               buttonTheme: const ButtonThemeData(
                 buttonColor: Color(0xFF0D47A1), // Match primary color
@@ -271,7 +270,7 @@ class _AppViewState extends State<AppView> {
               dividerColor: Colors.grey[300],
             ),
       navigatorKey: _navigatorKey,
-      builder: (BuildContext context, Widget? child) {
+      builder: (BuildContext _, Widget? child) {
         return BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: _authenticationStateListener,
           child: child,
@@ -294,9 +293,7 @@ class _AppViewState extends State<AppView> {
         );
       case DeletingAuthenticatedUserStatus():
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account deletion in progress...'),
-          ),
+          const SnackBar(content: Text('Account deletion in progress...')),
         );
       case AuthenticatedStatus():
         _navigator?.pushAndRemoveUntil<void>(

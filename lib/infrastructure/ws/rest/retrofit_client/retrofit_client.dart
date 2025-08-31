@@ -125,9 +125,7 @@ abstract class RetrofitClient implements RestClient {
 
   @override
   @DELETE('delete-user')
-  Future<DeleteAccountResponse> deleteAccount(
-    @Query('userId') String userId,
-  );
+  Future<DeleteAccountResponse> deleteAccount(@Query('userId') String userId);
 
   @override
   @GET('https://api.exchangerate-api.com/v4/latest/{fromCurrency}')
@@ -137,9 +135,7 @@ abstract class RetrofitClient implements RestClient {
 
   @override
   @GET('change')
-  Future<PriceChangeResponse> fetchPriceChange(
-    @Query('ticker') String ticker,
-  );
+  Future<PriceChangeResponse> fetchPriceChange(@Query('ticker') String ticker);
 
   @override
   @GET('change-percentage')

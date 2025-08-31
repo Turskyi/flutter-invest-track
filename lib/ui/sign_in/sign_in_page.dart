@@ -13,15 +13,18 @@ class SignInPage extends StatelessWidget {
 
   static Route<void> route() {
     return PageRouteBuilder<Widget>(
-      pageBuilder: (_, __, ___) => const SignInPage(),
-      transitionsBuilder: (
-        _,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        Widget child,
-      ) {
-        return FadeTransition(opacity: animation, child: child);
+      pageBuilder: (BuildContext _, Animation<double> _, Animation<double> _) {
+        return const SignInPage();
       },
+      transitionsBuilder:
+          (
+            _,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) {
+            return FadeTransition(opacity: animation, child: child);
+          },
     );
   }
 

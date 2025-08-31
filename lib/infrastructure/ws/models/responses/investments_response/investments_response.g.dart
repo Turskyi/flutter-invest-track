@@ -16,9 +16,9 @@ InvestmentsResponse _$InvestmentsResponseFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$InvestmentsResponseToJson(
-        InvestmentsResponse instance) =>
-    <String, dynamic>{
-      'investments': instance.investments,
-      'totalPages': instance.totalPages,
-      'currentPage': instance.currentPage,
-    };
+  InvestmentsResponse instance,
+) => <String, dynamic>{
+  'investments': instance.investments,
+  'totalPages': instance.totalPages,
+  'currentPage': instance.currentPage,
+};

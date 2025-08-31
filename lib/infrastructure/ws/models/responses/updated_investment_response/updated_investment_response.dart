@@ -18,18 +18,15 @@ class UpdatedInvestmentResponse implements InvestmentResult {
   final InvestmentResponse investment;
 
   @override
-  String toString() => 'UpdatedInvestmentResponse('
+  String toString() =>
+      'UpdatedInvestmentResponse('
       'updatedInvestment: $investment,'
       ')';
 
   Map<String, dynamic> toJson() => _$UpdatedInvestmentResponseToJson(this);
 
-  UpdatedInvestmentResponse copyWith({
-    InvestmentResponse? investment,
-  }) {
-    return UpdatedInvestmentResponse(
-      investment: investment ?? this.investment,
-    );
+  UpdatedInvestmentResponse copyWith({InvestmentResponse? investment}) {
+    return UpdatedInvestmentResponse(investment: investment ?? this.investment);
   }
 
   @override

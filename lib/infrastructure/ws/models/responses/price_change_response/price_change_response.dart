@@ -20,12 +20,8 @@ class PriceChangeResponse implements PriceChange {
 
   Map<String, dynamic> toJson() => _$PriceChangeResponseToJson(this);
 
-  PriceChangeResponse copyWith({
-    double? priceChange,
-  }) {
-    return PriceChangeResponse(
-      priceChange: priceChange ?? this.priceChange,
-    );
+  PriceChangeResponse copyWith({double? priceChange}) {
+    return PriceChangeResponse(priceChange: priceChange ?? this.priceChange);
   }
 
   @override

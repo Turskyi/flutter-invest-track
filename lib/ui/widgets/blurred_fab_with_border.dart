@@ -39,7 +39,6 @@ class BlurredFabWithBorder extends StatelessWidget {
           child: FloatingActionButton(
             onPressed: onPressed,
             tooltip: tooltip,
-            // backgroundColor: Colors.white.withOpacity(0.2), // Semi-transparent background
             child: Icon(icon),
           ),
         ),
