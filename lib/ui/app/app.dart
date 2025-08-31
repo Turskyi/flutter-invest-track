@@ -53,9 +53,10 @@ class _AppState extends State<App> {
             // we can explicitly opt out of this behavior by setting `lazy:
             // false`.
             lazy: false,
-            create: (BuildContext _) =>
-                widget.authenticationBloc
-                  ..add(const AuthenticationSubscriptionRequested()),
+            create: (BuildContext _) {
+              return widget.authenticationBloc
+                ..add(const AuthenticationSubscriptionRequested());
+            },
           ),
           BlocProvider<MenuBloc>(
             create: (BuildContext _) {

@@ -31,6 +31,8 @@ final class InvestmentsLoaded extends InvestmentsState {
   final bool isLoadingMore;
   final bool hasReachedMax;
 
+  bool get canLoadMore => !isLoadingMore && !hasReachedMax;
+
   InvestmentsLoaded copyWith({bool? isLoadingMore, bool? hasReachedMax}) {
     return InvestmentsLoaded(
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
