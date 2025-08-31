@@ -86,5 +86,11 @@ void main() {
         localizationDelegate,
       ),
     );
+
+    // Allow time for navigation and animations to complete.
+    await tester.pumpAndSettle();
+
+    // Verify that the SignInPage is displayed.
+    expect(find.byType(SignInPage), findsOneWidget);
   });
 }
