@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:authentication_repository/src/authentication_status.dart';
 import 'package:authentication_repository/src/env/env.dart';
@@ -43,7 +44,10 @@ class AuthenticationRepository {
   }) async {
     await _authInit();
     final String trimmedEmail = email.trim();
+
     final String trimmedPassword = password.trim();
+
+    // FIXME: https://github.com/clerk/clerk-sdk-flutter/issues/260
     await _auth?.attemptSignIn(
       strategy: clerk.Strategy.password,
       identifier: trimmedEmail,
@@ -65,13 +69,15 @@ class AuthenticationRepository {
         await _saveUserId(userId);
         await _saveToken(loginResponse.token);
       } catch (e) {
-        if (!e.toString().contains('422')) {
+//TODO: explain why error that contains 422 is fine?
+        if (!e.toString().contains('${HttpStatus.unprocessableEntity}')) {
           rethrow;
         }
       }
     } else {
       await _saveUserId(userId);
     }
+
     await _saveEmail(trimmedEmail);
     _controller.add(AuthenticationStatus.authenticated());
     return entity.User(id: userId, email: trimmedEmail);
@@ -192,8 +198,9 @@ class AuthenticationRepository {
     return _preferences.setString(entity.StorageKeys.email.key, email);
   }
 
-  String get _email =>
-      _preferences.getString(entity.StorageKeys.email.key) ?? '';
+  String get _email {
+    return _preferences.getString(entity.StorageKeys.email.key) ?? '';
+  }
 
   Future<bool> _removeToken() =>
       _preferences.remove(entity.StorageKeys.authToken.key);

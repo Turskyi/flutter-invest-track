@@ -15,6 +15,28 @@ import 'package:yahoo_finance_data_reader/yahoo_finance_data_reader.dart';
 part 'investments_event.dart';
 part 'investments_state.dart';
 
+/// Bloc responsible for managing all investment-related state.
+///
+/// ⚠️ Important usage notes:
+/// - This bloc emits multiple intermediate states (`InvestmentsUpdated`)
+///   while fetching investments (purchase price → current price → gain/loss).
+///   That means UI will rebuild multiple times unless filtered.
+/// - When reusing this bloc across multiple screens (e.g. list + details),
+///   you **must** use `buildWhen` (or similar filtering) to ignore
+///   intermediate states that do not belong to the current screen.
+///   Example:
+///   ```dart
+///   BlocBuilder<InvestmentsBloc, InvestmentsState>(
+///     buildWhen: (InvestmentsState _, InvestmentsState current) =>
+///         current is! InvestmentsUpdated && current is! InvestmentsError,
+///   )
+///   ```
+/// - Attempting to split this bloc into “list” and “details” blocs was
+///   tried before, but led to more complexity (state duplication,
+///   synchronization issues). Keeping one shared bloc and filtering
+///   unwanted states is simpler and recommended.
+///
+/// TL;DR: Reuse one bloc across screens, but filter states where needed.
 class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   InvestmentsBloc(
     this._investmentsRepository,
@@ -83,10 +105,12 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           final String investmentTicker = investment.ticker;
           try {
             final YahooFinanceResponse response =
-                await const YahooFinanceDailyReader().getDailyDTOs(
-                  investmentTicker,
-                  startDate: investment.purchaseDate,
-                );
+                await _retryWithBackoff<YahooFinanceResponse>(() {
+                  return const YahooFinanceDailyReader().getDailyDTOs(
+                    investmentTicker,
+                    startDate: investment.purchaseDate,
+                  );
+                });
 
             final double purchasePrice =
                 response.candlesData.firstOrNull?.close ?? 0;
@@ -119,15 +143,14 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       // --- STEP 2: Throttle current price requests ---
       final List<Investment> updatedInvestmentsWithCurrentPrices =
           <Investment>[];
-      for (final Investment investment
-          in updatedInvestmentsWithPurchasePrices) {
+      for (int i = 0; i < updatedInvestmentsWithPurchasePrices.length; i++) {
+        final Investment investment = updatedInvestmentsWithPurchasePrices[i];
         final String ticker = investment.ticker;
         try {
-          // Wait 200ms between requests to avoid burst.
-          await Future<void>.delayed(const Duration(milliseconds: 200));
-
           final YahooFinanceResponse currentValueResponse =
-              await const YahooFinanceDailyReader().getDailyDTOs(ticker);
+              await _retryWithBackoff<YahooFinanceResponse>(() {
+                return const YahooFinanceDailyReader().getDailyDTOs(ticker);
+              });
 
           final double currentPrice =
               currentValueResponse.candlesData.lastOrNull?.close ?? 0;
@@ -261,6 +284,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   ) async {
     final Investment investment = event.investment;
     final InvestmentsState currentState = state;
+
     if (currentState is InvestmentsLoaded) {
       emit(
         SelectedInvestmentState(
@@ -287,14 +311,18 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
     try {
       double currentPrice = investment.currentPrice ?? 0;
+
       if (currentPrice == 0) {
         final YahooFinanceResponse currentValue =
-            await const YahooFinanceDailyReader().getDailyDTOs(ticker);
+            await _retryWithBackoff<YahooFinanceResponse>(() {
+              return const YahooFinanceDailyReader().getDailyDTOs(ticker);
+            });
 
         currentPrice = currentValue.candlesData.lastOrNull?.close ?? 0;
       }
 
       final InvestmentsState investmentsState = state;
+
       if (currentPrice != 0 && investmentsState is InvestmentsLoaded) {
         emit(
           CurrentValueLoaded(
@@ -313,6 +341,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               toCurrency: CurrencyCode.cad.value,
             );
         final InvestmentsState investmentsState = state;
+
         if (investmentsState is InvestmentsLoaded) {
           emit(
             ExchangeRateLoaded(
@@ -326,12 +355,15 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         }
 
         double purchasePrice = investment.purchasePrice ?? 0;
+
         if (purchasePrice == 0) {
           final YahooFinanceResponse purchaseValue =
-              await const YahooFinanceDailyReader().getDailyDTOs(
-                ticker,
-                startDate: investment.purchaseDate,
-              );
+              await _retryWithBackoff<YahooFinanceResponse>(() {
+                return const YahooFinanceDailyReader().getDailyDTOs(
+                  ticker,
+                  startDate: investment.purchaseDate,
+                );
+              });
 
           purchasePrice = purchaseValue.candlesData.firstOrNull?.close ?? 0;
         }
@@ -359,6 +391,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       );
 
       final InvestmentsState investmentsState3 = state;
+
       if (investmentsState3 is InvestmentUpdated) {
         emit(investmentsState3.copyWith(priceChange: priceChange));
       } else if (investmentsState3 is InvestmentsLoaded) {
@@ -381,9 +414,11 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       );
     }
 
+    //TODO: handle error and emit InvestmentError state.
     final double changePercentage = await _investmentsRepository
         .fetchChangePercentage(ticker);
     final InvestmentsState investmentsState4 = state;
+
     if (investmentsState4 is InvestmentUpdated) {
       emit(investmentsState4.copyWith(changePercentage: changePercentage));
     }
@@ -413,8 +448,11 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
       final String ticker = createdInvestment.ticker;
       final DateTime? purchaseDate = createdInvestment.purchaseDate;
+
       final YahooFinanceResponse currentValue =
-          await const YahooFinanceDailyReader().getDailyDTOs(ticker);
+          await _retryWithBackoff<YahooFinanceResponse>(() {
+            return const YahooFinanceDailyReader().getDailyDTOs(ticker);
+          });
 
       final double currentPrice =
           currentValue.candlesData.lastOrNull?.close ?? 0;
@@ -424,10 +462,12 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
       try {
         final YahooFinanceResponse dateValueResponse =
-            await const YahooFinanceDailyReader().getDailyDTOs(
-              ticker,
-              startDate: purchaseDate,
-            );
+            await _retryWithBackoff<YahooFinanceResponse>(() {
+              return const YahooFinanceDailyReader().getDailyDTOs(
+                ticker,
+                startDate: purchaseDate,
+              );
+            });
 
         // Check if the response contains valid data.
         if (dateValueResponse.candlesData.isEmpty ||
@@ -654,5 +694,27 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     Emitter<InvestmentsState> emit,
   ) async {
     await _handleCreateOrUpdateInvestment(emitter: emit, event: event);
+  }
+
+  Future<T> _retryWithBackoff<T>(
+    Future<T> Function() request, {
+    int maxRetries = 5,
+    Duration initialDelay = const Duration(milliseconds: 200),
+  }) async {
+    Duration delay = initialDelay;
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        return await request();
+      } on DioException catch (e) {
+        if (e.response?.statusCode == HttpStatus.tooManyRequests) {
+          await Future<void>.delayed(delay);
+          // Exponential backoff.
+          delay *= 2;
+        } else {
+          rethrow;
+        }
+      }
+    }
+    throw Exception('Max retries exceeded');
   }
 }

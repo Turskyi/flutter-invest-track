@@ -1,6 +1,6 @@
 const String domain = 'investtracks.com';
 const String website = 'https://$domain';
-const String baseUrl = 'https://investtracks.com/';
+const String baseUrl = '$website/';
 const String apiBaseUrl = '${baseUrl}api/';
 const String supportEmail = 'support@$domain';
 const String companyDomain = 'turskyi.com';

@@ -155,17 +155,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                     label: 'Quantity',
                     hint: 'e.g. 100',
                     keyboardType: TextInputType.number,
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        // Allow empty input
-                        return null;
-                      }
-                      final int? number = int.tryParse(value);
-                      if (number == null || number < 0) {
-                        return 'Please enter a valid positive number.';
-                      }
-                      return null;
-                    },
+                    validator: _quantityValidator,
                   ),
                   const SizedBox(height: 16),
                   ValueListenableBuilder<TextEditingValue>(
@@ -222,6 +212,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                     children: <Widget>[
                       if (widget.investment != null)
                         BlocBuilder<InvestmentsBloc, InvestmentsState>(
+                          buildWhen: _shouldRebuildInvestmentPage,
                           builder: (BuildContext _, InvestmentsState state) {
                             final Color textColorOnYellow = Theme.of(
                               context,
@@ -316,6 +307,18 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
     _descriptionController.dispose();
     _formStateChangedNotifier.dispose();
     super.dispose();
+  }
+
+  String? _quantityValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      // Allow empty input
+      return null;
+    }
+    final int? number = int.tryParse(value);
+    if (number == null || number < 0) {
+      return 'Please enter a valid positive number.';
+    }
+    return null;
   }
 
   void _investmentsStateListener(BuildContext context, InvestmentsState state) {
@@ -482,5 +485,14 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
     }
     // URL is valid.
     return null;
+  }
+
+  bool _shouldRebuildInvestmentPage(
+    InvestmentsState _,
+    InvestmentsState current,
+  ) {
+    // Ignore `InvestmentsUpdated` and `InvestmentsError` states. They do
+    // not belong to this screen.
+    return current is! InvestmentsUpdated && current is! InvestmentsError;
   }
 }
