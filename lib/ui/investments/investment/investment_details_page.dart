@@ -49,19 +49,8 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<InvestmentsBloc, InvestmentsState>(
-      listener: (BuildContext context, InvestmentsState state) {
-        if (state is InvestmentsError) {
-          // Show a snackbar with the error message.
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else if (state is InvestmentDeleted) {
-          Navigator.of(context).pop(true);
-        }
-      },
+      listener: _investmentsStateListener,
+      buildWhen: _shouldRebuildInvestmentDetails,
       builder: (BuildContext context, InvestmentsState state) {
         final Investment investment = widget.investment;
         final int quantity = investment.quantity;
@@ -287,6 +276,29 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
         );
       },
     );
+  }
+
+  bool _shouldRebuildInvestmentDetails(
+    InvestmentsState _,
+    InvestmentsState current,
+  ) {
+    // Ignore `InvestmentsUpdated` and `InvestmentsError` states. They do
+    // not belong to this screen.
+    return current is! InvestmentsUpdated && current is! InvestmentsError;
+  }
+
+  void _investmentsStateListener(BuildContext context, InvestmentsState state) {
+    if (state is InvestmentsError) {
+      // Show a snackbar with the error message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (state is InvestmentDeleted) {
+      Navigator.of(context).pop(true);
+    }
   }
 
   @override

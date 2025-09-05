@@ -10,13 +10,17 @@ class InvestmentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<InvestmentsBloc, InvestmentsState>(
-      listener: (BuildContext context, InvestmentsState state) {
-        if (state is InvestmentDeleted) {
-          Navigator.of(context).pop(true);
-        }
-      },
-      builder: (BuildContext context, InvestmentsState state) {
+      listener: _handleInvestmentStateChanges,
+      buildWhen: _shouldRebuildForState,
+      builder: (BuildContext _, InvestmentsState state) {
         if (state is SelectedInvestmentState) {
+          // This condition handles `SelectedInvestmentState` and its subtypes,
+          // such as `InvestmentUpdated` and `CurrentValueLoaded`.
+          // `InvestmentUpdated` directly extends `SelectedInvestmentState`.
+          // `CurrentValueLoaded` extends `ValueLoadingState`, which in turn
+          // extends `SelectedInvestmentState`.
+          // Therefore, checking `state is SelectedInvestmentState` is
+          // sufficient.
           return InvestmentDetailsPage(investment: state.selectedInvestment);
         } else if (state is InvestmentSubmitted) {
           return InvestmentDetailsPage(investment: state.investment);
@@ -24,8 +28,10 @@ class InvestmentPage extends StatelessWidget {
           return InvestmentDetailsPage(investment: state.investment);
         } else {
           // Fancy loading placeholder.
-          return const GradientBackgroundScaffold(
-            body: Center(
+          return GradientBackgroundScaffold(
+            // We need to add the whole `AppBar` so that "arrow back" appeared.
+            appBar: AppBar(),
+            body: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -42,5 +48,20 @@ class InvestmentPage extends StatelessWidget {
         }
       },
     );
+  }
+
+  bool _shouldRebuildForState(InvestmentsState _, InvestmentsState current) {
+    // Ignore `InvestmentsUpdated` and `InvestmentsError` states. They do
+    // not belong to this screen.
+    return current is! InvestmentsUpdated && current is! InvestmentsError;
+  }
+
+  void _handleInvestmentStateChanges(
+    BuildContext context,
+    InvestmentsState state,
+  ) {
+    if (state is InvestmentDeleted) {
+      Navigator.of(context).pop(true);
+    }
   }
 }

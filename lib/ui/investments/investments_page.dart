@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -105,7 +107,9 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
             //TODO: replace with shimmer.
             return const Center(child: CircularProgressIndicator());
           } else if (state is InvestmentsError) {
-            final bool isRateLimit = state.errorMessage.contains('429');
+            final bool isRateLimit = state.errorMessage.contains(
+              '${HttpStatus.tooManyRequests}',
+            );
 
             return Center(
               child: Column(
