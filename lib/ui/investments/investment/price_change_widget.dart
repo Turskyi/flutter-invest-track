@@ -20,6 +20,7 @@ class PriceChangeWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         BlocBuilder<InvestmentsBloc, InvestmentsState>(
+          buildWhen: _shouldRebuildPriceChange,
           builder: (BuildContext _, InvestmentsState state) {
             return InfoRow(
               label: 'Price Change',
