@@ -714,7 +714,9 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       try {
         return await request();
       } on DioException catch (e) {
+        debugPrint('Error: $e.');
         if (e.response?.statusCode == HttpStatus.tooManyRequests) {
+          debugPrint('Too many requests. Retrying in $delay.');
           await Future<void>.delayed(delay);
           // Exponential backoff.
           delay *= 2;
@@ -723,6 +725,6 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         }
       }
     }
-    throw Exception('Max retries exceeded');
+    throw Exception('Max retries exceeded.');
   }
 }
