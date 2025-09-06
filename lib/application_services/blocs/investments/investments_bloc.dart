@@ -308,10 +308,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     }
 
     final String ticker = investment.ticker;
-
+    double currentPrice = investment.currentPrice ?? 0;
     try {
-      double currentPrice = investment.currentPrice ?? 0;
-
       if (currentPrice == 0) {
         final YahooFinanceResponse currentValue =
             await _retryWithBackoff<YahooFinanceResponse>(() {
@@ -421,6 +419,16 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
     if (investmentsState4 is InvestmentUpdated) {
       emit(investmentsState4.copyWith(changePercentage: changePercentage));
+    } else if (investmentsState4 is InvestmentsLoaded) {
+      emit(
+        InvestmentUpdated(
+          selectedInvestment: investment,
+          investments: investmentsState4.investments,
+          currentPrice: currentPrice,
+          hasReachedMax: investmentsState4.hasReachedMax,
+          priceChange: changePercentage,
+        ),
+      );
     }
   }
 
@@ -706,7 +714,9 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       try {
         return await request();
       } on DioException catch (e) {
+        debugPrint('Error: $e.');
         if (e.response?.statusCode == HttpStatus.tooManyRequests) {
+          debugPrint('Too many requests. Retrying in $delay.');
           await Future<void>.delayed(delay);
           // Exponential backoff.
           delay *= 2;
@@ -715,6 +725,6 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         }
       }
     }
-    throw Exception('Max retries exceeded');
+    throw Exception('Max retries exceeded.');
   }
 }

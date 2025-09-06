@@ -209,10 +209,12 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                           state.purchasePrice != null)
                         InfoRow(
                           label: 'Purchase Price',
-                          value: state.purchasePrice!.toStringAsFixed(2),
+                          value: state.purchasePrice?.toStringAsFixed(2) ?? '',
                           icon: Icons.price_check,
                         )
-                      else if (isPurchased)
+                      else if (isPurchased &&
+                          state is! InvestmentUpdated &&
+                          state is! InvestmentError)
                         const CircularProgressIndicator(),
                       if (isPurchased)
                         InfoRow(
@@ -239,7 +241,9 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                               ? Colors.greenAccent
                               : Colors.red,
                         )
-                      else if (isPurchased)
+                      else if (isPurchased &&
+                          state is! InvestmentUpdated &&
+                          state is! InvestmentError)
                         const CircularProgressIndicator(),
                       if (state is InvestmentUpdated && isPurchased)
                         InfoRow(
@@ -255,14 +259,16 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                               ? Colors.greenAccent
                               : Colors.red,
                         )
-                      else if (isPurchased)
+                      else if (isPurchased &&
+                          state is! InvestmentUpdated &&
+                          state is! InvestmentError)
                         const CircularProgressIndicator(),
                       if (state is InvestmentUpdated)
                         PriceChangeWidget(
                           priceChange: state.priceChange,
                           changePercentage: state.changePercentage,
                         )
-                      else
+                      else if (state is! InvestmentError)
                         const CircularProgressIndicator(),
                       const SizedBox(height: 20),
                       if (investment.description.isNotEmpty)
