@@ -40,5 +40,24 @@
   },
   "app": {
     "name": "InvestTrack"
+  },
+  "demo": {
+    "explore_button": "Explore Demo",
+    "banner_message": "Demo Mode - Sign in to track your own portfolio.",
+    "sign_in_action": "Sign In",
+    "sign_in_required_title": "Sign In Required",
+    "sign_in_required_body": "Create a free account to start tracking your personal investments.",
+    "continue_demo_action": "Continue Exploring"
+  },
+  "how_it_works": {
+    "button": "How it works",
+    "title": "How InvestTrack Works",
+    "step1_title": "Add your stocks",
+    "step1_body": "Enter the ticker symbol, quantity, and purchase date for each position you hold.",
+    "step2_title": "Live valuations",
+    "step2_body": "We fetch real-time prices and automatically calculate your total gain or loss.",
+    "step3_title": "Account required",
+    "step3_body": "Your portfolio is personal - a free account keeps your data private and synced across devices.",
+    "got_it": "Got it"
   }
 }

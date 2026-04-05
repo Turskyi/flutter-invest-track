@@ -12,6 +12,7 @@ import 'package:investtrack/domain_services/exchange_rate_repository.dart';
 import 'package:investtrack/domain_services/investments_repository.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
+import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/slide_page_route.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
 import 'package:investtrack/ui/investments/investment_tile/investment_tile.dart';
@@ -30,7 +31,9 @@ import 'package:models/models.dart';
 /// `context.select((AuthenticationBloc bloc) => bloc.state.user.id)` will
 /// trigger updates if the user id changes.
 class InvestmentsPage extends StatefulWidget {
-  const InvestmentsPage({super.key});
+  const InvestmentsPage({super.key, this.isDemo = false});
+
+  final bool isDemo;
 
   static Route<void> route(AuthenticationBloc authenticationBloc) {
     return PageRouteBuilder<void>(
@@ -70,11 +73,18 @@ class InvestmentsPage extends StatefulWidget {
 
 class _InvestmentsPageState extends State<InvestmentsPage> {
   FeedbackController? _feedbackController;
+  ScaffoldMessengerState? _scaffoldMessenger;
 
   @override
   void didChangeDependencies() {
-    _feedbackController = BetterFeedback.of(context);
     super.didChangeDependencies();
+    _feedbackController = BetterFeedback.of(context);
+    if (widget.isDemo) {
+      _scaffoldMessenger = ScaffoldMessenger.of(context);
+      WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+        _showDemoBanner();
+      });
+    }
   }
 
   @override
@@ -96,10 +106,12 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
           ],
         ),
       ),
-      drawer: BlocListener<MenuBloc, MenuState>(
-        listener: _menuStateListener,
-        child: const AppDrawer(),
-      ),
+      drawer: widget.isDemo
+          ? null
+          : BlocListener<MenuBloc, MenuState>(
+              listener: _menuStateListener,
+              child: const AppDrawer(),
+            ),
       body: BlocConsumer<InvestmentsBloc, InvestmentsState>(
         listener: _handleInvestmentsState,
         builder: (BuildContext context, InvestmentsState state) {
@@ -198,34 +210,40 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 onRefresh: () async => context.read<InvestmentsBloc>().add(
                   const LoadInvestments(),
                 ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: constants.maxWidth,
-                    ),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
-                      itemCount: state is CreatingInvestment
-                          ? allInvestments.length + 1
-                          : allInvestments.length +
-                                // Add extra item for loader.
-                                (state.hasReachedMax ? 0 : 1),
-                      itemBuilder: (BuildContext _, int index) {
-                        if (state is CreatingInvestment &&
-                            index == allInvestments.length) {
-                          return const ShimmerInvestment();
-                        } else if (index == allInvestments.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-                        final Investment investment = allInvestments[index];
-                        return InvestmentTile(investment: investment);
-                      },
-                    ),
-                  ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+                  itemCount: state is CreatingInvestment
+                      ? allInvestments.length + 1
+                      : allInvestments.length +
+                            // Add extra item for loader.
+                            (state.hasReachedMax ? 0 : 1),
+                  itemBuilder: (BuildContext _, int index) {
+                    if (state is CreatingInvestment &&
+                        index == allInvestments.length) {
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: constants.maxWidth,
+                          ),
+                          child: const ShimmerInvestment(),
+                        ),
+                      );
+                    } else if (index == allInvestments.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final Investment investment = allInvestments[index];
+                    return Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: constants.maxWidth,
+                        ),
+                        child: InvestmentTile(investment: investment),
+                      ),
+                    );
+                  },
                 ),
               ),
             );
@@ -245,9 +263,39 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
   @override
   void dispose() {
+    _scaffoldMessenger?.clearMaterialBanners();
+    _scaffoldMessenger = null;
     _feedbackController?.removeListener(_onFeedbackChanged);
     _feedbackController = null;
     super.dispose();
+  }
+
+  void _showDemoBanner() {
+    if (mounted) {
+      _scaffoldMessenger?.showMaterialBanner(
+        MaterialBanner(
+          backgroundColor: Colors.amber.shade800,
+          content: SelectableText(
+            translate('demo.banner_message'),
+            style: const TextStyle(color: Colors.white),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                _scaffoldMessenger?.clearMaterialBanners();
+                Navigator.of(
+                  context,
+                ).pushReplacementNamed(AppRoute.signIn.path);
+              },
+              child: Text(
+                translate('demo.sign_in_action'),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void _handleInvestmentsState(BuildContext context, InvestmentsState state) {
@@ -291,13 +339,72 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
   }
 
   void _navigateToAddEditPage() {
-    Navigator.of(context).push<bool?>(
-      SlidePageRoute<bool?>(
-        page: BlocProvider<InvestmentsBloc>.value(
-          value: context.read<InvestmentsBloc>(),
-          child: const AddEditInvestmentPage(),
+    if (widget.isDemo) {
+      _showDemoSignInPrompt();
+    } else {
+      Navigator.of(context).push<bool?>(
+        SlidePageRoute<bool?>(
+          page: BlocProvider<InvestmentsBloc>.value(
+            value: context.read<InvestmentsBloc>(),
+            child: const AddEditInvestmentPage(),
+          ),
         ),
+      );
+    }
+  }
+
+  void _showDemoSignInPrompt() {
+    final NavigatorState navigator = Navigator.of(context);
+    final ScaffoldMessengerState? messenger = _scaffoldMessenger;
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
+      builder: (BuildContext sheetContext) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.lock_outline,
+                size: 48,
+                color: Theme.of(sheetContext).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                translate('demo.sign_in_required_title'),
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                translate('demo.sign_in_required_body'),
+                textAlign: TextAlign.center,
+                style: Theme.of(sheetContext).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    messenger?.clearMaterialBanners();
+                    navigator.pushReplacementNamed(AppRoute.signIn.path);
+                  },
+                  child: Text(translate('demo.sign_in_action')),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.of(sheetContext).pop(),
+                child: Text(translate('demo.continue_demo_action')),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

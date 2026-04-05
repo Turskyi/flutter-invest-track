@@ -7,6 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
+import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart';
+import 'package:investtrack/application_services/repositories/demo_investments_repository.dart';
 import 'package:investtrack/di/injector.dart';
 import 'package:investtrack/domain_services/exchange_rate_repository.dart';
 import 'package:investtrack/domain_services/investments_repository.dart';
@@ -72,6 +74,15 @@ Future<void> main() async {
         child: const AddEditInvestmentPage(),
       );
     },
+    AppRoute.demo.path: (BuildContext _) => BlocProvider<InvestmentsBloc>(
+      create: (BuildContext _) => InvestmentsBloc(
+        const DemoInvestmentsRepository(),
+        const DemoExchangeRateRepository(),
+        authenticationBloc,
+        isDemo: true,
+      )..add(const LoadInvestments()),
+      child: const InvestmentsPage(isDemo: true),
+    ),
   };
 
   runApp(

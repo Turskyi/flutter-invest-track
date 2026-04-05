@@ -1,4 +1,4 @@
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_easy_translate/flutter_easy_translate.dart';
 
 /// What type of feedback the user wants to provide.
 enum FeedbackType {

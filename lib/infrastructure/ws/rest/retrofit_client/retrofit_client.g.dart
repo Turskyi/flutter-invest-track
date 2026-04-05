@@ -2,11 +2,13 @@
 
 part of 'retrofit_client.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _RetrofitClient implements RetrofitClient {
   _RetrofitClient(this._dio, {this.baseUrl, this.errorLogger});
@@ -43,7 +45,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignInResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -83,7 +85,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignInResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -110,7 +112,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignOutResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -142,7 +144,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignUpResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -177,7 +179,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = PrepareVerificationResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -213,7 +215,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = VerificationResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -248,7 +250,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = InvestmentsResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -278,7 +280,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = CreatedInvestmentResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -308,7 +310,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = UpdatedInvestmentResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -341,7 +343,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = DeleteInvestmentResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -368,7 +370,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = DeleteAccountResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -395,7 +397,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = ExchangeRateResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -422,7 +424,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = PriceChangeResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -449,7 +451,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = ChangePercentageResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -482,3 +484,5 @@ class _RetrofitClient implements RetrofitClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

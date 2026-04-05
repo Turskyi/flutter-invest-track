@@ -1,4 +1,4 @@
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_easy_translate/flutter_easy_translate.dart';
 
 /// A user-provided sentiment rating.
 enum FeedbackRating {

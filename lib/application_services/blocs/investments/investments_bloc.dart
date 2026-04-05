@@ -41,8 +41,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   InvestmentsBloc(
     this._investmentsRepository,
     this._exchangeRateRepository,
-    this._authenticationBloc,
-  ) : super(const InvestmentsLoading()) {
+    this._authenticationBloc, {
+    bool isDemo = false,
+  }) : _isDemo = isDemo,
+       super(const InvestmentsLoading()) {
     on<LoadInvestments>(_loadInvestments);
     on<LoadMoreInvestments>(_loadMoreInvestments);
     on<LoadInvestment>(_loadInvestment);
@@ -54,6 +56,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   final InvestmentsRepository _investmentsRepository;
   final ExchangeRateRepository _exchangeRateRepository;
   final AuthenticationBloc _authenticationBloc;
+  final bool _isDemo;
 
   FutureOr<void> _updateInvestment(
     UpdateInvestmentEvent event,
@@ -67,6 +70,22 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     Emitter<InvestmentsState> emit,
   ) async {
     emit(const InvestmentsLoading());
+
+    if (_isDemo) {
+      try {
+        final Investments investments = await _investmentsRepository
+            .getInvestments(userId: 'demo');
+        emit(
+          InvestmentsLoaded(
+            investments: investments.investments,
+            hasReachedMax: true,
+          ),
+        );
+      } catch (error) {
+        emit(InvestmentsError(errorMessage: error.toString()));
+      }
+      return;
+    }
 
     final String userId = _authenticationBloc.state.userId;
     if (userId.isEmpty) {
