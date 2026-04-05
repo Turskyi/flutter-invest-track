@@ -24,6 +24,10 @@ import 'package:investtrack/application_services/blocs/sign_in/bloc/sign_in_bloc
     as _i141;
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart'
     as _i445;
+import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart'
+    as _i451;
+import 'package:investtrack/application_services/repositories/demo_investments_repository.dart'
+    as _i650;
 import 'package:investtrack/application_services/repositories/exchange_rate_repository_impl.dart'
     as _i741;
 import 'package:investtrack/application_services/repositories/investments_repository_impl.dart'
@@ -62,6 +66,12 @@ extension GetItInjectableX on _i174.GetIt {
     final retrofitHttpClientModule = _$RetrofitHttpClientModule();
     final userRepositoryModule = _$UserRepositoryModule();
     final authenticationRepositoryModule = _$AuthenticationRepositoryModule();
+    gh.factory<_i451.DemoExchangeRateRepository>(
+      () => const _i451.DemoExchangeRateRepository(),
+    );
+    gh.factory<_i650.DemoInvestmentsRepository>(
+      () => const _i650.DemoInvestmentsRepository(),
+    );
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => sharedPreferencesModule.prefs,
       preResolve: true,
@@ -126,6 +136,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i305.InvestmentsRepository>(),
         gh<_i30.ExchangeRateRepository>(),
         gh<_i636.AuthenticationBloc>(),
+        isDemo: gh<bool>(),
       ),
     );
     return this;
