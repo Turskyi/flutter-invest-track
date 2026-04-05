@@ -1,9 +1,6 @@
 name: Upload Android Build to App Tester
 
 on:
-  push:
-    branches-ignore:
-      - master
   workflow_run:
     workflows:
       - Code Quality and Tests
@@ -12,7 +9,7 @@ on:
 
 jobs:
   build_apk:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'dev') }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch != 'master' }}
     name: Build Flutter (Android)
     runs-on: ubuntu-latest
 
@@ -104,6 +101,6 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
-          token: ${{secrets.FIREBASE_TOKEN}}
+          serviceCredentialsFileContent: ${{secrets.FIREBASE_SERVICE_ACCOUNT_KEY}}
           groups: testers
           file: app-release.apk

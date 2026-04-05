@@ -5,3 +5,13 @@ typescriptreact
 jsonc
 spellright.language
 spellright
+build_apk
+github.event.workflow_run.conclusion
+startsWith github.event.workflow_run.head_branch
+github.event.workflow_run.head_sha
+sha
+investtrack
+apk
+subosito
+wzieba
+github.event.workflow_run.head_branch
