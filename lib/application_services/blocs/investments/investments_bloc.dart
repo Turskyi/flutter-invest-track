@@ -431,22 +431,30 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       );
     }
 
-    //TODO: handle error and emit InvestmentError state.
-    final double changePercentage = await _investmentsRepository
-        .fetchChangePercentage(ticker);
-    final InvestmentsState investmentsState4 = state;
+    try {
+      final double changePercentage = await _investmentsRepository
+          .fetchChangePercentage(ticker);
+      final InvestmentsState investmentsState4 = state;
 
-    if (investmentsState4 is InvestmentUpdated) {
-      emit(investmentsState4.copyWith(changePercentage: changePercentage));
-    } else if (investmentsState4 is InvestmentsLoaded) {
-      emit(
-        InvestmentUpdated(
-          selectedInvestment: investment,
-          investments: investmentsState4.investments,
-          currentPrice: currentPrice,
-          hasReachedMax: investmentsState4.hasReachedMax,
-          priceChange: changePercentage,
-        ),
+      if (investmentsState4 is InvestmentUpdated) {
+        emit(investmentsState4.copyWith(changePercentage: changePercentage));
+      } else if (investmentsState4 is InvestmentsLoaded) {
+        emit(
+          InvestmentUpdated(
+            selectedInvestment: investment,
+            investments: investmentsState4.investments,
+            currentPrice: currentPrice,
+            hasReachedMax: investmentsState4.hasReachedMax,
+            priceChange: changePercentage,
+          ),
+        );
+      }
+    } catch (e, s) {
+      debugPrint(
+        'Error while fetching change percentage for ticker: '
+        '$ticker.\n'
+        'Error: $e\n'
+        'Stacktrace: $s.',
       );
     }
   }
