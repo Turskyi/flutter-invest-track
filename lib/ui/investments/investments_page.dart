@@ -14,9 +14,12 @@ import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/slide_page_route.dart';
+import 'package:investtrack/ui/investments/desktop_table.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
+import 'package:investtrack/ui/investments/investment/investment_page.dart';
 import 'package:investtrack/ui/investments/investment_tile/investment_tile.dart';
 import 'package:investtrack/ui/investments/investment_tile/shimmer_investment.dart';
+import 'package:investtrack/ui/investments/shimmer_desktop_table.dart';
 import 'package:investtrack/ui/menu/app_drawer.dart';
 import 'package:investtrack/ui/widgets/blurred_app_bar.dart';
 import 'package:investtrack/ui/widgets/blurred_fab_with_border.dart';
@@ -117,18 +120,26 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         listener: _handleInvestmentsState,
         builder: (BuildContext context, InvestmentsState state) {
           if (state is InvestmentsLoading) {
-            return ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
-              itemCount: 6,
-              itemBuilder: (BuildContext _, int _) {
-                return Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: constants.maxWidth,
-                    ),
-                    child: const ShimmerInvestment(),
-                  ),
-                );
+            return LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                if (constraints.maxWidth > 800.0) {
+                  return const ShimmerDesktopTable();
+                } else {
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+                    itemCount: 6,
+                    itemBuilder: (BuildContext _, int _) {
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: constants.maxWidth,
+                          ),
+                          child: const ShimmerInvestment(),
+                        ),
+                      );
+                    },
+                  );
+                }
               },
             );
           } else if (state is InvestmentsError) {
@@ -223,39 +234,53 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 onRefresh: () async => context.read<InvestmentsBloc>().add(
                   const LoadInvestments(),
                 ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
-                  itemCount: state is CreatingInvestment
-                      ? allInvestments.length + 1
-                      : allInvestments.length +
-                            // Add extra item for loader.
-                            (state.hasReachedMax ? 0 : 1),
-                  itemBuilder: (BuildContext _, int index) {
-                    if (state is CreatingInvestment &&
-                        index == allInvestments.length) {
-                      return Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: constants.maxWidth,
-                          ),
-                          child: const ShimmerInvestment(),
-                        ),
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    if (constraints.maxWidth > 800.0) {
+                      return DesktopTable(
+                        investments: allInvestments,
+                        showLoader:
+                            state is CreatingInvestment || !state.hasReachedMax,
+                        onInvestmentTap: (Investment investment) =>
+                            _navigateToInvestmentDetails(context, investment),
                       );
-                    } else if (index == allInvestments.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
+                    } else {
+                      return ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+                        itemCount: state is CreatingInvestment
+                            ? allInvestments.length + 1
+                            : allInvestments.length +
+                                  // Add extra item for loader.
+                                  (state.hasReachedMax ? 0 : 1),
+                        itemBuilder: (BuildContext _, int index) {
+                          if (state is CreatingInvestment &&
+                              index == allInvestments.length) {
+                            return Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: constants.maxWidth,
+                                ),
+                                child: const ShimmerInvestment(),
+                              ),
+                            );
+                          } else if (index == allInvestments.length) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+                          final Investment investment = allInvestments[index];
+                          return Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: constants.maxWidth,
+                              ),
+                              child: InvestmentTile(investment: investment),
+                            ),
+                          );
+                        },
                       );
                     }
-                    final Investment investment = allInvestments[index];
-                    return Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: constants.maxWidth,
-                        ),
-                        child: InvestmentTile(investment: investment),
-                      ),
-                    );
                   },
                 ),
               ),
@@ -349,6 +374,21 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
       SnackBar(
         content: Text(translate('feedback.feedbackSent')),
         duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _navigateToInvestmentDetails(
+    BuildContext context,
+    Investment investment,
+  ) {
+    Navigator.of(context).push(
+      SlidePageRoute<bool?>(
+        page: BlocProvider<InvestmentsBloc>.value(
+          value: context.read<InvestmentsBloc>()
+            ..add(LoadInvestment(investment)),
+          child: const InvestmentPage(),
+        ),
       ),
     );
   }

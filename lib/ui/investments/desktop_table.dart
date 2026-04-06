@@ -1,80 +1,199 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:investtrack/res/constants/constants.dart' as constants;
+import 'package:investtrack/utils/price_utils.dart';
 import 'package:models/models.dart';
 
-//TODO: maybe use this eventually for desktop.
 class DesktopTable extends StatelessWidget {
-  const DesktopTable({this.investments = const <Investment>[], super.key});
+  const DesktopTable({
+    this.investments = const <Investment>[],
+    this.showLoader = false,
+    this.onInvestmentTap,
+    super.key,
+  });
 
   final List<Investment> investments;
+  final bool showLoader;
+  final ValueChanged<Investment>? onInvestmentTap;
 
   @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 80, 16, 80),
-      child: DataTable(
-        columns: <DataColumn>[
-          DataColumn(label: Text(translate('desktop_table.company'))),
-          DataColumn(label: Text(translate('desktop_table.stock_exchange'))),
-          DataColumn(label: Text(translate('desktop_table.ticker'))),
-          DataColumn(label: Text(translate('desktop_table.current_price'))),
-          DataColumn(label: Text(translate('desktop_table.currency'))),
-          DataColumn(label: Text(translate('desktop_table.price_change'))),
-          DataColumn(label: Text(translate('desktop_table.percent_change'))),
-          DataColumn(label: Text(translate('desktop_table.quantity'))),
-          DataColumn(
-            label: Text(translate('desktop_table.total_current_value_usd')),
-          ),
-          DataColumn(
-            label: Text(translate('desktop_table.total_value_current_cad')),
-          ),
-          DataColumn(
-            label: Text(translate('desktop_table.total_value_purchase_usd')),
-          ),
-          DataColumn(
-            label: Text(translate('desktop_table.total_value_purchase_cad')),
-          ),
-          DataColumn(label: Text(translate('desktop_table.price_on_purchase'))),
-          DataColumn(label: Text(translate('desktop_table.gain_loss_usd'))),
-          DataColumn(label: Text(translate('desktop_table.gain_loss_cad'))),
-        ],
-        rows: investments.map((Investment investment) {
-          return DataRow(
-            cells: <DataCell>[
-              DataCell(Text(investment.companyName)),
-              DataCell(Text(investment.stockExchange)),
-              DataCell(Text(investment.ticker)),
-              const DataCell(
-                Text('TODO: dynamically calculate the "currentPrice"'),
-              ),
-              DataCell(Text(investment.currency)),
-              const DataCell(
-                Text('TODO: dynamically calculate the "priceChange"'),
-              ),
-              const DataCell(
-                Text('TODO: dynamically calculate the "percentChange"'),
-              ),
-              DataCell(Text(investment.quantity.toString())),
-              DataCell(Text(investment.totalCurrentValue?.toString() ?? 'N/A')),
-              const DataCell(
-                Text('TODO: dynamically calculate the "totalValueCurrentCAD"'),
-              ),
-              DataCell(
-                Text(investment.totalValueOnPurchase?.toString() ?? 'N/A'),
-              ),
-              const DataCell(
-                Text(
-                  'TODO: dynamically calculate the "totalValueOnPurchaseCAD"',
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(top: 80, bottom: 80),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              showCheckboxColumn: false,
+              columnSpacing: 24,
+              columns: <DataColumn>[
+                const DataColumn(label: SizedBox.shrink()),
+                DataColumn(label: Text(translate('desktop_table.company'))),
+                DataColumn(
+                  label: Text(translate('desktop_table.stock_exchange')),
                 ),
-              ),
-              DataCell(Text(investment.purchasePrice?.toString() ?? 'N/A')),
-              DataCell(Text(investment.gainOrLossUsd?.toString() ?? 'N/A')),
-              DataCell(Text(investment.gainOrLossCad?.toString() ?? 'N/A')),
-            ],
-          );
-        }).toList(),
+                DataColumn(label: Text(translate('desktop_table.ticker'))),
+                DataColumn(
+                  label: Text(translate('desktop_table.current_price')),
+                ),
+                DataColumn(label: Text(translate('desktop_table.currency'))),
+                DataColumn(
+                  label: Text(translate('desktop_table.price_change')),
+                ),
+                DataColumn(
+                  label: Text(translate('desktop_table.percent_change')),
+                ),
+                DataColumn(label: Text(translate('desktop_table.quantity'))),
+                DataColumn(
+                  label: Text(
+                    translate('desktop_table.total_current_value_usd'),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    translate('desktop_table.total_value_purchase_usd'),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(translate('desktop_table.price_on_purchase')),
+                ),
+                DataColumn(
+                  label: Text(translate('desktop_table.gain_loss_usd')),
+                ),
+                DataColumn(
+                  label: Text(translate('desktop_table.gain_loss_cad')),
+                ),
+              ],
+              rows: investments.map(_buildRow).toList(),
+            ),
+          ),
+          if (showLoader)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+        ],
       ),
     );
+  }
+
+  DataRow _buildRow(Investment investment) {
+    final double? currentPrice = investment.currentPrice;
+    final double? purchasePrice = investment.purchasePrice;
+    final double? priceChange = currentPrice != null && purchasePrice != null
+        ? currentPrice - purchasePrice
+        : null;
+    final double? percentChange =
+        priceChange != null && purchasePrice != null && purchasePrice != 0
+        ? (priceChange / purchasePrice) * 100
+        : null;
+    final double? gainOrLossUsd = investment.gainOrLossUsd;
+    final double? gainOrLossCad = investment.gainOrLossCad;
+
+    return DataRow(
+      onSelectChanged: onInvestmentTap != null
+          ? (bool? _) => onInvestmentTap!(investment)
+          : null,
+      cells: <DataCell>[
+        DataCell(
+          CircleAvatar(
+            backgroundColor: Colors.white,
+            backgroundImage: investment.companyLogoUrl.isNotEmpty
+                ? NetworkImage(investment.companyLogoUrl)
+                : const AssetImage(
+                    '${constants.imagePath}company-logo-placeholder.jpeg',
+                  ),
+            radius: 16,
+          ),
+        ),
+        DataCell(Text(investment.companyName)),
+        DataCell(Text(investment.stockExchange)),
+        DataCell(Text(investment.ticker)),
+        DataCell(
+          Text(formatPrice(price: currentPrice, currency: investment.currency)),
+        ),
+        DataCell(Text(investment.currency)),
+        DataCell(
+          Text(
+            _formatChange(priceChange),
+            style: TextStyle(
+              color: _changeColor(priceChange),
+              fontWeight: priceChange != null ? FontWeight.bold : null,
+            ),
+          ),
+        ),
+        DataCell(
+          Text(
+            _formatPercentChange(percentChange),
+            style: TextStyle(
+              color: _changeColor(percentChange),
+              fontWeight: percentChange != null ? FontWeight.bold : null,
+            ),
+          ),
+        ),
+        DataCell(Text(investment.quantity.toString())),
+        DataCell(
+          Text(
+            investment.totalCurrentValue != null
+                ? '\$${investment.totalCurrentValue!.toStringAsFixed(2)}'
+                : 'N/A',
+          ),
+        ),
+        DataCell(
+          Text(
+            investment.totalValueOnPurchase != null
+                ? '\$${investment.totalValueOnPurchase!.toStringAsFixed(2)}'
+                : 'N/A',
+          ),
+        ),
+        DataCell(
+          Text(
+            formatPrice(price: purchasePrice, currency: investment.currency),
+          ),
+        ),
+        DataCell(
+          Text(
+            gainOrLossUsd != null
+                ? '\$${gainOrLossUsd.toStringAsFixed(2)}'
+                : 'N/A',
+            style: TextStyle(
+              color: _changeColor(gainOrLossUsd),
+              fontWeight: gainOrLossUsd != null ? FontWeight.bold : null,
+            ),
+          ),
+        ),
+        DataCell(
+          Text(
+            gainOrLossCad != null
+                ? 'CAD ${gainOrLossCad.toStringAsFixed(2)}'
+                : 'N/A',
+            style: TextStyle(
+              color: _changeColor(gainOrLossCad),
+              fontWeight: gainOrLossCad != null ? FontWeight.bold : null,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatChange(double? change) {
+    if (change == null) return 'N/A';
+    final String prefix = change >= 0 ? '+' : '';
+    return '$prefix${change.toStringAsFixed(2)}';
+  }
+
+  String _formatPercentChange(double? percent) {
+    if (percent == null) return 'N/A';
+    final String prefix = percent >= 0 ? '+' : '';
+    return '$prefix${percent.toStringAsFixed(2)}%';
+  }
+
+  Color? _changeColor(double? value) {
+    if (value == null) return null;
+    return value >= 0 ? Colors.green : Colors.red;
   }
 }
