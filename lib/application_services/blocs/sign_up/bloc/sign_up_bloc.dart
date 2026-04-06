@@ -4,7 +4,6 @@ import 'package:clerk_auth/clerk_auth.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
-import 'package:investtrack/infrastructure/ws/models/responses/authentication_response/api_exception.dart';
 import 'package:models/models.dart';
 
 part 'sign_up_event.dart';

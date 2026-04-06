@@ -116,8 +116,20 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         listener: _handleInvestmentsState,
         builder: (BuildContext context, InvestmentsState state) {
           if (state is InvestmentsLoading) {
-            //TODO: replace with shimmer.
-            return const Center(child: CircularProgressIndicator());
+            return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+              itemCount: 6,
+              itemBuilder: (BuildContext _, int _) {
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: constants.maxWidth,
+                    ),
+                    child: const ShimmerInvestment(),
+                  ),
+                );
+              },
+            );
           } else if (state is InvestmentsError) {
             final bool isRateLimit = state.errorMessage.contains(
               '${HttpStatus.tooManyRequests}',
@@ -248,7 +260,9 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               ),
             );
           } else {
-            // TODO: handle this case. We should not be here.
+            // All sealed subclasses of InvestmentsState are covered above;
+            // this branch is unreachable at runtime.
+            assert(false, 'Unexpected InvestmentsState: $state');
             return const SizedBox();
           }
         },
