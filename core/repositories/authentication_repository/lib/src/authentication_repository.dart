@@ -126,8 +126,9 @@ class AuthenticationRepository {
         emailAddress: _email,
       );
     } else {
-      //TODO:  this should never happen, so better come up with better handling.
-      throw Exception('Signup id is empty');
+      throw StateError(
+        'sendCodeToUser() called without an active sign-up session.',
+      );
     }
   }
 
@@ -152,12 +153,15 @@ class AuthenticationRepository {
         _controller.add(AuthenticationStatus.authenticated());
         await _removeSignUpId();
       } else {
-        //TODO: come up with better handling.
-        throw Exception('User id is empty');
+        _controller.add(AuthenticationStatus.unauthenticated());
+        throw const entity.InvestTrackException(
+          'Verification succeeded but no user ID was returned.',
+        );
       }
     } else {
-      //TODO:  this should never happen, so better come up with better handling.
-      _controller.add(AuthenticationStatus.unauthenticated());
+      throw StateError(
+        'verify() called without an active sign-up session.',
+      );
     }
   }
 
