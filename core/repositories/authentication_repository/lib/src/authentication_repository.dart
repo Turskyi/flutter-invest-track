@@ -93,16 +93,18 @@ class AuthenticationRepository {
 
     final String trimmedEmail = email.trim();
     final String trimmedPassword = password.trim();
-
-    final clerk.Client? signUpResponse = await _auth?.attemptSignUp(
+    await _auth?.attemptSignUp(
       strategy: clerk.Strategy.password,
       emailAddress: trimmedEmail,
       password: trimmedPassword,
       passwordConfirmation: trimmedPassword,
     );
 
-    final String? signUpId = signUpResponse?.id;
-
+    // Trigger the email verification code to be sent.
+    final clerk.Client? signUpResponse = await _auth?.attemptSignUp(
+      strategy: clerk.Strategy.emailCode,
+    );
+    final String? signUpId = signUpResponse?.signUp?.id;
     if (signUpId?.isNotEmpty == true) {
       await _saveSignUpId(signUpId ?? '');
 
@@ -117,12 +119,11 @@ class AuthenticationRepository {
           entity.StorageKeys.signUpId.key,
         ) ??
         '';
-
     if (signUpId.isNotEmpty) {
       await _authInit();
 
       await _auth?.attemptSignUp(
-        strategy: clerk.Strategy.resetPasswordEmailCode,
+        strategy: clerk.Strategy.emailCode,
         emailAddress: _email,
       );
     } else {
@@ -243,7 +244,6 @@ class AuthenticationRepository {
           persistor: Persistor.none,
         ),
       );
-
       await _auth?.initialize();
     }
   }

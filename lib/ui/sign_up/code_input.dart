@@ -40,7 +40,7 @@ class _CodeInputState extends State<CodeInput> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List<SizedBox>.generate(6, (int index) {
         return SizedBox(
-          width: 40,
+          width: 48,
           child: TextField(
             controller: _controllers[index],
             keyboardType: TextInputType.number,

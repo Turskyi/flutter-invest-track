@@ -204,7 +204,6 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Button
                     ElevatedButton.icon(
                       onPressed: _navigateToAddEditPage,
                       icon: const Icon(Icons.add),
