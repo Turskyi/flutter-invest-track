@@ -10,10 +10,11 @@ class SignUpPage extends StatelessWidget {
   final String email;
   final String password;
 
-  static Route<void> route({required String email, String password = ''}) =>
-      MaterialPageRoute<void>(
-        builder: (_) => SignUpPage(email: email, password: password),
-      );
+  static Route<void> route({required String email, String password = ''}) {
+    return MaterialPageRoute<void>(
+      builder: (BuildContext _) => SignUpPage(email: email, password: password),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
