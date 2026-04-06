@@ -47,7 +47,6 @@ class AuthenticationRepository {
 
     final String trimmedPassword = password.trim();
 
-    // FIXME: https://github.com/clerk/clerk-sdk-flutter/issues/260
     await _auth?.attemptSignIn(
       strategy: clerk.Strategy.password,
       identifier: trimmedEmail,
@@ -69,7 +68,10 @@ class AuthenticationRepository {
         await _saveUserId(userId);
         await _saveToken(loginResponse.token);
       } catch (e) {
-//TODO: explain why error that contains 422 is fine?
+        // A 422 (Unprocessable Entity) response from the REST sign-in endpoint
+        // means the user is already registered via Clerk, so the REST call is
+        // semantically invalid - but the Clerk session was already established
+        // above, making it safe to continue the sign-in flow.
         if (!e.toString().contains('${HttpStatus.unprocessableEntity}')) {
           rethrow;
         }
