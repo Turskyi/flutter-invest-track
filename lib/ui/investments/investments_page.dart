@@ -89,6 +89,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return GradientBackgroundScaffold(
       appBar: BlurredAppBar(
         title: Row(
@@ -141,9 +142,9 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 children: <Widget>[
                   Text(
                     isRateLimit
-                        ? 'Too many requests. Please wait a moment and try '
-                              'again.'
-                        : 'Error: ${state.errorMessage}',
+                        ? translate('investments.error_too_many_requests')
+                        : '${translate('investments.error_generic_prefix')}'
+                              '${state.errorMessage}',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -151,7 +152,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                     onPressed: () => context.read<InvestmentsBloc>().add(
                       const LoadInvestments(),
                     ),
-                    child: const Text('Retry'),
+                    child: Text(translate('investments.retry_button')),
                   ),
                 ],
               ),
@@ -174,7 +175,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
                     // Message
                     Text(
-                      'No investments yet!',
+                      translate('investments.no_investments'),
                       style: themeData.textTheme.titleLarge?.copyWith(
                         color: themeData.colorScheme.onSurface.withOpacity(0.8),
                         fontWeight: FontWeight.bold,
@@ -183,7 +184,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Start tracking your portfolio today.',
+                      translate('investments.start_tracking'),
                       style: themeData.textTheme.bodyLarge?.copyWith(
                         color: themeData.colorScheme.onSurface.withOpacity(0.6),
                         fontWeight: FontWeight.bold,
@@ -196,7 +197,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                     ElevatedButton.icon(
                       onPressed: _navigateToAddEditPage,
                       icon: const Icon(Icons.add),
-                      label: const Text('Create your first investment'),
+                      label: Text(translate('investments.create_first')),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
@@ -269,7 +270,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
       ),
       floatingActionButton: BlurredFabWithBorder(
         onPressed: _navigateToAddEditPage,
-        tooltip: 'Add Investment',
+        tooltip: translate('investments.add_investment_tooltip'),
         icon: Icons.add,
       ),
     );

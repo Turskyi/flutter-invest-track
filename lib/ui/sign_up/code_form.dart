@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:formz/formz.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 import 'package:investtrack/ui/sign_up/code_continue_button.dart';
@@ -13,6 +14,7 @@ class CodeForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     final TextTheme textTheme = Theme.of(context).textTheme;
     final double? titleFontSize = textTheme.titleMedium?.fontSize;
     final double? headlineFontSize = textTheme.headlineSmall?.fontSize;
@@ -24,7 +26,7 @@ class CodeForm extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              'Verify your email',
+              translate('code_form.title'),
               style: TextStyle(
                 fontSize: headlineFontSize,
                 fontWeight: FontWeight.bold,
@@ -32,7 +34,7 @@ class CodeForm extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Enter the verification code sent to your email',
+              translate('code_form.subtitle'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: titleFontSize),
             ),
@@ -62,7 +64,7 @@ class CodeForm extends StatelessWidget {
             const SizedBox(height: 24),
             const CodeInput(),
             const Padding(padding: EdgeInsets.all(12)),
-            const Text('Didn\'t receive a code?'),
+            Text(translate('code_form.no_code_prompt')),
             const SizedBox(height: 8),
             BlocBuilder<SignUpBloc, SignUpState>(
               builder: (BuildContext context, SignUpState state) {
@@ -85,7 +87,7 @@ class CodeForm extends StatelessWidget {
                             ),
                           ),
                         )
-                      : const Text('Resend'),
+                      : Text(translate('code_form.resend_button')),
                 );
               },
             ),
@@ -107,7 +109,7 @@ class CodeForm extends StatelessWidget {
             content: Text(
               state is SignUpErrorState
                   ? state.errorMessage
-                  : 'Sign Up Failure',
+                  : translate('sign_up_form.error_sign_up_failure'),
             ),
           ),
         );

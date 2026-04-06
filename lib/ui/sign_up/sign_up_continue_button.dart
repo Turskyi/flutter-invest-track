@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:formz/formz.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 
@@ -11,6 +12,7 @@ class SignUpContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     final bool isUpProgressOrSuccess = context.select(
       (SignUpBloc bloc) => bloc.state.status.isInProgressOrSuccess,
     );
@@ -26,7 +28,7 @@ class SignUpContinueButton extends StatelessWidget {
       onPressed: isValid
           ? () => context.read<SignUpBloc>().add(const SignUpSubmitted())
           : null,
-      child: const Text('Continue'),
+      child: Text(translate('sign_in_form.continue_button')),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:models/models.dart';
 
 //TODO: maybe use this eventually for desktop.
@@ -9,25 +10,34 @@ class DesktopTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 80, 16, 80),
       child: DataTable(
-        columns: const <DataColumn>[
-          DataColumn(label: Text('Company')),
-          DataColumn(label: Text('Stock Exchange')),
-          DataColumn(label: Text('Ticker')),
-          DataColumn(label: Text('Current Price')),
-          DataColumn(label: Text('Currency')),
-          DataColumn(label: Text('Price Change')),
-          DataColumn(label: Text('% Change')),
-          DataColumn(label: Text('Quantity')),
-          DataColumn(label: Text('Total Current Value \$')),
-          DataColumn(label: Text('Total Value Current CAD')),
-          DataColumn(label: Text('Total Value on Purchase Date \$')),
-          DataColumn(label: Text('Total Value on Purchase Date CAD')),
-          DataColumn(label: Text('Price on Purchase Date')),
-          DataColumn(label: Text('Gain or Loss for Stock \$')),
-          DataColumn(label: Text('Gain or Loss for Stock in CAD')),
+        columns: <DataColumn>[
+          DataColumn(label: Text(translate('desktop_table.company'))),
+          DataColumn(label: Text(translate('desktop_table.stock_exchange'))),
+          DataColumn(label: Text(translate('desktop_table.ticker'))),
+          DataColumn(label: Text(translate('desktop_table.current_price'))),
+          DataColumn(label: Text(translate('desktop_table.currency'))),
+          DataColumn(label: Text(translate('desktop_table.price_change'))),
+          DataColumn(label: Text(translate('desktop_table.percent_change'))),
+          DataColumn(label: Text(translate('desktop_table.quantity'))),
+          DataColumn(
+            label: Text(translate('desktop_table.total_current_value_usd')),
+          ),
+          DataColumn(
+            label: Text(translate('desktop_table.total_value_current_cad')),
+          ),
+          DataColumn(
+            label: Text(translate('desktop_table.total_value_purchase_usd')),
+          ),
+          DataColumn(
+            label: Text(translate('desktop_table.total_value_purchase_cad')),
+          ),
+          DataColumn(label: Text(translate('desktop_table.price_on_purchase'))),
+          DataColumn(label: Text(translate('desktop_table.gain_loss_usd'))),
+          DataColumn(label: Text(translate('desktop_table.gain_loss_cad'))),
         ],
         rows: investments.map((Investment investment) {
           return DataRow(

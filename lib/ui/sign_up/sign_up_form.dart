@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:formz/formz.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
@@ -19,6 +20,7 @@ class SignUpForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return BlocListener<SignUpBloc, SignUpState>(
       listener: _signUpStateListener,
       child: Align(
@@ -29,14 +31,17 @@ class SignUpForm extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const Text(
-                  'Create your account',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  translate('sign_up_form.title'),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Welcome! Please fill in the details to get started.',
-                  style: TextStyle(fontSize: 16),
+                Text(
+                  translate('sign_up_form.subtitle'),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 24),
                 SignUpEmailInput(initialValue: email),
@@ -45,14 +50,14 @@ class SignUpForm extends StatelessWidget {
                 const Padding(padding: EdgeInsets.all(12)),
                 const SignUpContinueButton(),
                 const Padding(padding: EdgeInsets.all(24)),
-                const Text('Already have an account?'),
+                Text(translate('sign_up_form.sign_in_prompt_text_1')),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => Navigator.pushReplacementNamed(
                     context,
                     AppRoute.signIn.path,
                   ),
-                  child: const Text('Sign in'),
+                  child: Text(translate('sign_up_form.sign_in_prompt_text_2')),
                 ),
               ],
             ),
@@ -71,11 +76,9 @@ class SignUpForm extends StatelessWidget {
           TextSpan(
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              const TextSpan(
-                text:
-                    'Sign up is not available here. Please use our official '
-                    'website: ',
-                style: TextStyle(color: Colors.black),
+              TextSpan(
+                text: translate('sign_up_form.error_sign_up_unavailable_web_1'),
+                style: const TextStyle(color: Colors.black),
               ),
               TextSpan(
                 text: officialWebsiteUrl,
@@ -101,7 +104,7 @@ class SignUpForm extends StatelessWidget {
         if (state is SignUpErrorState) {
           errorMessage = state.errorMessage;
         } else {
-          errorMessage = 'Sign Up Failure';
+          errorMessage = translate('sign_up_form.error_sign_up_failure');
         }
         contentWidget = SelectableText(errorMessage);
       }

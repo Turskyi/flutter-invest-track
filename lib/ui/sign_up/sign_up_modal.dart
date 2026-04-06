@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,18 +18,14 @@ class _SignUpModalState extends State<SignUpModal> {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return AlertDialog(
-      title: const Text('Sign Up via Web'),
+      title: Text(translate('sign_up_modal.title')),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Text(
-              'To create an account, you will be redirected to our '
-              'mobile-friendly sign-up page in your web browser. '
-              'After completing the sign-up, '
-              'you can return to the app to log in and continue.',
-            ),
+            Text(translate('sign_up_modal.description')),
             const SizedBox(height: 16),
             Row(
               children: <Widget>[
@@ -41,13 +38,13 @@ class _SignUpModalState extends State<SignUpModal> {
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      text: 'I consent to the collection of my data. ',
+                      text: translate('sign_up_modal.consent_text'),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       children: <InlineSpan>[
                         TextSpan(
-                          text: 'Learn more.',
+                          text: translate('sign_in_form.consent_learn_more'),
                           style: TextStyle(
                             color: Theme.of(
                               context,
@@ -71,7 +68,7 @@ class _SignUpModalState extends State<SignUpModal> {
       actions: <Widget>[
         TextButton(
           onPressed: Navigator.of(context).pop,
-          child: const Text('Cancel'),
+          child: Text(translate('sign_up_modal.cancel_button')),
         ),
         TextButton(
           onPressed: _isConsentGiven
@@ -80,7 +77,7 @@ class _SignUpModalState extends State<SignUpModal> {
                   _redirectToWebSignUp(context);
                 }
               : null,
-          child: const Text('Proceed to Web Sign-Up'),
+          child: Text(translate('sign_up_modal.proceed_button')),
         ),
       ],
     );
@@ -112,7 +109,7 @@ class _SignUpModalState extends State<SignUpModal> {
       SnackBar(
         content: RichText(
           text: TextSpan(
-            text: 'Unable to open the sign-up page. ',
+            text: translate('sign_up_modal.unable_to_open'),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
             ), // Using theme color

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
@@ -18,6 +19,7 @@ class InvestmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     final String purchaseDateTimestamp =
         investment.purchaseDate?.toLocal().toString().split(' ').firstOrNull ??
         '';
@@ -114,13 +116,13 @@ class InvestmentCard extends StatelessWidget {
               const Divider(height: 20),
               if (quantity > 0)
                 InvestmentDetail(
-                  label: 'Purchase Price (USD)',
+                  label: translate('investment_card.purchase_price_usd'),
                   value: formatPrice(price: purchasePrice),
                   icon: Icons.money,
                 ),
               if (quantity > 0)
                 InvestmentDetail(
-                  label: 'Gain/Loss (USD)',
+                  label: translate('investment_card.gain_loss_usd'),
                   value:
                       '${formatPrice(price: gainOrLoss)} '
                       '(${gainOrLossPercentage.toStringAsFixed(2)}%)',
@@ -136,13 +138,13 @@ class InvestmentCard extends StatelessWidget {
                       : Colors.grey,
                 ),
               InvestmentDetail(
-                label: 'Current Price (USD)',
+                label: translate('investment_card.current_price_usd'),
                 value: formatPrice(price: currentPrice),
                 icon: Icons.monetization_on,
               ),
               if (quantity > 0)
                 InvestmentDetail(
-                  label: 'Quantity',
+                  label: translate('investment_card.quantity'),
                   value: quantity.toString(),
                   icon: Icons.pie_chart,
                 ),
@@ -154,8 +156,9 @@ class InvestmentCard extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       purchaseDateTimestamp.isNotEmpty && quantity > 0
-                          ? 'Purchased: $purchaseDateTimestamp'
-                          : 'Not yet purchased',
+                          ? '${translate('investment_card.purchased')}'
+                                '$purchaseDateTimestamp'
+                          : translate('investment_card.not_yet_purchased'),
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(width: 8),

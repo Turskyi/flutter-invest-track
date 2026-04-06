@@ -1,6 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
@@ -11,6 +12,7 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     final ThemeData theme = Theme.of(context);
     return Drawer(
       child: ListView(
@@ -32,7 +34,7 @@ class AppDrawer extends StatelessWidget {
               builder: (_, AuthenticationState state) {
                 final String email = state.user.email;
                 return Text(
-                  email.isNotEmpty ? email : 'No Email',
+                  email.isNotEmpty ? email : translate('menu.no_email'),
                   style: TextStyle(color: theme.colorScheme.onPrimary),
                 );
               },
@@ -51,7 +53,7 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip),
-            title: const Text('Privacy Policy'),
+            title: Text(translate('menu.privacy_policy')),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const PrivacyPolicyPage(),
@@ -60,12 +62,12 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.feedback),
-            title: const Text('Feedback'),
+            title: Text(translate('menu.feedback')),
             onTap: () => _showFeedbackDialog(context),
           ),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('Sign out'),
+            title: Text(translate('menu.sign_out')),
             onTap: () => context.read<AuthenticationBloc>().add(
               const AuthenticationSignOutPressed(),
             ),
@@ -82,7 +84,7 @@ class AppDrawer extends StatelessWidget {
                   color: theme.colorScheme.error,
                 ),
                 title: Text(
-                  'Delete Account',
+                  translate('menu.delete_account'),
                   style: TextStyle(color: theme.colorScheme.error),
                 ),
                 trailing: isDeleting
@@ -116,19 +118,16 @@ class AppDrawer extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Account'),
-          content: const Text(
-            'Are you sure you want to delete your account?\n'
-            'This action cannot be undone.',
-          ),
+          title: Text(translate('menu.delete_account')),
+          content: Text(translate('menu.delete_account_confirmation')),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(translate('menu.cancel')),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete'),
+              child: Text(translate('menu.delete')),
             ),
           ],
         );

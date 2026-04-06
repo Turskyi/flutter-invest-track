@@ -1,6 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
@@ -293,7 +294,9 @@ class _AppViewState extends State<AppView> {
         );
       case DeletingAuthenticatedUserStatus():
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account deletion in progress...')),
+          SnackBar(
+            content: Text(translate('app.account_deletion_in_progress')),
+          ),
         );
       case AuthenticatedStatus():
         _navigator?.pushAndRemoveUntil<void>(

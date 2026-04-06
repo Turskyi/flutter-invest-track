@@ -48,6 +48,7 @@ class _SignInFormState extends State<SignInForm>
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return BlocConsumer<SignInBloc, SignInState>(
       listener: _signInStateListener,
       builder: (BuildContext context, SignInState state) {
