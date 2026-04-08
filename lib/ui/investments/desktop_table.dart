@@ -66,6 +66,9 @@ class DesktopTable extends StatelessWidget {
                 DataColumn(
                   label: Text(translate('desktop_table.gain_loss_cad')),
                 ),
+                DataColumn(
+                  label: Text(translate('desktop_table.purchase_date')),
+                ),
               ],
               rows: investments.map(_buildRow).toList(),
             ),
@@ -92,7 +95,7 @@ class DesktopTable extends StatelessWidget {
         : null;
     final double? gainOrLossUsd = investment.gainOrLossUsd;
     final double? gainOrLossCad = investment.gainOrLossCad;
-
+    final DateTime? purchaseDate = investment.purchaseDate;
     return DataRow(
       onSelectChanged: onInvestmentTap != null
           ? (bool? _) => onInvestmentTap!(investment)
@@ -174,6 +177,13 @@ class DesktopTable extends StatelessWidget {
               color: _changeColor(gainOrLossCad),
               fontWeight: gainOrLossCad != null ? FontWeight.bold : null,
             ),
+          ),
+        ),
+        DataCell(
+          Text(
+            purchaseDate != null && investment.quantity > 0
+                ? purchaseDate.toLocal().toString().split(' ').first
+                : 'N/A',
           ),
         ),
       ],

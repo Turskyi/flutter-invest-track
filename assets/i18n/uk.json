@@ -143,6 +143,8 @@
   "investments": {
     "retry_button": "Повторити",
     "create_first": "Створіть своє перше вкладення",
+    "or_divider": "або",
+    "import_from_xlsx": "Імпортувати з файлу XLSX",
     "no_investments": "Ще немає вкладень!",
     "start_tracking": "Почніть відстежувати свій портфель сьогодні.",
     "add_investment_tooltip": "Додати інвестицію",
@@ -195,7 +197,8 @@
     "total_value_purchase_cad": "Вартість на дату купівлі CAD",
     "price_on_purchase": "Ціна на дату купівлі",
     "gain_loss_usd": "Прибуток/збиток $",
-    "gain_loss_cad": "Прибуток/збиток CAD"
+    "gain_loss_cad": "Прибуток/збиток CAD",
+    "purchase_date": "Дата купівлі"
   },
   "investment_card": {
     "purchase_price_usd": "Ціна купівлі (USD)",
@@ -204,5 +207,23 @@
     "quantity": "Кількість",
     "purchased": "Куплено: ",
     "not_yet_purchased": "Ще не куплено"
+  },
+  "import": {
+    "title": "Імпорт з XLSX",
+    "step1_pick_file": "Крок 1 - Виберіть файл XLSX",
+    "pick_file_button": "Вибрати файл…",
+    "step2_review": "Крок 2 - Перегляд виявлених акцій",
+    "selected_suffix": "вибрано",
+    "shares_suffix": "акцій",
+    "watchlist_label": "список спостереження",
+    "import_button": "Імпортувати вибране",
+    "progress_title": "Імпортується…",
+    "completed_title": "Імпорт завершено!",
+    "completed_imported": "Імпортовано:",
+    "completed_failed": "Помилок:",
+    "done_button": "Готово",
+    "error_no_bytes": "Не вдалося прочитати файл. Спробуйте ще раз.",
+    "error_no_stocks": "У цьому файлі не знайдено рядків з акціями.",
+    "error_parse_prefix": "Не вдалося розпарсити файл:"
   }
 }

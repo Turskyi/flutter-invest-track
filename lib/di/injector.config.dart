@@ -49,6 +49,7 @@ import 'package:investtrack/infrastructure/ws/rest/interceptors/logging_intercep
     as _i204;
 import 'package:investtrack/infrastructure/ws/rest/retrofit_client/retrofit_client.dart'
     as _i651;
+import 'package:investtrack/infrastructure/xlsx_service.dart' as _i967;
 import 'package:models/models.dart' as _i669;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:user_repository/user_repository.dart' as _i164;
@@ -79,6 +80,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i204.LoggingInterceptor>(
       () => const _i204.LoggingInterceptor(),
     );
+    gh.factory<_i967.XlsxService>(() => _i967.XlsxService());
     await gh.factoryAsync<_i361.Dio>(
       () =>
           dioHttpClientModule.getDioHttpClient(gh<_i204.LoggingInterceptor>()),

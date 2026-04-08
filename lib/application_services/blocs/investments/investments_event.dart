@@ -36,3 +36,9 @@ final class LoadInvestment extends InvestmentsEvent {
 
   final Investment investment;
 }
+
+final class BulkImportInvestmentsEvent extends InvestmentsEvent {
+  const BulkImportInvestmentsEvent({required this.imports});
+
+  final List<InvestmentImportData> imports;
+}

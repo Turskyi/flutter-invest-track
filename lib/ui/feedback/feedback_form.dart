@@ -1,6 +1,7 @@
 import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:investtrack/ui/feedback/rating_icon.dart';
 import 'package:models/models.dart';
 
 /// A form that prompts the user for the type of feedback they want to give,
@@ -82,7 +83,19 @@ class _CustomFeedbackFormState extends State<FeedbackForm> {
                   Text(translate('feedback.howDoesThisFeel')),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: FeedbackRating.values.map(_ratingToIcon).toList(),
+                    children: FeedbackRating.values
+                        .map(
+                          (FeedbackRating r) => RatingIcon(
+                            rating: r,
+                            isSelected: _customFeedback.rating == r,
+                            onTap: () => setState(
+                              () => _customFeedback = _customFeedback.copyWith(
+                                rating: r,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
@@ -101,30 +114,6 @@ class _CustomFeedbackFormState extends State<FeedbackForm> {
         ),
         const SizedBox(height: 8),
       ],
-    );
-  }
-
-  Widget _ratingToIcon(FeedbackRating rating) {
-    final bool isSelected = _customFeedback.rating == rating;
-    late IconData icon;
-    switch (rating) {
-      case FeedbackRating.bad:
-        icon = Icons.sentiment_dissatisfied;
-        break;
-      case FeedbackRating.neutral:
-        icon = Icons.sentiment_neutral;
-        break;
-      case FeedbackRating.good:
-        icon = Icons.sentiment_satisfied;
-        break;
-    }
-    return IconButton(
-      color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
-      onPressed: () => setState(
-        () => _customFeedback = _customFeedback.copyWith(rating: rating),
-      ),
-      icon: Icon(icon),
-      iconSize: 36,
     );
   }
 }

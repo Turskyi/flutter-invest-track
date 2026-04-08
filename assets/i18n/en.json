@@ -143,6 +143,8 @@
   "investments": {
     "retry_button": "Retry",
     "create_first": "Create your first investment",
+    "or_divider": "or",
+    "import_from_xlsx": "Import from XLSX file",
     "no_investments": "No investments yet!",
     "start_tracking": "Start tracking your portfolio today.",
     "add_investment_tooltip": "Add Investment",
@@ -195,7 +197,8 @@
     "total_value_purchase_cad": "Total Value on Purchase Date CAD",
     "price_on_purchase": "Price on Purchase Date",
     "gain_loss_usd": "Gain or Loss for Stock $",
-    "gain_loss_cad": "Gain or Loss for Stock in CAD"
+    "gain_loss_cad": "Gain or Loss for Stock in CAD",
+    "purchase_date": "Purchase Date"
   },
   "investment_card": {
     "purchase_price_usd": "Purchase Price (USD)",
@@ -204,5 +207,23 @@
     "quantity": "Quantity",
     "purchased": "Purchased: ",
     "not_yet_purchased": "Not yet purchased"
+  },
+  "import": {
+    "title": "Import from XLSX",
+    "step1_pick_file": "Step 1 - Pick your XLSX file",
+    "pick_file_button": "Choose file…",
+    "step2_review": "Step 2 - Review detected stocks",
+    "selected_suffix": "selected",
+    "shares_suffix": "shares",
+    "watchlist_label": "watchlist",
+    "import_button": "Import selected",
+    "progress_title": "Importing…",
+    "completed_title": "Import complete!",
+    "completed_imported": "Imported:",
+    "completed_failed": "Failed:",
+    "done_button": "Done",
+    "error_no_bytes": "Could not read file data. Please try again.",
+    "error_no_stocks": "No valid stock rows were found in this file.",
+    "error_parse_prefix": "Failed to parse file:"
   }
 }

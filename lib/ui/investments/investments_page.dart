@@ -15,6 +15,7 @@ import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/slide_page_route.dart';
 import 'package:investtrack/ui/investments/desktop_table.dart';
+import 'package:investtrack/ui/investments/import/xlsx_import_page.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
 import 'package:investtrack/ui/investments/investment/investment_page.dart';
 import 'package:investtrack/ui/investments/investment_tile/investment_tile.dart';
@@ -215,6 +216,27 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    Text(
+                      translate('investments.or_divider'),
+                      style: themeData.textTheme.bodySmall?.copyWith(
+                        color: themeData.colorScheme.onSurface.withOpacity(0.5),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: widget.isDemo
+                          ? _showDemoSignInPrompt
+                          : _navigateToImportPage,
+                      icon: const Icon(Icons.upload_file),
+                      label: Text(translate('investments.import_from_xlsx')),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -405,6 +427,17 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         ),
       );
     }
+  }
+
+  Future<void> _navigateToImportPage() {
+    return Navigator.of(context).push<void>(
+      SlidePageRoute<void>(
+        page: BlocProvider<InvestmentsBloc>.value(
+          value: context.read<InvestmentsBloc>(),
+          child: const XlsxImportPage(),
+        ),
+      ),
+    );
   }
 
   void _showDemoSignInPrompt() {
