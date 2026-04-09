@@ -41,36 +41,37 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize dependency injection and wait for `SharedPreferences`.
-  await injectDependencies();
+  final GetIt dependencies = await injectDependencies();
 
   final LocalizationDelegate localizationDelegate = await localization
       .getLocalizationDelegate();
 
-  final AuthenticationRepository authenticationRepository =
-      GetIt.instance<AuthenticationRepository>();
-  final InvestmentsRepository investmentsRepository = GetIt.I
+  final AuthenticationRepository authenticationRepository = dependencies
+      .get<AuthenticationRepository>();
+  final InvestmentsRepository investmentsRepository = dependencies
       .get<InvestmentsRepository>();
-  final ExchangeRateRepository exchangeRateRepository = GetIt.I
+  final ExchangeRateRepository exchangeRateRepository = dependencies
       .get<ExchangeRateRepository>();
-  final AuthenticationBloc authenticationBloc =
-      GetIt.instance<AuthenticationBloc>();
-  final MenuBloc menuBloc = GetIt.I.get<MenuBloc>();
+  final AuthenticationBloc authenticationBloc = dependencies
+      .get<AuthenticationBloc>();
+  final MenuBloc menuBloc = dependencies.get<MenuBloc>();
 
   final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
-    AppRoute.investments.path: (BuildContext _) =>
-        BlocProvider<InvestmentsBloc>(
-          create: (BuildContext _) => InvestmentsBloc(
-            investmentsRepository,
-            exchangeRateRepository,
-            authenticationBloc,
-          )..add(const LoadInvestments()),
-          child: const InvestmentsPage(),
-        ),
+    AppRoute.investments.path: (BuildContext _) {
+      return BlocProvider<InvestmentsBloc>(
+        create: (BuildContext _) => InvestmentsBloc(
+          investmentsRepository,
+          exchangeRateRepository,
+          authenticationBloc,
+        )..add(const LoadInvestments()),
+        child: const InvestmentsPage(),
+      );
+    },
     AppRoute.signIn.path: (BuildContext _) => const SignInPage(),
     AppRoute.privacyPolity.path: (BuildContext _) => const PrivacyPolicyPage(),
     AppRoute.addInvestment.path: (BuildContext _) {
       return BlocProvider<InvestmentsBloc>(
-        create: (BuildContext _) => GetIt.I.get<InvestmentsBloc>(),
+        create: (BuildContext _) => dependencies.get<InvestmentsBloc>(),
         child: const AddEditInvestmentPage(),
       );
     },
