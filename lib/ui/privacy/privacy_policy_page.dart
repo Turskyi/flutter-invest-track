@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
+import 'package:investtrack/ui/privacy/privacy_home_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
@@ -13,7 +15,11 @@ class PrivacyPolicyPage extends StatelessWidget {
     LocalizationProvider.of(context);
     final Color linkColor = Theme.of(context).colorScheme.primary;
     return Scaffold(
-      appBar: AppBar(title: Text(translate('privacy_policy.title'))),
+      appBar: AppBar(
+        automaticallyImplyLeading: !kIsWeb,
+        leading: kIsWeb ? const PrivacyHomeButton() : null,
+        title: Text(translate('privacy_policy.title')),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -244,3 +250,4 @@ class PrivacyPolicyPage extends StatelessWidget {
     );
   }
 }
+
