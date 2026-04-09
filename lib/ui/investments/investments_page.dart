@@ -41,6 +41,7 @@ class InvestmentsPage extends StatefulWidget {
 
   static Route<void> route(AuthenticationBloc authenticationBloc) {
     return PageRouteBuilder<void>(
+      settings: RouteSettings(name: AppRoute.investments.path),
       pageBuilder: (BuildContext _, Animation<double> _, Animation<double> _) {
         return BlocProvider<InvestmentsBloc>(
           create: (_) => InvestmentsBloc(
@@ -507,7 +508,8 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
     required ScrollNotification scrollInfo,
     required InvestmentsLoaded state,
   }) {
-    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+    if (scrollInfo.metrics.axis == Axis.vertical &&
+        scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
         !state.isLoadingMore &&
         !state.hasReachedMax) {
       context.read<InvestmentsBloc>().add(const LoadMoreInvestments());

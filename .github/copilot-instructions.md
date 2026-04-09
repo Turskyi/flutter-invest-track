@@ -18,6 +18,12 @@
   private helpers should be extracted to their own file once they grow beyond a tightly-coupled
   implementation detail of a single widget (e.g. when they receive only injected data and
   callbacks and carry no knowledge of the parent's internals).
+- Prefer `Object?` over `dynamic` unless `dynamic` is required by a framework API, generated code,
+  or truly dynamic behavior.
+- Keep the order of members in a class logical and easy to scan. Declare fields first (for example,
+  `final ScrollController _horizontalScrollController = ScrollController();`), then place
+  overridden lifecycle methods in the same order they execute. For Flutter widgets, prefer `build`
+  before `dispose`.
 - Prefer an explicit `else` branch over an early `return` followed by a closing brace. For example, prefer:
   ```dart
   if (condition) {

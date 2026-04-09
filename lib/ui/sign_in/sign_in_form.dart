@@ -10,8 +10,8 @@ import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/sign_in/continue_button.dart';
 import 'package:investtrack/ui/sign_in/email_input.dart';
-import 'package:investtrack/ui/sign_in/how_it_works_bottom_sheet.dart';
 import 'package:investtrack/ui/sign_in/password_input.dart';
+import 'package:investtrack/ui/sign_in/sign_in_footer_buttons.dart';
 import 'package:investtrack/ui/sign_in/sign_up_prompt.dart';
 import 'package:investtrack/ui/widgets/input_field.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -158,17 +158,7 @@ class _SignInFormState extends State<SignInForm>
                   ),
                   const SizedBox(height: 12),
                   if (widget.showFooterButtons) ...<Widget>[
-                    TextButton.icon(
-                      icon: const Icon(Icons.info_outline),
-                      label: Text(translate('how_it_works.button')),
-                      onPressed: () => HowItWorksBottomSheet.show(context),
-                    ),
-                    TextButton.icon(
-                      icon: const Icon(Icons.play_circle_outline),
-                      label: Text(translate('demo.explore_button')),
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed(AppRoute.demo.path),
-                    ),
+                    const SignInFooterButtons(),
                   ],
                 ],
               ),

@@ -108,6 +108,7 @@ class _Step extends StatelessWidget {
                 title,
                 style: textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 4),

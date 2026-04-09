@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
+import 'package:investtrack/ui/app/current_route_observer.dart';
 import 'package:investtrack/ui/investments/investments_page.dart';
 import 'package:investtrack/ui/not_found_page.dart';
 import 'package:investtrack/ui/sign_in/sign_in_page.dart';
@@ -34,11 +35,25 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
+  static final Set<String> _publicRoutePaths = <String>{
+    AppRoute.signIn.path,
+    AppRoute.privacyPolity.path,
+    AppRoute.demo.path,
+  };
+
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  final CurrentRouteObserver _currentRouteObserver = CurrentRouteObserver();
 
   NavigatorState? get _navigator => _navigatorKey.currentState;
 
   final bool _isDarkTheme = true;
+  late final String _initialRoute;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialRoute = _resolveInitialRoute();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +63,7 @@ class _AppViewState extends State<AppView> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: constants.appName,
-      initialRoute: AppRoute.signIn.path,
+      initialRoute: _initialRoute,
       routes: widget.routeMap,
       onGenerateRoute: (RouteSettings settings) {
         final String routeName = settings.name ?? '';
@@ -271,6 +286,7 @@ class _AppViewState extends State<AppView> {
               dividerColor: Colors.grey[300],
             ),
       navigatorKey: _navigatorKey,
+      navigatorObservers: <NavigatorObserver>[_currentRouteObserver],
       builder: (BuildContext _, Widget? child) {
         return BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: _authenticationStateListener,
@@ -304,21 +320,51 @@ class _AppViewState extends State<AppView> {
           (Route<void> route) => false,
         );
       case UnauthenticatedStatus():
-        _navigator?.pushAndRemoveUntil<void>(
-          SignInPage.route(),
-          (Route<void> route) => false,
-        );
-        if (status.message.isNotEmpty) {
-          final String message = status.message;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              duration: const Duration(seconds: 1),
-            ),
+        if (_isCurrentRoutePublic()) {
+          _showStatusMessage(context, status.message);
+        } else {
+          _navigator?.pushAndRemoveUntil<void>(
+            SignInPage.route(),
+            (Route<void> route) => false,
           );
+          _showStatusMessage(context, status.message);
         }
       case UnknownAuthenticationStatus():
         break;
+    }
+  }
+
+  String _resolveInitialRoute() {
+    final String defaultRouteName =
+        WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+    final String normalizedRouteName = defaultRouteName.startsWith('/')
+        ? defaultRouteName
+        : '/$defaultRouteName';
+
+    if (
+        defaultRouteName.isNotEmpty &&
+        defaultRouteName != Navigator.defaultRouteName &&
+        widget.routeMap.containsKey(normalizedRouteName)) {
+      return normalizedRouteName;
+    } else {
+      return AppRoute.signIn.path;
+    }
+  }
+
+  bool _isCurrentRoutePublic() {
+    final String routeName =
+        _currentRouteObserver.currentRouteName ?? _initialRoute;
+    return _publicRoutePaths.contains(routeName);
+  }
+
+  void _showStatusMessage(BuildContext context, String message) {
+    if (message.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 1),
+        ),
+      );
     }
   }
 }

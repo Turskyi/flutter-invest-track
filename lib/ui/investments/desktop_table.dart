@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
+import 'package:investtrack/ui/widgets/horizontal_overflow_indicator.dart';
 import 'package:investtrack/utils/price_utils.dart';
 import 'package:models/models.dart';
 
-class DesktopTable extends StatelessWidget {
+class DesktopTable extends StatefulWidget {
   const DesktopTable({
     this.investments = const <Investment>[],
     this.showLoader = false,
@@ -17,63 +18,110 @@ class DesktopTable extends StatelessWidget {
   final ValueChanged<Investment>? onInvestmentTap;
 
   @override
+  State<DesktopTable> createState() => _DesktopTableState();
+}
+
+class _DesktopTableState extends State<DesktopTable> {
+  final ScrollController _horizontalScrollController = ScrollController();
+
+  @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
+    final ThemeData themeData = Theme.of(context);
+    final TextStyle headingTextStyle =
+        (themeData.textTheme.titleSmall ?? const TextStyle()).copyWith(
+          color: themeData.colorScheme.onPrimary,
+        );
     return SingleChildScrollView(
       padding: const EdgeInsets.only(top: 80, bottom: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              showCheckboxColumn: false,
-              columnSpacing: 24,
-              columns: <DataColumn>[
-                const DataColumn(label: SizedBox.shrink()),
-                DataColumn(label: Text(translate('desktop_table.company'))),
-                DataColumn(
-                  label: Text(translate('desktop_table.stock_exchange')),
-                ),
-                DataColumn(label: Text(translate('desktop_table.ticker'))),
-                DataColumn(
-                  label: Text(translate('desktop_table.current_price')),
-                ),
-                DataColumn(label: Text(translate('desktop_table.currency'))),
-                DataColumn(
-                  label: Text(translate('desktop_table.price_change')),
-                ),
-                DataColumn(
-                  label: Text(translate('desktop_table.percent_change')),
-                ),
-                DataColumn(label: Text(translate('desktop_table.quantity'))),
-                DataColumn(
-                  label: Text(
-                    translate('desktop_table.total_current_value_usd'),
+          Stack(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: SingleChildScrollView(
+                  controller: _horizontalScrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    showCheckboxColumn: false,
+                    columnSpacing: 24,
+                    headingTextStyle: headingTextStyle,
+                    columns: <DataColumn>[
+                      const DataColumn(label: SizedBox.shrink()),
+                      DataColumn(
+                        label: Text(translate('desktop_table.company')),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          translate('desktop_table.stock_exchange'),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.ticker')),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.current_price')),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.currency')),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.price_change')),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          translate('desktop_table.percent_change'),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.quantity')),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          translate(
+                            'desktop_table.total_current_value_usd',
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          translate(
+                            'desktop_table.total_value_purchase_usd',
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          translate('desktop_table.price_on_purchase'),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.gain_loss_usd')),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.gain_loss_cad')),
+                      ),
+                      DataColumn(
+                        label: Text(translate('desktop_table.purchase_date')),
+                      ),
+                    ],
+                    rows: widget.investments.map(_buildRow).toList(),
                   ),
                 ),
-                DataColumn(
-                  label: Text(
-                    translate('desktop_table.total_value_purchase_usd'),
-                  ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: HorizontalOverflowIndicator(
+                  controller: _horizontalScrollController,
                 ),
-                DataColumn(
-                  label: Text(translate('desktop_table.price_on_purchase')),
-                ),
-                DataColumn(
-                  label: Text(translate('desktop_table.gain_loss_usd')),
-                ),
-                DataColumn(
-                  label: Text(translate('desktop_table.gain_loss_cad')),
-                ),
-                DataColumn(
-                  label: Text(translate('desktop_table.purchase_date')),
-                ),
-              ],
-              rows: investments.map(_buildRow).toList(),
-            ),
+              ),
+            ],
           ),
-          if (showLoader)
+          if (widget.showLoader)
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Center(child: CircularProgressIndicator()),
@@ -81,6 +129,12 @@ class DesktopTable extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
   }
 
   DataRow _buildRow(Investment investment) {
@@ -97,8 +151,8 @@ class DesktopTable extends StatelessWidget {
     final double? gainOrLossCad = investment.gainOrLossCad;
     final DateTime? purchaseDate = investment.purchaseDate;
     return DataRow(
-      onSelectChanged: onInvestmentTap != null
-          ? (bool? _) => onInvestmentTap!(investment)
+      onSelectChanged: widget.onInvestmentTap != null
+          ? (bool? _) => widget.onInvestmentTap!(investment)
           : null,
       cells: <DataCell>[
         DataCell(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:investtrack/ui/widgets/horizontal_overflow_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ShimmerDesktopTable extends StatelessWidget {
+class ShimmerDesktopTable extends StatefulWidget {
   const ShimmerDesktopTable({super.key});
 
   /// Approximate widths (px) for each column matching the real DataTable:
@@ -30,28 +31,61 @@ class ShimmerDesktopTable extends StatelessWidget {
   static const double _horizontalCellPadding = 16;
 
   @override
+  State<ShimmerDesktopTable> createState() => _ShimmerDesktopTableState();
+}
+
+class _ShimmerDesktopTableState extends State<ShimmerDesktopTable> {
+  final ScrollController _horizontalScrollController = ScrollController();
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.only(top: 80, bottom: 80),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Shimmer.fromColors(
-          baseColor: Colors.grey[700]!,
-          highlightColor: Colors.grey[500]!,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const _ShimmerRow(isHeader: true),
-              const Divider(height: 1, thickness: 1),
-              for (int i = 0; i < _dataRowCount; i++) ...<Widget>[
-                const _ShimmerRow(isHeader: false),
-                const Divider(height: 1, thickness: 0.5),
-              ],
-            ],
+      child: Stack(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: SingleChildScrollView(
+              controller: _horizontalScrollController,
+              scrollDirection: Axis.horizontal,
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[700]!,
+                highlightColor: Colors.grey[500]!,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const _ShimmerRow(isHeader: true),
+                    const Divider(height: 1, thickness: 1),
+                    for (
+                      int i = 0;
+                      i < ShimmerDesktopTable._dataRowCount;
+                      i++
+                    ) ...<Widget>[
+                      const _ShimmerRow(isHeader: false),
+                      const Divider(height: 1, thickness: 0.5),
+                    ],
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: HorizontalOverflowIndicator(
+              controller: _horizontalScrollController,
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
   }
 }
 
