@@ -6,6 +6,7 @@ import 'package:investtrack/application_services/blocs/authentication/bloc/authe
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
+import 'package:investtrack/ui/sign_in/language_selector_button.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -70,6 +71,11 @@ class AppDrawer extends StatelessWidget {
                   leading: const Icon(Icons.feedback),
                   title: Text(translate('menu.feedback')),
                   onTap: () => _showFeedbackDialog(context),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.language),
+                  title: Text(translate('menu.language')),
+                  trailing: const LanguageSelectorButton(),
                 ),
                 ListTile(
                   leading: const Icon(Icons.logout),
