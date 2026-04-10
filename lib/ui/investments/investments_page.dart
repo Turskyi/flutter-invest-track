@@ -245,29 +245,34 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
           } else if (state is InvestmentsLoaded) {
             final List<Investment> allInvestments = state.investments;
 
-            return NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification scrollInfo) {
-                return _handleScrollNotification(
-                  scrollInfo: scrollInfo,
-                  state: state,
-                );
-              },
-              child: RefreshIndicator(
-                onRefresh: () async => context.read<InvestmentsBloc>().add(
-                  const LoadInvestments(),
-                ),
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    if (constraints.maxWidth > 800.0) {
-                      return DesktopTable(
-                        investments: allInvestments,
-                        showLoader:
-                            state is CreatingInvestment || !state.hasReachedMax,
-                        onInvestmentTap: (Investment investment) =>
-                            _navigateToInvestmentDetails(context, investment),
-                      );
-                    } else {
-                      return ListView.builder(
+            return RefreshIndicator(
+              onRefresh: () async =>
+                  context.read<InvestmentsBloc>().add(const LoadInvestments()),
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  if (constraints.maxWidth > 800.0) {
+                    return DesktopTable(
+                      investments: allInvestments,
+                      showLoader:
+                          state is CreatingInvestment || state.isLoadingMore,
+                      canLoadMore: state.canLoadMore,
+                      onLoadMore: () {
+                        context.read<InvestmentsBloc>().add(
+                          const LoadMoreInvestments(),
+                        );
+                      },
+                      onInvestmentTap: (Investment investment) =>
+                          _navigateToInvestmentDetails(context, investment),
+                    );
+                  } else {
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        return _handleScrollNotification(
+                          scrollInfo: scrollInfo,
+                          state: state,
+                        );
+                      },
+                      child: ListView.builder(
                         padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
                         itemCount: state is CreatingInvestment
                             ? allInvestments.length + 1
@@ -301,10 +306,10 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                             ),
                           );
                         },
-                      );
-                    }
-                  },
-                ),
+                      ),
+                    );
+                  }
+                },
               ),
             );
           } else {

@@ -9,12 +9,16 @@ class DesktopTable extends StatefulWidget {
   const DesktopTable({
     this.investments = const <Investment>[],
     this.showLoader = false,
+    this.canLoadMore = false,
+    this.onLoadMore,
     this.onInvestmentTap,
     super.key,
   });
 
   final List<Investment> investments;
   final bool showLoader;
+  final bool canLoadMore;
+  final VoidCallback? onLoadMore;
   final ValueChanged<Investment>? onInvestmentTap;
 
   @override
@@ -22,9 +26,32 @@ class DesktopTable extends StatefulWidget {
 }
 
 class _DesktopTableState extends State<DesktopTable> {
+  static const double _loadMoreThreshold = 120;
+
+  final ScrollController _verticalScrollController = ScrollController();
   final ScrollController _horizontalScrollController = ScrollController();
+  int _lastLoadMoreRequestedAtCount = -1;
 
   String get _notAvailableLabel => translate('desktop_table.not_available');
+
+  @override
+  void initState() {
+    super.initState();
+    _verticalScrollController.addListener(_onVerticalScroll);
+    WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+      _requestMoreWhenNotScrollable();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant DesktopTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.investments.length != widget.investments.length) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration _) {
+        _requestMoreWhenNotScrollable();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +62,7 @@ class _DesktopTableState extends State<DesktopTable> {
           color: themeData.colorScheme.onPrimary,
         );
     return SingleChildScrollView(
+      controller: _verticalScrollController,
       padding: const EdgeInsets.only(top: 80, bottom: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -127,8 +155,46 @@ class _DesktopTableState extends State<DesktopTable> {
 
   @override
   void dispose() {
+    _verticalScrollController
+      ..removeListener(_onVerticalScroll)
+      ..dispose();
     _horizontalScrollController.dispose();
     super.dispose();
+  }
+
+  void _onVerticalScroll() {
+    if (!_canRequestMoreData || !_verticalScrollController.hasClients) {
+      return;
+    } else {
+      final ScrollPosition position = _verticalScrollController.position;
+      final bool reachedBottom =
+          position.pixels >= position.maxScrollExtent - _loadMoreThreshold;
+      if (reachedBottom) {
+        _requestMore();
+      }
+    }
+  }
+
+  void _requestMoreWhenNotScrollable() {
+    if (!_canRequestMoreData || !_verticalScrollController.hasClients) {
+      return;
+    } else {
+      final ScrollPosition position = _verticalScrollController.position;
+      if (position.maxScrollExtent <= 0) {
+        _requestMore();
+      }
+    }
+  }
+
+  bool get _canRequestMoreData {
+    return widget.canLoadMore &&
+        widget.onLoadMore != null &&
+        _lastLoadMoreRequestedAtCount != widget.investments.length;
+  }
+
+  void _requestMore() {
+    _lastLoadMoreRequestedAtCount = widget.investments.length;
+    widget.onLoadMore?.call();
   }
 
   DataRow _buildRow(Investment investment) {
