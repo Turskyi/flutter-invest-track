@@ -15,10 +15,23 @@ void main() {
     localizationDelegate = await setUpFlutterTranslateForTests();
   });
 
-  Widget buildSubject(List<Investment> investments) => prepareWidgetForTesting(
-    LocalizedApp(localizationDelegate, DesktopTable(investments: investments)),
-    localizationDelegate,
-  );
+  Widget buildSubject({
+    required List<Investment> investments,
+    bool canLoadMore = false,
+    VoidCallback? onLoadMore,
+  }) {
+    return prepareWidgetForTesting(
+      LocalizedApp(
+        localizationDelegate,
+        DesktopTable(
+          investments: investments,
+          canLoadMore: canLoadMore,
+          onLoadMore: onLoadMore,
+        ),
+      ),
+      localizationDelegate,
+    );
+  }
 
   testWidgets('shows N/A for purchase price when purchase date is missing', (
     WidgetTester tester,
@@ -28,7 +41,9 @@ void main() {
       purchasePrice: null,
     );
 
-    await tester.pumpWidget(buildSubject(<Investment>[investment]));
+    await tester.pumpWidget(
+      buildSubject(investments: <Investment>[investment]),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('N/A'), findsWidgets);
@@ -43,7 +58,9 @@ void main() {
         purchasePrice: null,
       );
 
-      await tester.pumpWidget(buildSubject(<Investment>[investment]));
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Loading...'), findsOneWidget);
@@ -59,13 +76,111 @@ void main() {
         currency: 'USD',
       );
 
-      await tester.pumpWidget(buildSubject(<Investment>[investment]));
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text(r'$120.00'), findsOneWidget);
       expect(find.text('Loading...'), findsNothing);
     },
   );
+
+  testWidgets(
+    'requests next page once when content is not scrollable and can load more',
+    (WidgetTester tester) async {
+      int loadMoreCalls = 0;
+      final Investment investment = _buildInvestment(
+        purchaseDate: DateTime(2024, 1, 15),
+        purchasePrice: 120,
+      );
+
+      await tester.pumpWidget(
+        buildSubject(
+          investments: <Investment>[investment],
+          canLoadMore: true,
+          onLoadMore: () {
+            loadMoreCalls++;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(loadMoreCalls, 1);
+
+      await tester.pumpWidget(
+        buildSubject(
+          investments: <Investment>[investment],
+          canLoadMore: true,
+          onLoadMore: () {
+            loadMoreCalls++;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(loadMoreCalls, 1);
+    },
+  );
+
+  testWidgets('does not request next page when canLoadMore is false', (
+    WidgetTester tester,
+  ) async {
+    int loadMoreCalls = 0;
+    final Investment investment = _buildInvestment(
+      purchaseDate: DateTime(2024, 1, 15),
+      purchasePrice: 120,
+    );
+
+    await tester.pumpWidget(
+      buildSubject(
+        investments: <Investment>[investment],
+        canLoadMore: false,
+        onLoadMore: () {
+          loadMoreCalls++;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(loadMoreCalls, 0);
+  });
+
+  testWidgets('requests next page again after investment count increases', (
+    WidgetTester tester,
+  ) async {
+    int loadMoreCalls = 0;
+    final Investment investment = _buildInvestment(
+      purchaseDate: DateTime(2024, 1, 15),
+      purchasePrice: 120,
+    );
+
+    await tester.pumpWidget(
+      buildSubject(
+        investments: <Investment>[investment],
+        canLoadMore: true,
+        onLoadMore: () {
+          loadMoreCalls++;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(loadMoreCalls, 1);
+
+    await tester.pumpWidget(
+      buildSubject(
+        investments: <Investment>[investment, investment.copyWith(id: 2)],
+        canLoadMore: true,
+        onLoadMore: () {
+          loadMoreCalls++;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(loadMoreCalls, 2);
+  });
 }
 
 Investment _buildInvestment({
