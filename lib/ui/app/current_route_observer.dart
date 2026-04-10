@@ -27,4 +27,3 @@ class CurrentRouteObserver extends NavigatorObserver {
     currentRouteName = previousRoute?.settings.name;
   }
 }
-

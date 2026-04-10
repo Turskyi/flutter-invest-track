@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HorizontalOverflowIndicator extends StatefulWidget {
-  const HorizontalOverflowIndicator({
-    required this.controller,
-    super.key,
-  });
+  const HorizontalOverflowIndicator({required this.controller, super.key});
 
   final ScrollController controller;
 
@@ -89,10 +86,10 @@ class _HorizontalOverflowIndicatorState
                 _cachedThumbTravel = thumbTravel;
                 _cachedMaxScrollExtent = maxScrollExtent;
 
-                final Color trackColor =
-                    themeData.colorScheme.onSurface.withOpacity(0.12);
-                final Color thumbColor =
-                    themeData.colorScheme.primary.withOpacity(0.55);
+                final Color trackColor = themeData.colorScheme.onSurface
+                    .withOpacity(0.12);
+                final Color thumbColor = themeData.colorScheme.primary
+                    .withOpacity(0.55);
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: _horizontalPadding,
@@ -160,8 +157,9 @@ class _HorizontalOverflowIndicatorState
 
   void _onDragStart(DragStartDetails details) {
     _dragStartDx = details.localPosition.dx;
-    _dragStartPixels =
-        widget.controller.hasClients ? widget.controller.position.pixels : 0.0;
+    _dragStartPixels = widget.controller.hasClients
+        ? widget.controller.position.pixels
+        : 0.0;
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
@@ -172,9 +170,10 @@ class _HorizontalOverflowIndicatorState
     }
     final double dragDelta = details.localPosition.dx - startDx;
     final double scrollRatio = _cachedMaxScrollExtent / _cachedThumbTravel;
-    final double newPixels =
-        (startPixels + dragDelta * scrollRatio)
-            .clamp(0.0, _cachedMaxScrollExtent);
+    final double newPixels = (startPixels + dragDelta * scrollRatio).clamp(
+      0.0,
+      _cachedMaxScrollExtent,
+    );
     widget.controller.jumpTo(newPixels);
   }
 

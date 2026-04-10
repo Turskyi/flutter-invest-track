@@ -23,9 +23,7 @@ class PrivacyHomeButton extends StatelessWidget {
           child: Ink(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
             child: Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
@@ -43,4 +41,3 @@ class PrivacyHomeButton extends StatelessWidget {
     );
   }
 }
-

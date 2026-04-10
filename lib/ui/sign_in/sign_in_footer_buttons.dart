@@ -37,4 +37,3 @@ class SignInFooterButtons extends StatelessWidget {
     );
   }
 }
-

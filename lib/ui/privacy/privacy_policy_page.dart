@@ -250,4 +250,3 @@ class PrivacyPolicyPage extends StatelessWidget {
     );
   }
 }
-

@@ -107,6 +107,14 @@ class Investment {
   final DateTime? purchaseDate;
   @JsonKey(name: 'isPurchased')
   final bool isPurchased;
+
+  /// The stock price at the time of purchase, in the investment's [currency].
+  ///
+  /// This value is **not** entered by the user. It is fetched automatically
+  /// by the backend via a finance API (`fetchStockPrice(ticker, purchaseDate)`)
+  /// using the [ticker] and [purchaseDate]. It may be `null` when the API
+  /// returns no data for the given date (e.g. market was closed or the ticker
+  /// was not yet listed).
   @JsonKey(name: 'purchasePrice')
   final double? purchasePrice;
   @JsonKey(name: 'totalCurrentValue')

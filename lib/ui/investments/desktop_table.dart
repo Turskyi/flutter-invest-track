@@ -54,9 +54,7 @@ class _DesktopTableState extends State<DesktopTable> {
                         label: Text(translate('desktop_table.company')),
                       ),
                       DataColumn(
-                        label: Text(
-                          translate('desktop_table.stock_exchange'),
-                        ),
+                        label: Text(translate('desktop_table.stock_exchange')),
                       ),
                       DataColumn(
                         label: Text(translate('desktop_table.ticker')),
@@ -71,25 +69,19 @@ class _DesktopTableState extends State<DesktopTable> {
                         label: Text(translate('desktop_table.price_change')),
                       ),
                       DataColumn(
-                        label: Text(
-                          translate('desktop_table.percent_change'),
-                        ),
+                        label: Text(translate('desktop_table.percent_change')),
                       ),
                       DataColumn(
                         label: Text(translate('desktop_table.quantity')),
                       ),
                       DataColumn(
                         label: Text(
-                          translate(
-                            'desktop_table.total_current_value_usd',
-                          ),
+                          translate('desktop_table.total_current_value_usd'),
                         ),
                       ),
                       DataColumn(
                         label: Text(
-                          translate(
-                            'desktop_table.total_value_purchase_usd',
-                          ),
+                          translate('desktop_table.total_value_purchase_usd'),
                         ),
                       ),
                       DataColumn(
@@ -140,6 +132,7 @@ class _DesktopTableState extends State<DesktopTable> {
   DataRow _buildRow(Investment investment) {
     final double? currentPrice = investment.currentPrice;
     final double? purchasePrice = investment.purchasePrice;
+
     final double? priceChange = currentPrice != null && purchasePrice != null
         ? currentPrice - purchasePrice
         : null;
@@ -150,6 +143,7 @@ class _DesktopTableState extends State<DesktopTable> {
     final double? gainOrLossUsd = investment.gainOrLossUsd;
     final double? gainOrLossCad = investment.gainOrLossCad;
     final DateTime? purchaseDate = investment.purchaseDate;
+
     return DataRow(
       onSelectChanged: widget.onInvestmentTap != null
           ? (bool? _) => widget.onInvestmentTap!(investment)
@@ -166,9 +160,9 @@ class _DesktopTableState extends State<DesktopTable> {
             radius: 16,
           ),
         ),
-        DataCell(Text(investment.companyName)),
+        DataCell(SelectableText(investment.companyName)),
         DataCell(Text(investment.stockExchange)),
-        DataCell(Text(investment.ticker)),
+        DataCell(SelectableText(investment.ticker)),
         DataCell(
           Text(formatPrice(price: currentPrice, currency: investment.currency)),
         ),

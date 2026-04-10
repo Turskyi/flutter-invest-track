@@ -341,8 +341,7 @@ class _AppViewState extends State<AppView> {
         ? defaultRouteName
         : '/$defaultRouteName';
 
-    if (
-        defaultRouteName.isNotEmpty &&
+    if (defaultRouteName.isNotEmpty &&
         defaultRouteName != Navigator.defaultRouteName &&
         widget.routeMap.containsKey(normalizedRouteName)) {
       return normalizedRouteName;
@@ -360,10 +359,7 @@ class _AppViewState extends State<AppView> {
   void _showStatusMessage(BuildContext context, String message) {
     if (message.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 1),
-        ),
+        SnackBar(content: Text(message), duration: const Duration(seconds: 1)),
       );
     }
   }
