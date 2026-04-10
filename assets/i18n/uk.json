@@ -160,7 +160,8 @@
     "fill_required_fields": "Будь ласка, заповніть усі обов'язкові поля правильно.",
     "quantity_validation_error": "Будь ласка, введіть дійсне позитивне число.",
     "select_purchase_date": "Будь ласка, виберіть дату купівлі",
-    "purchase_date_future": "Дата купівлі не може бути в майбутньому"
+    "purchase_date_future": "Дата купівлі не може бути в майбутньому",
+    "loading": "Завантаження..."
   },
   "add_investment": {
     "title": "Додати вкладення",
@@ -199,7 +200,8 @@
     "price_on_purchase": "Ціна на дату купівлі",
     "gain_loss_usd": "Прибуток/збиток $",
     "gain_loss_cad": "Прибуток/збиток CAD",
-    "purchase_date": "Дата купівлі"
+    "purchase_date": "Дата купівлі",
+    "not_available": "Н/Д"
   },
   "investment_card": {
     "purchase_price_usd": "Ціна купівлі (USD)",

@@ -160,7 +160,8 @@
     "fill_required_fields": "Please fill out all required fields correctly.",
     "quantity_validation_error": "Please enter a valid positive number.",
     "select_purchase_date": "Please select a purchase date",
-    "purchase_date_future": "Purchase date cannot be in the future"
+    "purchase_date_future": "Purchase date cannot be in the future",
+    "loading": "Loading..."
   },
   "add_investment": {
     "title": "Add Investment",
@@ -199,7 +200,8 @@
     "price_on_purchase": "Price on Purchase Date",
     "gain_loss_usd": "Gain or Loss for Stock $",
     "gain_loss_cad": "Gain or Loss for Stock in CAD",
-    "purchase_date": "Purchase Date"
+    "purchase_date": "Purchase Date",
+    "not_available": "N/A"
   },
   "investment_card": {
     "purchase_price_usd": "Purchase Price (USD)",

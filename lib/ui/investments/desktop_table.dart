@@ -24,6 +24,8 @@ class DesktopTable extends StatefulWidget {
 class _DesktopTableState extends State<DesktopTable> {
   final ScrollController _horizontalScrollController = ScrollController();
 
+  String get _notAvailableLabel => translate('desktop_table.not_available');
+
   @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
@@ -164,7 +166,12 @@ class _DesktopTableState extends State<DesktopTable> {
         DataCell(Text(investment.stockExchange)),
         DataCell(SelectableText(investment.ticker)),
         DataCell(
-          Text(formatPrice(price: currentPrice, currency: investment.currency)),
+          Text(
+            formatPriceByCode(
+              price: currentPrice,
+              currencyCode: investment.currency,
+            ),
+          ),
         ),
         DataCell(Text(investment.currency)),
         DataCell(
@@ -190,26 +197,31 @@ class _DesktopTableState extends State<DesktopTable> {
           Text(
             investment.totalCurrentValue != null
                 ? '\$${investment.totalCurrentValue!.toStringAsFixed(2)}'
-                : 'N/A',
+                : _notAvailableLabel,
           ),
         ),
         DataCell(
           Text(
             investment.totalValueOnPurchase != null
                 ? '\$${investment.totalValueOnPurchase!.toStringAsFixed(2)}'
-                : 'N/A',
+                : _notAvailableLabel,
           ),
         ),
         DataCell(
           Text(
-            formatPrice(price: purchasePrice, currency: investment.currency),
+            _formatPurchasePrice(
+              purchasePrice: purchasePrice,
+              purchaseDate: purchaseDate,
+              quantity: investment.quantity,
+              currency: investment.currency,
+            ),
           ),
         ),
         DataCell(
           Text(
             gainOrLossUsd != null
                 ? '\$${gainOrLossUsd.toStringAsFixed(2)}'
-                : 'N/A',
+                : _notAvailableLabel,
             style: TextStyle(
               color: _changeColor(gainOrLossUsd),
               fontWeight: gainOrLossUsd != null ? FontWeight.bold : null,
@@ -220,7 +232,7 @@ class _DesktopTableState extends State<DesktopTable> {
           Text(
             gainOrLossCad != null
                 ? 'CAD ${gainOrLossCad.toStringAsFixed(2)}'
-                : 'N/A',
+                : _notAvailableLabel,
             style: TextStyle(
               color: _changeColor(gainOrLossCad),
               fontWeight: gainOrLossCad != null ? FontWeight.bold : null,
@@ -231,7 +243,7 @@ class _DesktopTableState extends State<DesktopTable> {
           Text(
             purchaseDate != null && investment.quantity > 0
                 ? purchaseDate.toLocal().toString().split(' ').first
-                : 'N/A',
+                : _notAvailableLabel,
           ),
         ),
       ],
@@ -239,15 +251,34 @@ class _DesktopTableState extends State<DesktopTable> {
   }
 
   String _formatChange(double? change) {
-    if (change == null) return 'N/A';
-    final String prefix = change >= 0 ? '+' : '';
-    return '$prefix${change.toStringAsFixed(2)}';
+    if (change == null) {
+      return _notAvailableLabel;
+    } else {
+      final String prefix = change >= 0 ? '+' : '';
+      return '$prefix${change.toStringAsFixed(2)}';
+    }
   }
 
   String _formatPercentChange(double? percent) {
-    if (percent == null) return 'N/A';
-    final String prefix = percent >= 0 ? '+' : '';
-    return '$prefix${percent.toStringAsFixed(2)}%';
+    if (percent == null) {
+      return _notAvailableLabel;
+    } else {
+      final String prefix = percent >= 0 ? '+' : '';
+      return '$prefix${percent.toStringAsFixed(2)}%';
+    }
+  }
+
+  String _formatPurchasePrice({
+    required double? purchasePrice,
+    required DateTime? purchaseDate,
+    required num quantity,
+    required String currency,
+  }) {
+    if (purchaseDate == null || quantity <= 0) {
+      return _notAvailableLabel;
+    } else {
+      return formatPriceByCode(price: purchasePrice, currencyCode: currency);
+    }
   }
 
   Color? _changeColor(double? value) {
