@@ -93,6 +93,8 @@ const Map<String, Object?> _enTestTranslations = <String, Object?>{
     'support_subtitle':
         'Visit our support page for help and frequently asked questions.',
   },
+  'investments': <String, String>{'loading': 'Loading...'},
+  'desktop_table': <String, String>{'not_available': 'N/A'},
   'about': <String, String>{
     'title': 'About',
     'privacy_title': 'Privacy & Data',
