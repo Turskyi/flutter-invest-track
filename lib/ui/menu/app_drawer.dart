@@ -35,15 +35,21 @@ class AppDrawer extends StatelessWidget {
                   ),
                   accountEmail:
                       BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                    builder: (_, AuthenticationState state) {
-                      final String email = state.user.email;
-                      return Text(
-                        email.isNotEmpty ? email : translate('menu.no_email'),
-                        style: TextStyle(color: theme.colorScheme.onPrimary),
-                      );
-                    },
+                        builder: (_, AuthenticationState state) {
+                          final String email = state.user.email;
+                          return Text(
+                            email.isNotEmpty
+                                ? email
+                                : translate('menu.no_email'),
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                          );
+                        },
+                      ),
+                  currentAccountPicture: Image.asset(
+                    '${constants.imagePath}logo.png',
                   ),
-                  currentAccountPicture: Image.asset('assets/images/logo.png'),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: <Color>[
@@ -58,11 +64,7 @@ class AppDrawer extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.privacy_tip),
                   title: Text(translate('menu.privacy_policy')),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const PrivacyPolicyPage(),
-                    ),
-                  ),
+                  onTap: () => _navigateToPrivacyPolicy(context),
                 ),
                 ListTile(
                   leading: const Icon(Icons.feedback),
@@ -114,6 +116,14 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _navigateToPrivacyPolicy(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext _) => const PrivacyPolicyPage(),
       ),
     );
   }
