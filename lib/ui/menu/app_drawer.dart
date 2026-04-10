@@ -15,102 +15,116 @@ class AppDrawer extends StatelessWidget {
     LocalizationProvider.of(context);
     final ThemeData theme = Theme.of(context);
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: <Widget>[
-          UserAccountsDrawerHeader(
-            accountName: Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: Text(
-                constants.appName,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onPrimary,
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                UserAccountsDrawerHeader(
+                  accountName: Padding(
+                    padding: const EdgeInsets.only(top: 24.0),
+                    child: Text(
+                      constants.appName,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+                  accountEmail:
+                      BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                    builder: (_, AuthenticationState state) {
+                      final String email = state.user.email;
+                      return Text(
+                        email.isNotEmpty ? email : translate('menu.no_email'),
+                        style: TextStyle(color: theme.colorScheme.onPrimary),
+                      );
+                    },
+                  ),
+                  currentAccountPicture: Image.asset('assets/images/logo.png'),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        theme.colorScheme.primary,
+                        theme.colorScheme.secondary,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            accountEmail: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-              builder: (_, AuthenticationState state) {
-                final String email = state.user.email;
-                return Text(
-                  email.isNotEmpty ? email : translate('menu.no_email'),
-                  style: TextStyle(color: theme.colorScheme.onPrimary),
-                );
-              },
-            ),
-            currentAccountPicture: Image.asset('assets/images/logo.png'),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: <Color>[
-                  theme.colorScheme.primary,
-                  theme.colorScheme.secondary,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip),
-            title: Text(translate('menu.privacy_policy')),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const PrivacyPolicyPage(),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.feedback),
-            title: Text(translate('menu.feedback')),
-            onTap: () => _showFeedbackDialog(context),
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: Text(translate('menu.sign_out')),
-            onTap: () => context.read<AuthenticationBloc>().add(
-              const AuthenticationSignOutPressed(),
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip),
+                  title: Text(translate('menu.privacy_policy')),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const PrivacyPolicyPage(),
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.feedback),
+                  title: Text(translate('menu.feedback')),
+                  onTap: () => _showFeedbackDialog(context),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: Text(translate('menu.sign_out')),
+                  onTap: () => context.read<AuthenticationBloc>().add(
+                    const AuthenticationSignOutPressed(),
+                  ),
+                ),
+              ],
             ),
           ),
           const Divider(height: 16),
-          BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (BuildContext context, AuthenticationState state) {
-              const double progressIndicatorSize = 24.0;
-              final AuthenticationStatus status = state.status;
-              final bool isDeleting = status is DeletingAuthenticatedUserStatus;
-              return ListTile(
-                leading: Icon(
-                  Icons.delete_forever,
-                  color: theme.colorScheme.error,
-                ),
-                title: Text(
-                  translate('menu.delete_account'),
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
-                trailing: isDeleting
-                    ? const SizedBox(
-                        width: progressIndicatorSize,
-                        height: progressIndicatorSize,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : null,
-                onTap: isDeleting
-                    ? null
-                    : () async {
-                        final bool? confirmed =
-                            await _showDeleteAccountConfirmationDialog(context);
-                        if (context.mounted && confirmed == true) {
-                          context.read<AuthenticationBloc>().add(
-                            const AuthenticationAccountDeletionRequested(),
-                          );
-                        }
-                      },
-              );
-            },
+          SafeArea(
+            top: false,
+            child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+              builder: (BuildContext context, AuthenticationState state) {
+                const double progressIndicatorSize = 24.0;
+                final AuthenticationStatus status = state.status;
+                final bool isDeleting =
+                    status is DeletingAuthenticatedUserStatus;
+                return ListTile(
+                  leading: Icon(
+                    Icons.delete_forever,
+                    color: theme.colorScheme.error,
+                  ),
+                  title: Text(
+                    translate('menu.delete_account'),
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                  trailing: isDeleting
+                      ? const SizedBox(
+                          width: progressIndicatorSize,
+                          height: progressIndicatorSize,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : null,
+                  onTap: isDeleting
+                      ? null
+                      : () async {
+                          await _handleDeleteAccount(context);
+                        },
+                );
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _handleDeleteAccount(BuildContext context) async {
+    final bool? confirmed = await _showDeleteAccountConfirmationDialog(context);
+    if (context.mounted && confirmed == true) {
+      context.read<AuthenticationBloc>().add(
+        const AuthenticationAccountDeletionRequested(),
+      );
+    }
   }
 
   Future<bool?> _showDeleteAccountConfirmationDialog(BuildContext context) {
@@ -135,6 +149,7 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  void _showFeedbackDialog(BuildContext context) =>
-      context.read<MenuBloc>().add(const BugReportPressedEvent());
+  void _showFeedbackDialog(BuildContext context) {
+    return context.read<MenuBloc>().add(const BugReportPressedEvent());
+  }
 }
