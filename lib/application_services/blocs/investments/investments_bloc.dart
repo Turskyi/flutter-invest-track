@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/domain_services/exchange_rate_repository.dart';
@@ -39,12 +40,13 @@ part 'investments_state.dart';
 ///   unwanted states is simpler and recommended.
 ///
 /// TL;DR: Reuse one bloc across screens, but filter states where needed.
+@injectable
 class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   InvestmentsBloc(
     this._investmentsRepository,
     this._exchangeRateRepository,
     this._authenticationBloc, {
-    bool isDemo = false,
+    @factoryParam bool isDemo = false,
   }) : _isDemo = isDemo,
        super(const InvestmentsLoading()) {
     on<LoadInvestments>(_loadInvestments);

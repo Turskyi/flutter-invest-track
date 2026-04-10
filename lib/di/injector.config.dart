@@ -133,12 +133,12 @@ extension GetItInjectableX on _i174.GetIt {
         authenticationRepository: gh<_i223.AuthenticationRepository>(),
       ),
     );
-    gh.factory<_i91.InvestmentsBloc>(
-      () => _i91.InvestmentsBloc(
+    gh.factoryParam<_i91.InvestmentsBloc, bool, dynamic>(
+      (isDemo, _) => _i91.InvestmentsBloc(
         gh<_i305.InvestmentsRepository>(),
         gh<_i30.ExchangeRateRepository>(),
         gh<_i636.AuthenticationBloc>(),
-        isDemo: gh<bool>(),
+        isDemo: isDemo,
       ),
     );
     return this;

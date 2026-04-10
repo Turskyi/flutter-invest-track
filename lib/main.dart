@@ -7,11 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
-import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart';
-import 'package:investtrack/application_services/repositories/demo_investments_repository.dart';
 import 'package:investtrack/di/injector.dart';
-import 'package:investtrack/domain_services/exchange_rate_repository.dart';
-import 'package:investtrack/domain_services/investments_repository.dart';
 import 'package:investtrack/localization/localization_delelegate_getter.dart'
     as localization;
 import 'package:investtrack/router/app_route.dart';
@@ -48,22 +44,24 @@ Future<void> main() async {
 
   final AuthenticationRepository authenticationRepository = dependencies
       .get<AuthenticationRepository>();
-  final InvestmentsRepository investmentsRepository = dependencies
-      .get<InvestmentsRepository>();
-  final ExchangeRateRepository exchangeRateRepository = dependencies
-      .get<ExchangeRateRepository>();
+
   final AuthenticationBloc authenticationBloc = dependencies
       .get<AuthenticationBloc>();
   final MenuBloc menuBloc = dependencies.get<MenuBloc>();
 
+  final InvestmentsBloc investmentsBloc = dependencies.get<InvestmentsBloc>(
+    param1: false,
+  );
+  final InvestmentsBloc demoInvestmentsBloc = dependencies.get<InvestmentsBloc>(
+    param1: true,
+  );
+
   final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
     AppRoute.investments.path: (BuildContext _) {
       return BlocProvider<InvestmentsBloc>(
-        create: (BuildContext _) => InvestmentsBloc(
-          investmentsRepository,
-          exchangeRateRepository,
-          authenticationBloc,
-        )..add(const LoadInvestments()),
+        create: (BuildContext _) {
+          return investmentsBloc..add(const LoadInvestments());
+        },
         child: const InvestmentsPage(),
       );
     },
@@ -71,17 +69,14 @@ Future<void> main() async {
     AppRoute.privacyPolity.path: (BuildContext _) => const PrivacyPolicyPage(),
     AppRoute.addInvestment.path: (BuildContext _) {
       return BlocProvider<InvestmentsBloc>(
-        create: (BuildContext _) => dependencies.get<InvestmentsBloc>(),
+        create: (BuildContext _) => investmentsBloc,
         child: const AddEditInvestmentPage(),
       );
     },
     AppRoute.demo.path: (BuildContext _) => BlocProvider<InvestmentsBloc>(
-      create: (BuildContext _) => InvestmentsBloc(
-        const DemoInvestmentsRepository(),
-        const DemoExchangeRateRepository(),
-        authenticationBloc,
-        isDemo: true,
-      )..add(const LoadInvestments()),
+      create:
+          (BuildContext _) =>
+              demoInvestmentsBloc..add(const LoadInvestments()),
       child: const InvestmentsPage(isDemo: true),
     ),
   };
