@@ -47,6 +47,25 @@ void main() {
       },
     );
 
+    test(
+      'all demo investments have non-null gainOrLossCad for desktop table',
+      () async {
+        final Investments result = await repository.getInvestments(
+          userId: 'any',
+        );
+
+        for (final Investment investment in result.investments) {
+          expect(
+            investment.gainOrLossCad,
+            isNotNull,
+            reason:
+                '${investment.ticker} must have gainOrLossCad set so the '
+                'desktop table does not show N/A',
+          );
+        }
+      },
+    );
+
     test('demo investments include the expected tickers', () async {
       final Investments result = await repository.getInvestments(userId: 'any');
 

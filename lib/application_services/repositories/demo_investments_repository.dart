@@ -31,6 +31,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
       totalValueOnPurchase: 1347.60,
       totalCurrentValue: 1893.00,
       gainOrLossUsd: 545.40,
+      gainOrLossCad: 741.74,
     ),
     Investment(
       id: 2,
@@ -51,6 +52,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
       totalValueOnPurchase: 1210.00,
       totalCurrentValue: 2077.50,
       gainOrLossUsd: 867.50,
+      gainOrLossCad: 1179.80,
     ),
     Investment(
       id: 3,
@@ -70,6 +72,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
       totalValueOnPurchase: 2220.00,
       totalCurrentValue: 7000.00,
       gainOrLossUsd: 4780.00,
+      gainOrLossCad: 6500.80,
     ),
     Investment(
       id: 4,
@@ -90,6 +93,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
       totalValueOnPurchase: 2976.00,
       totalCurrentValue: 2100.00,
       gainOrLossUsd: -876.00,
+      gainOrLossCad: -1191.36,
     ),
     Investment(
       id: 5,
@@ -108,6 +112,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
       totalValueOnPurchase: 1725.00,
       totalCurrentValue: 2550.00,
       gainOrLossUsd: 825.00,
+      gainOrLossCad: 1122.00,
     ),
   ];
 

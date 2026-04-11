@@ -47,13 +47,10 @@ Future<void> main() async {
   final InvestmentsBloc investmentsBloc = dependencies.get<InvestmentsBloc>(
     param1: false,
   );
-  final InvestmentsBloc demoInvestmentsBloc = dependencies.get<InvestmentsBloc>(
-    param1: true,
-  );
 
   final Map<String, WidgetBuilder> routeMap = router.getRouteMap(
     investmentsBloc: investmentsBloc,
-    demoInvestmentsBloc: demoInvestmentsBloc,
+    authenticationBloc: authenticationBloc,
   );
 
   runApp(

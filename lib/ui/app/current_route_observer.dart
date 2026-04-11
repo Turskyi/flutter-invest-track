@@ -24,6 +24,8 @@ class CurrentRouteObserver extends NavigatorObserver {
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didRemove(route, previousRoute);
-    currentRouteName = previousRoute?.settings.name;
+    if (route.settings.name == currentRouteName) {
+      currentRouteName = previousRoute?.settings.name;
+    }
   }
 }

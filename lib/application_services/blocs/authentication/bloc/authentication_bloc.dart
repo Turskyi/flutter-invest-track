@@ -88,11 +88,11 @@ class AuthenticationBloc
     );
   }
 
-  void _onLogoutPressed(
+  Future<void> _onLogoutPressed(
     AuthenticationSignOutPressed event,
     Emitter<AuthenticationState> emit,
-  ) {
-    _authenticationRepository.signOut();
+  ) async {
+    await _authenticationRepository.signOut();
   }
 
   Future<void> _onAccountDeletionRequested(

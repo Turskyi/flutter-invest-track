@@ -346,9 +346,8 @@ class _AppViewState extends State<AppView> {
   }
 
   bool _isCurrentRoutePublic() {
-    final String routeName =
-        _currentRouteObserver.currentRouteName ?? _initialRoute;
-    return publicRoutePaths.contains(routeName);
+    final String? routeName = _currentRouteObserver.currentRouteName;
+    return routeName != null && publicRoutePaths.contains(routeName);
   }
 
   void _showStatusMessage(BuildContext context, String message) {
