@@ -200,6 +200,14 @@ class _DesktopTableState extends State<DesktopTable> {
   DataRow _buildRow(Investment investment) {
     final double? currentPrice = investment.currentPrice;
     final double? purchasePrice = investment.purchasePrice;
+    final double? totalCurrentValue =
+        investment.totalCurrentValue ??
+        (currentPrice != null ? investment.quantity * currentPrice : null);
+    final double? totalValueOnPurchase =
+        investment.totalValueOnPurchase ??
+        (purchasePrice != null && investment.quantity > 0
+            ? investment.quantity * purchasePrice
+            : null);
 
     final double? priceChange = currentPrice != null && purchasePrice != null
         ? currentPrice - purchasePrice
@@ -261,15 +269,15 @@ class _DesktopTableState extends State<DesktopTable> {
         DataCell(Text(investment.quantity.toString())),
         DataCell(
           Text(
-            investment.totalCurrentValue != null
-                ? '\$${investment.totalCurrentValue!.toStringAsFixed(2)}'
+            totalCurrentValue != null
+                ? '\$${totalCurrentValue.toStringAsFixed(2)}'
                 : _notAvailableLabel,
           ),
         ),
         DataCell(
           Text(
-            investment.totalValueOnPurchase != null
-                ? '\$${investment.totalValueOnPurchase!.toStringAsFixed(2)}'
+            totalValueOnPurchase != null
+                ? '\$${totalValueOnPurchase.toStringAsFixed(2)}'
                 : _notAvailableLabel,
           ),
         ),

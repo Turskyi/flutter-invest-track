@@ -146,6 +146,103 @@ void main() {
     expect(loadMoreCalls, 0);
   });
 
+  group('computed value fallbacks', () {
+    testWidgets('shows total current value from currentPrice * quantity '
+        'when totalCurrentValue is null', (WidgetTester tester) async {
+      final Investment investment = _buildInvestment(
+        purchaseDate: DateTime(2024, 1, 15),
+        purchasePrice: 120,
+        currentPrice: 150,
+        totalCurrentValue: null,
+        quantity: 3,
+      );
+
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
+      await tester.pumpAndSettle();
+
+      // 3 * 150 = 450.00
+      expect(find.text(r'$450.00'), findsOneWidget);
+    });
+
+    testWidgets('shows total value on purchase from purchasePrice * quantity '
+        'when totalValueOnPurchase is null', (WidgetTester tester) async {
+      final Investment investment = _buildInvestment(
+        purchaseDate: DateTime(2024, 1, 15),
+        purchasePrice: 120,
+        currentPrice: 150,
+        totalValueOnPurchase: null,
+        quantity: 3,
+      );
+
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
+      await tester.pumpAndSettle();
+
+      // 3 * 120 = 360.00
+      expect(find.text(r'$360.00'), findsOneWidget);
+    });
+
+    testWidgets('shows gain/loss CAD when gainOrLossCad is provided', (
+      WidgetTester tester,
+    ) async {
+      final Investment investment = _buildInvestment(
+        purchaseDate: DateTime(2024, 1, 15),
+        purchasePrice: 120,
+        gainOrLossCad: 55,
+      );
+
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('CAD 55.00'), findsOneWidget);
+    });
+
+    testWidgets('shows N/A for gain/loss CAD when gainOrLossCad is null', (
+      WidgetTester tester,
+    ) async {
+      final Investment investment = _buildInvestment(
+        purchaseDate: DateTime(2024, 1, 15),
+        purchasePrice: 120,
+        gainOrLossCad: null,
+      );
+
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
+      await tester.pumpAndSettle();
+
+      // The CAD column should show N/A when not enriched by bloc.
+      final Finder cadCells = find.text('N/A');
+      expect(cadCells, findsWidgets);
+    });
+
+    testWidgets('shows explicit totalCurrentValue and totalValueOnPurchase '
+        'when provided', (WidgetTester tester) async {
+      final Investment investment = _buildInvestment(
+        purchaseDate: DateTime(2024, 1, 15),
+        purchasePrice: 120,
+        currentPrice: 999,
+        totalCurrentValue: 280,
+        totalValueOnPurchase: 240,
+        quantity: 2,
+      );
+
+      await tester.pumpWidget(
+        buildSubject(investments: <Investment>[investment]),
+      );
+      await tester.pumpAndSettle();
+
+      // Should use the explicit values, not currentPrice * quantity.
+      expect(find.text(r'$280.00'), findsOneWidget);
+      expect(find.text(r'$240.00'), findsOneWidget);
+    });
+  });
+
   testWidgets('requests next page again after investment count increases', (
     WidgetTester tester,
   ) async {
@@ -188,6 +285,11 @@ Investment _buildInvestment({
   required double? purchasePrice,
   String currency = 'CAD',
   int quantity = 2,
+  double? currentPrice = 140,
+  double? totalCurrentValue = 280,
+  double? totalValueOnPurchase = 240,
+  double? gainOrLossUsd = 40,
+  double? gainOrLossCad = 55,
 }) {
   return Investment(
     ticker: 'AAPL',
@@ -200,11 +302,11 @@ Investment _buildInvestment({
     quantity: quantity,
     purchaseDate: purchaseDate,
     companyName: 'Apple Inc',
-    currentPrice: 140,
-    totalCurrentValue: 280,
-    totalValueOnPurchase: 240,
+    currentPrice: currentPrice,
+    totalCurrentValue: totalCurrentValue,
+    totalValueOnPurchase: totalValueOnPurchase,
     purchasePrice: purchasePrice,
-    gainOrLossUsd: 40,
-    gainOrLossCad: 55,
+    gainOrLossUsd: gainOrLossUsd,
+    gainOrLossCad: gainOrLossCad,
   );
 }

@@ -228,6 +228,44 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           hasReachedMax: hasReachedMax,
         ),
       );
+
+      // --- STEP 4: Calculate CAD gain/loss with one exchange-rate lookup ---
+      try {
+        final double cadExchangeRate = await _exchangeRateRepository
+            .getExchangeRate(
+              fromCurrency: CurrencyCode.usd.value,
+              toCurrency: CurrencyCode.cad.value,
+            );
+
+        final List<Investment> updatedInvestmentsWithCadGainOrLoss =
+            updatedInvestmentsWithGainOrLoss.map((Investment investment) {
+              final double? gainOrLossUsd = investment.gainOrLossUsd;
+              final bool canCalculateCadGainOrLoss =
+                  investment.isPurchased && gainOrLossUsd != null;
+
+              if (investment.gainOrLossCad != null ||
+                  !canCalculateCadGainOrLoss) {
+                return investment;
+              } else {
+                return investment.copyWith(
+                  gainOrLossCad: gainOrLossUsd * cadExchangeRate,
+                );
+              }
+            }).toList();
+
+        emit(
+          InvestmentsUpdated(
+            investments: updatedInvestmentsWithCadGainOrLoss,
+            hasReachedMax: hasReachedMax,
+          ),
+        );
+      } catch (e, stackTrace) {
+        debugPrint(
+          'Error while fetching USD to CAD exchange rate.\n'
+          'Error: $e\n'
+          'Stacktrace: $stackTrace.',
+        );
+      }
     } catch (error, stackTrace) {
       debugPrint(
         'Error $error. Stacktrace for an error in $runtimeType: $stackTrace.',
