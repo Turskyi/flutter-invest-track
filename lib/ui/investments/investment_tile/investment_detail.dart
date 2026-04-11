@@ -18,24 +18,43 @@ class InvestmentDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Icon(
-              icon,
-              size: themeData.textTheme.titleMedium?.fontSize,
-              color: valueColor ?? themeData.iconTheme.color,
-            ),
-            const SizedBox(width: 8),
-            Text(label, style: themeData.textTheme.bodyLarge),
-          ],
+        Expanded(
+          flex: 2,
+          child: Row(
+            children: <Widget>[
+              Icon(
+                icon,
+                size: themeData.textTheme.titleMedium?.fontSize,
+                color: valueColor ?? themeData.iconTheme.color,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: themeData.textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: themeData.textTheme.titleSmall?.fontSize,
-            fontWeight: FontWeight.bold,
+        const SizedBox(width: 8),
+        Expanded(
+          flex: 1,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: themeData.textTheme.bodySmall?.fontSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ],
