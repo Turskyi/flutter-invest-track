@@ -10,6 +10,7 @@ import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/sign_up/sign_up_continue_button.dart';
 import 'package:investtrack/ui/sign_up/sign_up_email_input.dart';
 import 'package:investtrack/ui/sign_up/sign_up_password_input.dart';
+import 'package:investtrack/ui/widgets/app_version_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignUpForm extends StatelessWidget {
@@ -59,6 +60,8 @@ class SignUpForm extends StatelessWidget {
                   ),
                   child: Text(translate('sign_up_form.sign_in_prompt_text_2')),
                 ),
+                const SizedBox(height: 24),
+                const AppVersionText(),
               ],
             ),
           ),
