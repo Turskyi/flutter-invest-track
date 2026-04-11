@@ -1,5 +1,6 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:clerk_auth/clerk_auth.dart' show AuthError;
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -155,6 +156,16 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
               ),
             );
           }
+        } else if (error is AuthError) {
+          emit(
+            SignInErrorState(
+              status: FormzSubmissionStatus.failure,
+              email: state.email,
+              password: state.password,
+              isValid: state.isValid,
+              errorMessage: error.toString(),
+            ),
+          );
         } else {
           emit(state.copyWith(status: FormzSubmissionStatus.failure));
         }

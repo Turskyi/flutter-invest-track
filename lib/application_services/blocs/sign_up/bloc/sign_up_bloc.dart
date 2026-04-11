@@ -153,11 +153,21 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           email: state.email,
           password: state.password,
           isValid: state.isValid,
-          errorMessage: error.message,
+          errorMessage: error.toString(),
+          code: state.code,
         ),
       );
     } else {
-      emitter(state.copyWith(status: FormzSubmissionStatus.failure));
+      emitter(
+        SignUpErrorState(
+          status: FormzSubmissionStatus.failure,
+          email: state.email,
+          password: state.password,
+          isValid: state.isValid,
+          errorMessage: error.toString(),
+          code: state.code,
+        ),
+      );
     }
   }
 
