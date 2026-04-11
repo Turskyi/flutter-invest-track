@@ -3,9 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:clerk_auth/clerk_auth.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:formz/formz.dart';
-import 'package:investtrack/infrastructure/ws/models/responses/authentication_response/api_exception.dart';
 import 'package:models/models.dart';
 
 part 'sign_up_event.dart';
@@ -181,12 +179,19 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         final String code = state.code.value;
         if (code.isNotEmpty) {
           await _authenticationRepository.verify(code);
+          emit(state.copyWith(status: FormzSubmissionStatus.success));
         } else {
-          // TODO: handle this better.
-          debugPrint('Code is empty in `_onCodeSubmitted` of $runtimeType');
+          emit(
+            SignUpErrorState(
+              status: FormzSubmissionStatus.failure,
+              email: state.email,
+              password: state.password,
+              isValid: state.isValid,
+              errorMessage: 'Verification code cannot be empty.',
+              code: state.code,
+            ),
+          );
         }
-
-        emit(state.copyWith(status: FormzSubmissionStatus.success));
       } catch (e) {
         _handleError(error: e, emitter: emit);
       }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/sign_in/bloc/sign_in_bloc.dart';
 import 'package:models/models.dart';
 
@@ -15,6 +16,7 @@ class _PasswordInputState extends State<PasswordInput> {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     final PasswordValidationError? displayError = context.select(
       (SignInBloc bloc) => bloc.state.password.displayError,
     );
@@ -26,8 +28,10 @@ class _PasswordInputState extends State<PasswordInput> {
           context.read<SignInBloc>().add(SignInPasswordChanged(password)),
       obscureText: _obscureText,
       decoration: InputDecoration(
-        labelText: 'Password',
-        errorText: displayError != null ? 'invalid password' : null,
+        labelText: translate('sign_in_form.password_label'),
+        errorText: displayError != null
+            ? translate('sign_in_form.invalid_password')
+            : null,
         suffixIcon: IconButton(
           icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
           onPressed: _toggleVisibility,

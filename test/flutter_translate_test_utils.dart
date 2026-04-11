@@ -93,6 +93,8 @@ const Map<String, Object?> _enTestTranslations = <String, Object?>{
     'support_subtitle':
         'Visit our support page for help and frequently asked questions.',
   },
+  'investments': <String, String>{'loading': 'Loading...'},
+  'desktop_table': <String, String>{'not_available': 'N/A'},
   'about': <String, String>{
     'title': 'About',
     'privacy_title': 'Privacy & Data',
@@ -173,26 +175,30 @@ const Map<String, Object?> _enTestTranslations = <String, Object?>{
   },
 };
 
+// Minimal Ukrainian translations for use in widget tests.
+const Map<String, Object?> _ukTestTranslations = <String, Object?>{
+  'title': 'InvestTrack',
+};
+
 Future<LocalizationDelegate> setUpFlutterTranslateForTests({
   Locale startLocale = const Locale('en'),
 }) async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
 
   final String englishLanguageCode = Language.en.isoLanguageCode;
+  final String ukrainianLanguageCode = Language.uk.isoLanguageCode;
   final LocalizationDelegate delegate = await LocalizationDelegate.create(
     fallbackLocale: englishLanguageCode,
-    supportedLocales: <String>[englishLanguageCode],
+    supportedLocales: <String>[englishLanguageCode, ukrainianLanguageCode],
   );
 
   // Manually load translations for the starting locale into the static
   // Localization instance.
   // This is the key to bypassing the file loading for the actual translation
   // content.
-  if (startLocale.languageCode == englishLanguageCode) {
-    Localization.load(_enTestTranslations);
+  if (startLocale.languageCode == ukrainianLanguageCode) {
+    Localization.load(_ukTestTranslations);
   } else {
-    // Load fallback or throw error if startLocale is not one of your test
-    // locales.
     Localization.load(_enTestTranslations);
   }
 

@@ -2,6 +2,10 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtrack/application_services/blocs/sign_in/bloc/sign_in_bloc.dart';
+import 'package:investtrack/res/constants/constants.dart' as constants;
+import 'package:investtrack/router/app_route.dart';
+import 'package:investtrack/ui/sign_in/language_selector_button.dart';
+import 'package:investtrack/ui/sign_in/sign_in_footer_buttons.dart';
 import 'package:investtrack/ui/sign_in/sign_in_form.dart';
 
 /// The [SignInPage] is responsible for exposing the `Route` as well as
@@ -13,6 +17,7 @@ class SignInPage extends StatelessWidget {
 
   static Route<void> route() {
     return PageRouteBuilder<Widget>(
+      settings: RouteSettings(name: AppRoute.signIn.path),
       pageBuilder: (BuildContext _, Animation<double> _, Animation<double> _) {
         return const SignInPage();
       },
@@ -30,13 +35,28 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isWide = MediaQuery.sizeOf(context).width > constants.maxWidth;
     return Scaffold(
-      body: BlocProvider<SignInBloc>(
-        create: (BuildContext context) => SignInBloc(
-          authenticationRepository: context.read<AuthenticationRepository>(),
-        ),
-        child: const SignInForm(),
+      body: Stack(
+        children: <Widget>[
+          BlocProvider<SignInBloc>(
+            create: (BuildContext context) => SignInBloc(
+              authenticationRepository: context
+                  .read<AuthenticationRepository>(),
+            ),
+            child: SignInForm(showFooterButtons: !isWide),
+          ),
+          const Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(child: LanguageSelectorButton()),
+          ),
+        ],
       ),
+      persistentFooterAlignment: AlignmentDirectional.center,
+      persistentFooterButtons: isWide
+          ? const <Widget>[SignInFooterButtons()]
+          : null,
     );
   }
 }

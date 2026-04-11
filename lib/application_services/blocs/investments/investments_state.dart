@@ -33,10 +33,15 @@ final class InvestmentsLoaded extends InvestmentsState {
 
   bool get canLoadMore => !isLoadingMore && !hasReachedMax;
 
-  InvestmentsLoaded copyWith({bool? isLoadingMore, bool? hasReachedMax}) {
+  InvestmentsLoaded copyWith({
+    bool? isLoadingMore,
+    bool? hasReachedMax,
+    List<Investment>? investments,
+  }) {
     return InvestmentsLoaded(
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      investments: investments ?? this.investments,
     );
   }
 }
@@ -211,4 +216,35 @@ final class InvestmentError extends InvestmentsLoaded {
 
   final Investment investment;
   final String errorMessage;
+}
+
+/// Emitted while a bulk XLSX import is in progress.
+final class ImportingInvestments extends InvestmentsLoaded {
+  const ImportingInvestments({
+    required super.investments,
+    required super.hasReachedMax,
+    required this.current,
+    required this.total,
+    super.isLoadingMore = false,
+  });
+
+  /// Index of the stock currently being imported (0-based).
+  final int current;
+
+  /// Total number of stocks to import.
+  final int total;
+}
+
+/// Emitted when a bulk XLSX import has finished.
+final class ImportCompleted extends InvestmentsLoaded {
+  const ImportCompleted({
+    required super.investments,
+    required super.hasReachedMax,
+    required this.importedCount,
+    required this.failedCount,
+    super.isLoadingMore = false,
+  });
+
+  final int importedCount;
+  final int failedCount;
 }

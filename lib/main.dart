@@ -1,24 +1,17 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:get_it/get_it.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/di/injector.dart';
-import 'package:investtrack/domain_services/exchange_rate_repository.dart';
-import 'package:investtrack/domain_services/investments_repository.dart';
 import 'package:investtrack/localization/localization_delelegate_getter.dart'
     as localization;
-import 'package:investtrack/router/app_route.dart';
+import 'package:investtrack/router/routes.dart' as router;
 import 'package:investtrack/ui/app/app.dart';
 import 'package:investtrack/ui/feedback/feedback_form.dart';
-import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
-import 'package:investtrack/ui/investments/investments_page.dart';
-import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
-import 'package:investtrack/ui/sign_in/sign_in_page.dart';
 
 /// The [main] is the ultimate detail — the lowest-level policy.
 /// It is the initial entry point of the system.
@@ -39,40 +32,26 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize dependency injection and wait for `SharedPreferences`.
-  await injectDependencies();
+  final GetIt dependencies = await injectDependencies();
 
   final LocalizationDelegate localizationDelegate = await localization
       .getLocalizationDelegate();
 
-  final AuthenticationRepository authenticationRepository =
-      GetIt.instance<AuthenticationRepository>();
-  final InvestmentsRepository investmentsRepository = GetIt.I
-      .get<InvestmentsRepository>();
-  final ExchangeRateRepository exchangeRateRepository = GetIt.I
-      .get<ExchangeRateRepository>();
-  final AuthenticationBloc authenticationBloc =
-      GetIt.instance<AuthenticationBloc>();
-  final MenuBloc menuBloc = GetIt.I.get<MenuBloc>();
+  final AuthenticationRepository authenticationRepository = dependencies
+      .get<AuthenticationRepository>();
 
-  final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
-    AppRoute.investments.path: (BuildContext _) =>
-        BlocProvider<InvestmentsBloc>(
-          create: (BuildContext _) => InvestmentsBloc(
-            investmentsRepository,
-            exchangeRateRepository,
-            authenticationBloc,
-          )..add(const LoadInvestments()),
-          child: const InvestmentsPage(),
-        ),
-    AppRoute.signIn.path: (BuildContext _) => const SignInPage(),
-    AppRoute.privacyPolity.path: (BuildContext _) => const PrivacyPolicyPage(),
-    AppRoute.addInvestment.path: (BuildContext _) {
-      return BlocProvider<InvestmentsBloc>(
-        create: (BuildContext _) => GetIt.I.get<InvestmentsBloc>(),
-        child: const AddEditInvestmentPage(),
-      );
-    },
-  };
+  final AuthenticationBloc authenticationBloc = dependencies
+      .get<AuthenticationBloc>();
+  final MenuBloc menuBloc = dependencies.get<MenuBloc>();
+
+  final InvestmentsBloc investmentsBloc = dependencies.get<InvestmentsBloc>(
+    param1: false,
+  );
+
+  final Map<String, WidgetBuilder> routeMap = router.getRouteMap(
+    investmentsBloc: investmentsBloc,
+    authenticationBloc: authenticationBloc,
+  );
 
   runApp(
     LocalizedApp(

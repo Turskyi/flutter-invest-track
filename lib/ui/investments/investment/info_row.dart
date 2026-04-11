@@ -20,26 +20,40 @@ class InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(icon, color: valueColor ?? themeData.iconTheme.color),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: themeData.colorScheme.onPrimary,
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: <Widget>[
+                Icon(icon, color: valueColor ?? themeData.iconTheme.color),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: themeData.textTheme.bodyMedium?.copyWith(
+                      color: themeData.colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            flex: 2,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: themeData.textTheme.bodyMedium?.copyWith(
+                  color: valueColor ?? themeData.textTheme.bodyLarge?.color,
                 ),
               ),
-            ],
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              color: valueColor ?? themeData.textTheme.bodyLarge?.color,
             ),
           ),
         ],

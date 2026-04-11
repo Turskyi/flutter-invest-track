@@ -17,13 +17,17 @@
     "typescriptreact",
     "typescript",
     "xml",
-    "jsonc"
+    "jsonc",
+    "github-actions-workflow"
   ],
   "spellright.parserByClass": {
     "Log": {
       "parser": "code"
     },
     "properties": {
+      "parser": "plain"
+    },
+    "github-actions-workflow": {
       "parser": "plain"
     }
   }

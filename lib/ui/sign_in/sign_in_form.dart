@@ -11,6 +11,7 @@ import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/sign_in/continue_button.dart';
 import 'package:investtrack/ui/sign_in/email_input.dart';
 import 'package:investtrack/ui/sign_in/password_input.dart';
+import 'package:investtrack/ui/sign_in/sign_in_footer_buttons.dart';
 import 'package:investtrack/ui/sign_in/sign_up_prompt.dart';
 import 'package:investtrack/ui/widgets/input_field.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,7 +24,9 @@ import 'package:url_launcher/url_launcher.dart';
 /// rebuilds. The `onChanged` callback is used to notify the [SignInBloc] of
 /// changes to the email/password.
 class SignInForm extends StatefulWidget {
-  const SignInForm({super.key});
+  const SignInForm({super.key, this.showFooterButtons = true});
+
+  final bool showFooterButtons;
 
   @override
   State<SignInForm> createState() => _SignInFormState();
@@ -45,6 +48,7 @@ class _SignInFormState extends State<SignInForm>
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return BlocConsumer<SignInBloc, SignInState>(
       listener: _signInStateListener,
       builder: (BuildContext context, SignInState state) {
@@ -152,6 +156,10 @@ class _SignInFormState extends State<SignInForm>
                     email: state.email.value,
                     password: state.password.value,
                   ),
+                  const SizedBox(height: 12),
+                  if (widget.showFooterButtons) ...<Widget>[
+                    const SignInFooterButtons(),
+                  ],
                 ],
               ),
             ),
@@ -248,7 +256,7 @@ class _SignInFormState extends State<SignInForm>
       // position (i.e., the last character matched by the main URL part)
       // is NOT one of the characters inside the square brackets: '.', ',',
       // '!', '?', ';', ':'.
-      r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(?<![.,!?;:])',
+      r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|%[0-9a-fA-F][0-9a-fA-F])+(?<![.,!?;:])',
     );
 
     final Iterable<RegExpMatch> matches = urlRegExp.allMatches(errorMessage);

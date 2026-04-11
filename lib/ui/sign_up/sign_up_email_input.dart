@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
@@ -26,6 +27,7 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     final EmailValidationError? displayError = context.select(
       (SignUpBloc bloc) => bloc.state.email.displayError,
     );
@@ -40,8 +42,10 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
       onChanged: (String email) =>
           context.read<SignUpBloc>().add(SignUpEmailChanged(email)),
       decoration: InputDecoration(
-        labelText: 'Email address',
-        errorText: displayError != null ? 'invalid email' : null,
+        labelText: translate('sign_in_form.email_label'),
+        errorText: displayError != null
+            ? translate('sign_in_form.invalid_email')
+            : null,
       ),
     );
   }

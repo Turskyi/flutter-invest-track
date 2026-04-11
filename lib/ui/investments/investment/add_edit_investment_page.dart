@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/currency_list.dart' as list;
@@ -71,10 +72,13 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
 
   @override
   Widget build(BuildContext context) {
+    LocalizationProvider.of(context);
     return GradientBackgroundScaffold(
       appBar: BlurredAppBar(
         title: Text(
-          widget.investment == null ? 'Add Investment' : 'Edit Investment',
+          widget.investment == null
+              ? translate('add_investment.title')
+              : translate('add_investment.edit_title'),
         ),
       ),
       body: Align(
@@ -95,11 +99,13 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                 children: <Widget>[
                   LabeledTextField(
                     controller: _tickerController,
-                    label: 'Ticker Symbol (Stock name)',
-                    hint: 'e.g. GOOG',
+                    label: translate('add_investment.ticker_label'),
+                    hint: translate('add_investment.ticker_hint'),
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a value.';
+                        return translate(
+                          'add_investment.ticker_validation_error',
+                        );
                       }
                       return null;
                     },
@@ -107,33 +113,37 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                   const SizedBox(height: 16),
                   LabeledTextField(
                     controller: _companyNameController,
-                    label: 'Company Name',
-                    hint: 'e.g. Alphabet Inc Class C',
+                    label: translate('add_investment.company_name_label'),
+                    hint: translate('add_investment.company_name_hint'),
                     validator: (String? value) => value == null || value.isEmpty
-                        ? 'Please enter company name'
+                        ? translate(
+                            'add_investment.company_name_validation_error',
+                          )
                         : null,
                   ),
                   const SizedBox(height: 16),
                   LabeledTextField(
                     controller: _companyLogoUrlController,
-                    label: 'Company Logo URL',
-                    hint: 'Enter direct image URL.',
+                    label: translate('add_investment.company_logo_label'),
+                    hint: translate('add_investment.company_logo_hint'),
                     validator: _validateImageUrl,
                   ),
                   const SizedBox(height: 16),
                   DropdownField(
-                    label: 'Investment Type',
+                    label: translate('add_investment.investment_type_label'),
                     value: _investmentType,
                     items: types.investmentTypes,
                     onChanged: (String? value) =>
                         setState(() => _investmentType = value),
                     validator: (String? value) => value == null || value.isEmpty
-                        ? 'Please select Investment Type'
+                        ? translate(
+                            'add_investment.investment_type_validation_error',
+                          )
                         : null,
                   ),
                   const SizedBox(height: 16),
                   DropdownField(
-                    label: 'Stock Exchange',
+                    label: translate('add_investment.stock_exchange_label'),
                     value: _stockExchange,
                     items: types.stockExchangeTypes,
                     onChanged: (String? value) =>
@@ -141,7 +151,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                   ),
                   const SizedBox(height: 16),
                   DropdownField(
-                    label: 'Currency',
+                    label: translate('add_investment.currency_label'),
                     value: _currency,
                     items: list.currencies
                         .map((Currency currency) => currency.alphabeticCode)
@@ -152,8 +162,8 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                   const SizedBox(height: 16),
                   LabeledTextField(
                     controller: _quantityController,
-                    label: 'Quantity',
-                    hint: 'e.g. 100',
+                    label: translate('add_investment.quantity_label'),
+                    hint: translate('add_investment.quantity_hint'),
                     keyboardType: TextInputType.number,
                     validator: _quantityValidator,
                   ),
@@ -170,7 +180,9 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                         children: <Widget>[
                           if (isQuantityValid)
                             DatePicker(
-                              label: 'Purchase Date and Time',
+                              label: translate(
+                                'add_investment.purchase_date_label',
+                              ),
                               selectedDate: _purchaseDate,
                               onChanged: (DateTime? value) {
                                 setState(() => _purchaseDate = value);
@@ -183,8 +195,12 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
                                 _purchaseDate == null
-                                    ? 'Please select a purchase date'
-                                    : 'Purchase date cannot be in the future',
+                                    ? translate(
+                                        'investments.select_purchase_date',
+                                      )
+                                    : translate(
+                                        'investments.purchase_date_future',
+                                      ),
                                 style: const TextStyle(
                                   color: Colors.red,
                                   fontSize: 12,
@@ -198,8 +214,8 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                   const SizedBox(height: 16),
                   LabeledTextField(
                     controller: _descriptionController,
-                    label: 'Description',
-                    hint: 'Enter a description',
+                    label: translate('add_investment.description_label'),
+                    hint: translate('add_investment.description_hint'),
                     maxLines: 5,
                     validator: (_) {
                       // Allow empty input.
@@ -225,7 +241,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                               child: state is InvestmentDeleting
                                   ? const CircularProgressIndicator()
                                   : Text(
-                                      'Delete investment',
+                                      translate('investments.delete_button'),
                                       style: TextStyle(
                                         color: textColorOnYellow,
                                         fontSize: Theme.of(
@@ -239,7 +255,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                         ),
                       ValueListenableBuilder<bool>(
                         valueListenable: _formStateChangedNotifier,
-                        child: const Text('Submit'),
+                        child: Text(translate('investments.submit_button')),
                         builder: (BuildContext _, bool _, Widget? submitText) {
                           return BlocConsumer<
                             InvestmentsBloc,
@@ -316,7 +332,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
     }
     final int? number = int.tryParse(value);
     if (number == null || number < 0) {
-      return 'Please enter a valid positive number.';
+      return translate('investments.quantity_validation_error');
     }
     return null;
   }
@@ -349,16 +365,12 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Invalid Ticker'),
+              title: Text(translate('investments.invalid_ticker_title')),
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const Text(
-                    'It looks like the input you entered '
-                    'is invalid. The issue could be with '
-                    'the ticker or the date.',
-                  ),
+                  Text(translate('investments.invalid_ticker_body')),
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: () async {
@@ -370,19 +382,16 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                         throw 'Could not launch $url';
                       }
                     },
-                    child: const Text(
-                      'Find valid tickers here',
-                      style: TextStyle(
+                    child: Text(
+                      translate('investments.find_tickers_link'),
+                      style: const TextStyle(
                         color: Colors.blue,
                         decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Please note: This link will open a '
-                    'browser and is not part of the app.',
-                  ),
+                  Text(translate('investments.ticker_browser_note')),
                 ],
               ),
               actions: <Widget>[
@@ -390,7 +399,7 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('OK'),
+                  child: Text(translate('sign_in_form.error_dialog_ok_button')),
                 ),
               ],
             );
@@ -453,8 +462,8 @@ class _AddEditInvestmentPageState extends State<AddEditInvestmentPage> {
     } else {
       // Handle invalid form case.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill out all required fields correctly.'),
+        SnackBar(
+          content: Text(translate('investments.fill_required_fields')),
           backgroundColor: Colors.red,
         ),
       );

@@ -1,5 +1,5 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 // **************************************************************************
 // InjectableConfigGenerator
@@ -24,6 +24,10 @@ import 'package:investtrack/application_services/blocs/sign_in/bloc/sign_in_bloc
     as _i141;
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart'
     as _i445;
+import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart'
+    as _i451;
+import 'package:investtrack/application_services/repositories/demo_investments_repository.dart'
+    as _i650;
 import 'package:investtrack/application_services/repositories/exchange_rate_repository_impl.dart'
     as _i741;
 import 'package:investtrack/application_services/repositories/investments_repository_impl.dart'
@@ -45,6 +49,7 @@ import 'package:investtrack/infrastructure/ws/rest/interceptors/logging_intercep
     as _i204;
 import 'package:investtrack/infrastructure/ws/rest/retrofit_client/retrofit_client.dart'
     as _i651;
+import 'package:investtrack/infrastructure/xlsx_service.dart' as _i967;
 import 'package:models/models.dart' as _i669;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:user_repository/user_repository.dart' as _i164;
@@ -57,11 +62,17 @@ extension GetItInjectableX on _i174.GetIt {
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final sharedPreferencesModule = _$SharedPreferencesModule();
-    final userRepositoryModule = _$UserRepositoryModule();
     final dioHttpClientModule = _$DioHttpClientModule();
     final restClientModule = _$RestClientModule();
     final retrofitHttpClientModule = _$RetrofitHttpClientModule();
+    final userRepositoryModule = _$UserRepositoryModule();
     final authenticationRepositoryModule = _$AuthenticationRepositoryModule();
+    gh.factory<_i451.DemoExchangeRateRepository>(
+      () => const _i451.DemoExchangeRateRepository(),
+    );
+    gh.factory<_i650.DemoInvestmentsRepository>(
+      () => const _i650.DemoInvestmentsRepository(),
+    );
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => sharedPreferencesModule.prefs,
       preResolve: true,
@@ -69,10 +80,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i204.LoggingInterceptor>(
       () => const _i204.LoggingInterceptor(),
     );
-    gh.lazySingleton<_i164.UserRepository>(
-      () =>
-          userRepositoryModule.getUserRepository(gh<_i460.SharedPreferences>()),
-    );
+    gh.factory<_i967.XlsxService>(() => _i967.XlsxService());
     await gh.factoryAsync<_i361.Dio>(
       () =>
           dioHttpClientModule.getDioHttpClient(gh<_i204.LoggingInterceptor>()),
@@ -84,8 +92,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i651.RetrofitClient>(
       () => retrofitHttpClientModule.getRetrofitHttpClient(gh<_i361.Dio>()),
     );
-    gh.factory<_i30.ExchangeRateRepository>(
-      () => _i741.ExchangeRateRepositoryImpl(gh<_i669.RestClient>()),
+    gh.factory<_i305.InvestmentsRepository>(
+      () => _i233.InvestmentsRepositoryImpl(
+        gh<_i669.RestClient>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
+    gh.lazySingleton<_i164.UserRepository>(
+      () =>
+          userRepositoryModule.getUserRepository(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i113.SettingsRepository>(
+      () => _i803.SettingsRepositoryImpl(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i682.MenuBloc>(
+      () => _i682.MenuBloc(gh<_i113.SettingsRepository>()),
     );
     gh.lazySingleton<_i223.AuthenticationRepository>(
       () => authenticationRepositoryModule.getAuthenticationRepository(
@@ -93,17 +114,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i460.SharedPreferences>(),
       ),
     );
-    gh.factory<_i305.InvestmentsRepository>(
-      () => _i233.InvestmentsRepositoryImpl(
-        gh<_i669.RestClient>(),
-        gh<_i460.SharedPreferences>(),
-      ),
-    );
-    gh.factory<_i113.SettingsRepository>(
-      () => _i803.SettingsRepositoryImpl(gh<_i460.SharedPreferences>()),
-    );
-    gh.factory<_i682.MenuBloc>(
-      () => _i682.MenuBloc(gh<_i113.SettingsRepository>()),
+    gh.factory<_i30.ExchangeRateRepository>(
+      () => _i741.ExchangeRateRepositoryImpl(gh<_i669.RestClient>()),
     );
     gh.factory<_i636.AuthenticationBloc>(
       () => _i636.AuthenticationBloc(
@@ -121,11 +133,12 @@ extension GetItInjectableX on _i174.GetIt {
         authenticationRepository: gh<_i223.AuthenticationRepository>(),
       ),
     );
-    gh.factory<_i91.InvestmentsBloc>(
-      () => _i91.InvestmentsBloc(
+    gh.factoryParam<_i91.InvestmentsBloc, bool, dynamic>(
+      (isDemo, _) => _i91.InvestmentsBloc(
         gh<_i305.InvestmentsRepository>(),
         gh<_i30.ExchangeRateRepository>(),
         gh<_i636.AuthenticationBloc>(),
+        isDemo: isDemo,
       ),
     );
     return this;
@@ -134,13 +147,13 @@ extension GetItInjectableX on _i174.GetIt {
 
 class _$SharedPreferencesModule extends _i270.SharedPreferencesModule {}
 
-class _$UserRepositoryModule extends _i280.UserRepositoryModule {}
-
 class _$DioHttpClientModule extends _i617.DioHttpClientModule {}
 
 class _$RestClientModule extends _i939.RestClientModule {}
 
 class _$RetrofitHttpClientModule extends _i825.RetrofitHttpClientModule {}
+
+class _$UserRepositoryModule extends _i280.UserRepositoryModule {}
 
 class _$AuthenticationRepositoryModule
     extends _i828.AuthenticationRepositoryModule {}

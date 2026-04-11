@@ -3,6 +3,9 @@ const String website = 'https://$domain';
 const String baseUrl = '$website/';
 const String apiBaseUrl = '${baseUrl}api/';
 const String supportEmail = 'support@$domain';
+const String telegramSupportUrl = 'https://t.me/+rkZH9QPzYOpjNTQy';
+const String githubIssuesUrl =
+    'https://github.com/Turskyi/flutter-invest-track/issues';
 const String companyDomain = 'turskyi.com';
 const String appName = 'InvestTrack';
 const String authServiceLink = 'https://clerk.com';
@@ -11,6 +14,7 @@ const String remoteDbServiceName = 'Vercel Postgres';
 const String remoteDbServiceLink =
     'https://vercel.com/docs/storage/vercel-postgres#vercel-postgres';
 const String deletionInstructionsLink = '${baseUrl}instruction';
+const String privacyChoicesLink = '${baseUrl}privacy-choices';
 const int emailMaxLength = 40;
 const int emailMinLength = 9;
 const int maxRetries = 1;

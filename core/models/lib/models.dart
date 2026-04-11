@@ -12,6 +12,7 @@ export 'src/abstract/price_change.dart';
 export 'src/abstract/rates.dart';
 export 'src/abstract/register_response.dart';
 export 'src/abstract/verification.dart';
+export 'src/api_exception.dart';
 export 'src/code.dart';
 export 'src/currency.dart';
 export 'src/email_address.dart';

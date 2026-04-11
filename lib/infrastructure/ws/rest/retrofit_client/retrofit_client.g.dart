@@ -2,11 +2,13 @@
 
 part of 'retrofit_client.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _RetrofitClient implements RetrofitClient {
   _RetrofitClient(this._dio, {this.baseUrl, this.errorLogger});
@@ -43,7 +45,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignInResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -83,7 +85,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignInResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -110,110 +112,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = SignOutResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<SignUpResponse> signUp(String emailAddress, String password) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = {'email_address': emailAddress, 'password': password};
-    final _options = _setStreamType<SignUpResponse>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded',
-          )
-          .compose(
-            _dio.options,
-            'https://clerk.investtracks.com/v1/client/sign_ups?_clerk_js_version=5.17.0',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SignUpResponse _value;
-    try {
-      _value = SignUpResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<PrepareVerificationResponse> prepare(
-    String id,
-    String strategy,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = {'strategy': strategy};
-    final _options = _setStreamType<PrepareVerificationResponse>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded',
-          )
-          .compose(
-            _dio.options,
-            'https://clerk.investtracks.com/v1/client/sign_ups/${id}/prepare_verification?_clerk_js_version=5.17.0',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late PrepareVerificationResponse _value;
-    try {
-      _value = PrepareVerificationResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<VerificationResponse> verify(
-    String id,
-    String code,
-    String strategy,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = {'code': code, 'strategy': strategy};
-    final _options = _setStreamType<VerificationResponse>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded',
-          )
-          .compose(
-            _dio.options,
-            'https://clerk.investtracks.com/v1/client/sign_ups/${id}/attempt_verification?_clerk_js_version=5.15.0',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late VerificationResponse _value;
-    try {
-      _value = VerificationResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -248,7 +147,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = InvestmentsResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -278,7 +177,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = CreatedInvestmentResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -308,7 +207,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = UpdatedInvestmentResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -341,7 +240,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = DeleteInvestmentResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -368,7 +267,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = DeleteAccountResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -395,7 +294,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = ExchangeRateResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -422,7 +321,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = PriceChangeResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -449,7 +348,7 @@ class _RetrofitClient implements RetrofitClient {
     try {
       _value = ChangePercentageResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -482,3 +381,5 @@ class _RetrofitClient implements RetrofitClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on
