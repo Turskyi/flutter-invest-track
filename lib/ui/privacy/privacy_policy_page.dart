@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/ui/privacy/privacy_home_button.dart';
+import 'package:investtrack/ui/sign_in/language_selector_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
@@ -19,6 +20,7 @@ class PrivacyPolicyPage extends StatelessWidget {
         automaticallyImplyLeading: !kIsWeb,
         leading: kIsWeb ? const PrivacyHomeButton() : null,
         title: Text(translate('privacy_policy.title')),
+        actions: const <Widget>[SafeArea(child: LanguageSelectorButton())],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

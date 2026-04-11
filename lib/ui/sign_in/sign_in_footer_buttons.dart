@@ -22,6 +22,13 @@ class SignInFooterButtons extends StatelessWidget {
           },
         ),
         TextButton.icon(
+          icon: const Icon(Icons.help_outline),
+          label: Text(translate('support.button')),
+          onPressed: () {
+            Navigator.of(context).pushNamed(AppRoute.support.path);
+          },
+        ),
+        TextButton.icon(
           icon: const Icon(Icons.info_outline),
           label: Text(translate('how_it_works.button')),
           onPressed: () => HowItWorksBottomSheet.show(context),

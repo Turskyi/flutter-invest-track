@@ -228,5 +228,19 @@
     "error_no_bytes": "Could not read file data. Please try again.",
     "error_no_stocks": "No valid stock rows were found in this file.",
     "error_parse_prefix": "Failed to parse file:"
+  },
+  "support": {
+    "button": "Support",
+    "title": "Support",
+    "subtitle": "Need help with InvestTrack? Report bugs, request features, or reach out through any of the channels below.",
+    "email_label": "Email",
+    "telegram_label": "Telegram",
+    "telegram_action": "Join our Telegram group",
+    "github_label": "GitHub",
+    "github_action": "Open an issue on GitHub",
+    "website_label": "Website",
+    "website_action": "Visit our website",
+    "error_could_not_launch": "Could not open the link.",
+    "error_copy_action": "Copy"
   }
 }

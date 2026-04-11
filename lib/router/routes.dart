@@ -6,6 +6,7 @@ import 'package:investtrack/ui/investments/investment/add_edit_investment_page.d
 import 'package:investtrack/ui/investments/investments_page.dart';
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
 import 'package:investtrack/ui/sign_in/sign_in_page.dart';
+import 'package:investtrack/ui/support/support_page.dart';
 
 Map<String, WidgetBuilder> getRouteMap({
   required InvestmentsBloc investmentsBloc,
@@ -22,6 +23,7 @@ Map<String, WidgetBuilder> getRouteMap({
     },
     AppRoute.signIn.path: (BuildContext _) => const SignInPage(),
     AppRoute.privacyPolity.path: (BuildContext _) => const PrivacyPolicyPage(),
+    AppRoute.support.path: (BuildContext _) => const SupportPage(),
     AppRoute.addInvestment.path: (BuildContext _) {
       return BlocProvider<InvestmentsBloc>(
         create: (BuildContext _) => investmentsBloc,

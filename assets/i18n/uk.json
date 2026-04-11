@@ -228,5 +228,19 @@
     "error_no_bytes": "Не вдалося прочитати файл. Спробуйте ще раз.",
     "error_no_stocks": "У цьому файлі не знайдено рядків з акціями.",
     "error_parse_prefix": "Не вдалося розпарсити файл:"
+  },
+  "support": {
+    "button": "Підтримка",
+    "title": "Підтримка",
+    "subtitle": "Потрібна допомога з InvestTrack? Повідомте про помилку, запропонуйте покращення або зверніться до нас через будь-який із каналів нижче.",
+    "email_label": "Електронна пошта",
+    "telegram_label": "Telegram",
+    "telegram_action": "Приєднатися до нашої групи Telegram",
+    "github_label": "GitHub",
+    "github_action": "Відкрити issue на GitHub",
+    "website_label": "Веб-сайт",
+    "website_action": "Відвідати наш сайт",
+    "error_could_not_launch": "Не вдалося відкрити посилання.",
+    "error_copy_action": "Копіювати"
   }
 }
