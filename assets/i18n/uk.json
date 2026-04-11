@@ -211,6 +211,18 @@
     "purchased": "Куплено: ",
     "not_yet_purchased": "Ще не куплено"
   },
+  "investment_details": {
+    "current_price_usd": "Поточна ціна (USD)",
+    "quantity": "Кількість",
+    "total_value_current_usd": "Загальна вартість (поточна USD)",
+    "total_value_current_cad": "Загальна вартість (поточна CAD)",
+    "purchase_date": "Дата купівлі",
+    "purchase_price": "Ціна купівлі",
+    "total_value_purchase_usd": "Загальна вартість (на дату купівлі USD)",
+    "total_value_purchase_cad": "Загальна вартість (на дату купівлі CAD)",
+    "gain_loss_usd": "Прибуток/збиток (USD)",
+    "gain_loss_cad": "Прибуток/збиток CAD"
+  },
   "import": {
     "title": "Імпорт з XLSX",
     "step1_pick_file": "Крок 1 - Виберіть файл XLSX",

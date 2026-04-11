@@ -20,7 +20,7 @@ class InvestmentDetail extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          flex: 2,
+          flex: 3,
           child: Row(
             children: <Widget>[
               Icon(
@@ -32,7 +32,7 @@ class InvestmentDetail extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: themeData.textTheme.bodyMedium,
                 ),
@@ -42,7 +42,7 @@ class InvestmentDetail extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Expanded(
-          flex: 1,
+          flex: 2,
           child: Align(
             alignment: Alignment.centerRight,
             child: Text(

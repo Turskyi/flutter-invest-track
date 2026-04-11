@@ -273,7 +273,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                         );
                       },
                       child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 80),
+                        padding: const EdgeInsets.fromLTRB(16.0, 112, 16, 104),
                         itemCount: state is CreatingInvestment
                             ? allInvestments.length + 1
                             : allInvestments.length +

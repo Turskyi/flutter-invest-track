@@ -24,6 +24,7 @@ class InvestmentCard extends StatelessWidget {
         investment.purchaseDate?.toLocal().toString().split(' ').firstOrNull ??
         '';
     final int quantity = investment.quantity;
+    final bool isPurchased = investment.purchaseDate != null && quantity > 0;
     final ThemeData themeData = Theme.of(context);
     final double? currentPrice = investment.currentPrice;
     final double? purchasePrice = investment.purchasePrice;
@@ -117,7 +118,9 @@ class InvestmentCard extends StatelessWidget {
               if (quantity > 0)
                 InvestmentDetail(
                   label: translate('investment_card.purchase_price_usd'),
-                  value: formatPrice(price: purchasePrice),
+                  value: isPurchased
+                      ? formatPrice(price: purchasePrice)
+                      : translate('desktop_table.not_available'),
                   icon: Icons.money,
                 ),
               if (quantity > 0)

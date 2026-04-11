@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
@@ -155,6 +156,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
+                              const SizedBox(height: 4),
                               Text(investment.companyName),
                               Text(investment.type),
                               Text(investment.stockExchange),
@@ -168,13 +170,15 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         const CircularProgressIndicator()
                       else
                         InfoRow(
-                          label: 'Current Price (USD)',
+                          label: translate(
+                            'investment_details.current_price_usd',
+                          ),
                           value: formatPrice(price: currentPrice),
                           icon: Icons.monetization_on,
                         ),
                       if (isPurchased)
                         InfoRow(
-                          label: 'Quantity',
+                          label: translate('investment_details.quantity'),
                           value: investment.quantity.toString(),
                           icon: Icons.confirmation_number,
                         ),
@@ -182,7 +186,9 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         const CircularProgressIndicator()
                       else if (isPurchased)
                         InfoRow(
-                          label: 'Total Value (Current USD)',
+                          label: translate(
+                            'investment_details.total_value_current_usd',
+                          ),
                           value: totalValueCurrent.toStringAsFixed(2),
                           icon: Icons.attach_money,
                         ),
@@ -190,13 +196,15 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         const CircularProgressIndicator()
                       else if (isPurchased)
                         InfoRow(
-                          label: 'Total Value (Current CAD)',
+                          label: translate(
+                            'investment_details.total_value_current_cad',
+                          ),
                           value: totalValueCad.toStringAsFixed(2),
                           icon: Icons.currency_exchange_sharp,
                         ),
                       if (isPurchased)
                         InfoRow(
-                          label: 'Purchase Date',
+                          label: translate('investment_details.purchase_date'),
                           value:
                               investment.purchaseDate
                                   ?.toIso8601String()
@@ -208,7 +216,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                       if (state is InvestmentUpdated &&
                           state.purchasePrice != null)
                         InfoRow(
-                          label: 'Purchase Price',
+                          label: translate('investment_details.purchase_price'),
                           value: state.purchasePrice?.toStringAsFixed(2) ?? '',
                           icon: Icons.price_check,
                         )
@@ -218,19 +226,23 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         const CircularProgressIndicator(),
                       if (isPurchased)
                         InfoRow(
-                          label: 'Total Value (Purchase USD)',
+                          label: translate(
+                            'investment_details.total_value_purchase_usd',
+                          ),
                           value: totalValuePurchase.toStringAsFixed(2),
                           icon: Icons.money,
                         ),
                       if (isPurchased)
                         InfoRow(
-                          label: 'Total Value (Purchase CAD)',
+                          label: translate(
+                            'investment_details.total_value_purchase_cad',
+                          ),
                           value: totalValuePurchaseCad.toStringAsFixed(2),
                           icon: Icons.money_rounded,
                         ),
                       if (state is InvestmentUpdated && isPurchased)
                         InfoRow(
-                          label: 'Gain/Loss (USD)',
+                          label: translate('investment_details.gain_loss_usd'),
                           value:
                               '${formatPrice(price: gainOrLoss)} '
                               '(${gainOrLossPercentage.toStringAsFixed(2)}%)',
@@ -247,7 +259,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         const CircularProgressIndicator(),
                       if (state is InvestmentUpdated && isPurchased)
                         InfoRow(
-                          label: 'Gain/Loss CAD',
+                          label: translate('investment_details.gain_loss_cad'),
                           value:
                               '${gainOrLossCad.toStringAsFixed(2)} '
                               '(${gainOrLossPercentageCad.toStringAsFixed(2)}'

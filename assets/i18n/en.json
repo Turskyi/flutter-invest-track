@@ -211,6 +211,18 @@
     "purchased": "Purchased: ",
     "not_yet_purchased": "Not yet purchased"
   },
+  "investment_details": {
+    "current_price_usd": "Current Price (USD)",
+    "quantity": "Quantity",
+    "total_value_current_usd": "Total Value (Current USD)",
+    "total_value_current_cad": "Total Value (Current CAD)",
+    "purchase_date": "Purchase Date",
+    "purchase_price": "Purchase Price",
+    "total_value_purchase_usd": "Total Value (Purchase USD)",
+    "total_value_purchase_cad": "Total Value (Purchase CAD)",
+    "gain_loss_usd": "Gain/Loss (USD)",
+    "gain_loss_cad": "Gain/Loss CAD"
+  },
   "import": {
     "title": "Import from XLSX",
     "step1_pick_file": "Step 1 - Pick your XLSX file",
