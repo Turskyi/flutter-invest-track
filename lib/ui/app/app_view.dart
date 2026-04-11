@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
+import 'package:investtrack/router/public_routes.dart';
 import 'package:investtrack/ui/app/current_route_observer.dart';
 import 'package:investtrack/ui/investments/investments_page.dart';
 import 'package:investtrack/ui/not_found_page.dart';
@@ -35,12 +36,6 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
-  static final Set<String> _publicRoutePaths = <String>{
-    AppRoute.signIn.path,
-    AppRoute.privacyPolity.path,
-    AppRoute.demo.path,
-  };
-
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   final CurrentRouteObserver _currentRouteObserver = CurrentRouteObserver();
 
@@ -353,7 +348,7 @@ class _AppViewState extends State<AppView> {
   bool _isCurrentRoutePublic() {
     final String routeName =
         _currentRouteObserver.currentRouteName ?? _initialRoute;
-    return _publicRoutePaths.contains(routeName);
+    return publicRoutePaths.contains(routeName);
   }
 
   void _showStatusMessage(BuildContext context, String message) {

@@ -14,6 +14,7 @@ const String remoteDbServiceName = 'Vercel Postgres';
 const String remoteDbServiceLink =
     'https://vercel.com/docs/storage/vercel-postgres#vercel-postgres';
 const String deletionInstructionsLink = '${baseUrl}instruction';
+const String privacyChoicesLink = '${baseUrl}privacy-choices';
 const int emailMaxLength = 40;
 const int emailMinLength = 9;
 const int maxRetries = 1;
