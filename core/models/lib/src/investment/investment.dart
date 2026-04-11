@@ -69,10 +69,10 @@ class Investment {
     required this.totalValueOnPurchase,
     required this.totalCurrentValue,
     required this.purchasePrice,
+    this.gainOrLossCad,
   })  : id = 0,
         slug = null,
         isPurchased = quantity > 0,
-        gainOrLossCad = null,
         createdAt = null,
         updatedAt = null;
 

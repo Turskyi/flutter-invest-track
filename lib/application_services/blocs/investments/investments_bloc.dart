@@ -560,6 +560,23 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         final double totalValuePurchase = quantity * purchasePrice;
         final double gainOrLoss = totalValueCurrent - totalValuePurchase;
 
+        double? gainOrLossCad;
+        try {
+          final double cadExchangeRate = await _exchangeRateRepository
+              .getExchangeRate(
+                fromCurrency: CurrencyCode.usd.value,
+                toCurrency: CurrencyCode.cad.value,
+              );
+          gainOrLossCad = gainOrLoss * cadExchangeRate;
+        } catch (e, stackTrace) {
+          debugPrint(
+            'Error while fetching USD to CAD exchange rate during '
+            'investment creation.\n'
+            'Error: $e\n'
+            'Stacktrace: $stackTrace.',
+          );
+        }
+
         try {
           // Create the new `createdInvestment` using the repository.
           final Investment newInvestment = await _investmentsRepository.create(
@@ -576,21 +593,25 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               userId: userId,
               currentPrice: currentPrice,
               gainOrLossUsd: gainOrLoss,
+              gainOrLossCad: gainOrLossCad,
               totalValueOnPurchase: totalValuePurchase,
               totalCurrentValue: totalValueCurrent,
               purchasePrice: purchasePrice,
             ),
           );
 
-          // Add the new `createdInvestment` to the existing list of
-          // investments.
-          investments.add(newInvestment);
+          // The backend response does not include `gainOrLossCad`, so
+          // apply the locally computed value before adding to the list.
+          final Investment enrichedInvestment = gainOrLossCad != null
+              ? newInvestment.copyWith(gainOrLossCad: gainOrLossCad)
+              : newInvestment;
+
+          investments.add(enrichedInvestment);
           final InvestmentsState currentState = state;
           if (currentState is InvestmentsLoaded) {
-            // Emit the new state with the updated list of investments.
             emitter(
               InvestmentSubmitted(
-                investment: newInvestment,
+                investment: enrichedInvestment,
                 investments: investments,
                 hasReachedMax: currentState.hasReachedMax,
               ),
