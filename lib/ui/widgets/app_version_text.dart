@@ -17,13 +17,6 @@ class _AppVersionTextState extends State<AppVersionText> {
     _loadVersion();
   }
 
-  Future<void> _loadVersion() async {
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    if (mounted) {
-      setState(() => _version = info.version);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_version == null) {
@@ -35,5 +28,12 @@ class _AppVersionTextState extends State<AppVersionText> {
         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
       ),
     );
+  }
+
+  Future<void> _loadVersion() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() => _version = info.version);
+    }
   }
 }

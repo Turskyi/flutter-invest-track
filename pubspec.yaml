@@ -64,8 +64,8 @@ dependencies:
       ref: master
   formz: ^0.8.0
   get_it: ^9.2.1
-  injectable: ^2.7.1+4
-  injectable_generator: ^2.12.1
+  injectable: ^3.0.0
+  injectable_generator: ^3.0.2
   #  Tried 0.20.2, did not compile.
   intl: ^0.20.2
   json_annotation: ^4.11.0
@@ -94,8 +94,8 @@ dependency_overrides:
   source_gen: ^4.2.2
 
 dev_dependencies:
-  # Tried ^2.6.0, could not compile.
-  build_runner: ^2.13.1
+
+  build_runner: ^2.14.1
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
