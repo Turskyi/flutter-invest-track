@@ -38,8 +38,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void _onEmailChanged(SignUpEmailChanged event, Emitter<SignUpState> emit) {
     final EmailAddress email = EmailAddress.dirty(event.email);
     emit(
-      state.copyWith(
+      SignUpState(
+        status: FormzSubmissionStatus.initial,
         email: email,
+        password: state.password,
+        code: state.code,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[
           state.password,
           email,
@@ -54,8 +57,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   ) {
     final Password password = Password.dirty(event.password);
     emit(
-      state.copyWith(
+      SignUpState(
+        status: FormzSubmissionStatus.initial,
+        email: state.email,
         password: password,
+        code: state.code,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[
           password,
           state.email,
@@ -67,7 +73,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void _onCodeChanged(CodeChanged event, Emitter<SignUpState> emit) {
     final Code code = Code.dirty(event.code);
     emit(
-      state.copyWith(
+      SignUpState(
+        status: FormzSubmissionStatus.initial,
+        email: state.email,
+        password: state.password,
         code: code,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[code]),
       ),

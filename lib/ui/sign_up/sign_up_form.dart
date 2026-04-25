@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:formz/formz.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
@@ -71,7 +70,7 @@ class SignUpForm extends StatelessWidget {
   }
 
   void _signUpStateListener(BuildContext context, SignUpState state) {
-    if (state.status.isFailure || state is SignUpErrorState) {
+    if (state is SignUpErrorState) {
       Widget contentWidget;
       const String officialWebsiteUrl = constants.website;
       if (kIsWeb) {
@@ -91,12 +90,7 @@ class SignUpForm extends StatelessWidget {
                 ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () async {
-                    final Uri url = Uri.parse(officialWebsiteUrl);
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url, webOnlyWindowName: '_blank');
-                    } else {
-                      debugPrint('Could not launch $officialWebsiteUrl');
-                    }
+                    await _launchUrl(officialWebsiteUrl);
                   },
               ),
             ],
@@ -104,22 +98,36 @@ class SignUpForm extends StatelessWidget {
         );
       } else {
         String errorMessage;
-        if (state is SignUpErrorState) {
-          errorMessage = state.errorMessage;
-        } else {
-          errorMessage = translate('sign_up_form.error_sign_up_failure');
-        }
+        errorMessage = state.errorMessage.replaceAll(
+          ' (ERROR RECEIVED FROM SERVER)',
+          '',
+        );
         contentWidget = SelectableText(errorMessage);
       }
 
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
             content: contentWidget,
-            duration: const Duration(seconds: 10),
-          ),
-        );
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, webOnlyWindowName: '_blank');
+    } else {
+      debugPrint('Could not launch $urlString');
     }
   }
 }
