@@ -16,6 +16,12 @@ class LanguageSelectorButton extends StatelessWidget {
     ).delegate.currentLocale.languageCode;
     final Language current = Language.fromIsoLanguageCode(currentCode);
 
+    final ThemeData theme = Theme.of(context);
+    final Color textColor =
+        IconTheme.of(context).color ??
+        theme.appBarTheme.titleTextStyle?.color ??
+        theme.colorScheme.onSurface;
+
     return PopupMenuButton<Language>(
       tooltip: '',
       child: Padding(
@@ -25,8 +31,11 @@ class LanguageSelectorButton extends StatelessWidget {
           children: <Widget>[
             Text(current.flag, style: const TextStyle(fontSize: 20)),
             const SizedBox(width: 4),
-            Text(current.name, style: Theme.of(context).textTheme.bodyMedium),
-            const Icon(Icons.arrow_drop_down),
+            Text(
+              current.name,
+              style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+            ),
+            Icon(Icons.arrow_drop_down, color: textColor),
           ],
         ),
       ),
