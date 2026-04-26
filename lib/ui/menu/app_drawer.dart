@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
+import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
 import 'package:investtrack/ui/sign_in/language_selector_button.dart';
+import 'package:models/models.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -76,6 +78,32 @@ class AppDrawer extends StatelessWidget {
                   leading: const Icon(Icons.language),
                   title: Text(translate('menu.language')),
                   trailing: const LanguageSelectorButton(),
+                ),
+                BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (BuildContext context, ThemeState state) {
+                    final bool isVibrant = state.theme == AppTheme.vibrant;
+                    return ListTile(
+                      leading: Icon(
+                        isVibrant ? Icons.brightness_6 : Icons.brightness_2,
+                      ),
+                      title: Text(translate('menu.theme')),
+                      subtitle: Text(
+                        isVibrant
+                            ? translate('menu.theme_vibrant')
+                            : translate('menu.theme_stealth'),
+                      ),
+                      trailing: Switch(
+                        value: isVibrant,
+                        onChanged: (bool value) {
+                          context.read<ThemeBloc>().add(
+                            ThemeChanged(
+                              value ? AppTheme.vibrant : AppTheme.stealth,
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.logout),

@@ -25,6 +25,18 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
+  AppTheme getAppTheme() {
+    final String? savedThemeValue = _preferences.getString(
+      StorageKeys.appTheme.key,
+    );
+    return AppTheme.fromValue(savedThemeValue);
+  }
+
+  @override
   Future<bool> saveLanguageIsoCode(String languageIsoCode) =>
       _preferences.setString(StorageKeys.languageIsoCode.key, languageIsoCode);
+
+  @override
+  Future<bool> saveAppTheme(AppTheme theme) =>
+      _preferences.setString(StorageKeys.appTheme.key, theme.value);
 }

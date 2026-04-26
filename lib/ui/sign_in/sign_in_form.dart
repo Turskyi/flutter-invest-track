@@ -193,7 +193,9 @@ class _SignInFormState extends State<SignInForm>
             children: <TextSpan>[
               TextSpan(
                 text: translate('sign_in_form.error_sign_in_unavailable_web_1'),
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
               ),
               TextSpan(
                 text: officialWebsiteUrl,

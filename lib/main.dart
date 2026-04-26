@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
+import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/di/injector.dart';
 import 'package:investtrack/localization/localization_delelegate_getter.dart'
     as localization;
@@ -43,6 +44,7 @@ Future<void> main() async {
   final AuthenticationBloc authenticationBloc = dependencies
       .get<AuthenticationBloc>();
   final MenuBloc menuBloc = dependencies.get<MenuBloc>();
+  final ThemeBloc themeBloc = dependencies.get<ThemeBloc>();
 
   final InvestmentsBloc investmentsBloc = dependencies.get<InvestmentsBloc>(
     param1: false,
@@ -73,6 +75,7 @@ Future<void> main() async {
           authenticationRepository: authenticationRepository,
           authenticationBloc: authenticationBloc,
           menuBloc: menuBloc,
+          themeBloc: themeBloc,
         ),
       ),
     ),

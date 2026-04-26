@@ -12,6 +12,7 @@ import 'package:investtrack/ui/privacy/privacy_choices_page.dart';
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
 import 'package:investtrack/ui/sign_in/sign_in_page.dart';
 import 'package:investtrack/ui/support/support_page.dart';
+import 'package:investtrack/ui/widgets/public_theme_wrapper.dart';
 
 Map<String, WidgetBuilder> getRouteMap({
   required InvestmentsBloc investmentsBloc,
@@ -26,12 +27,16 @@ Map<String, WidgetBuilder> getRouteMap({
         child: const InvestmentsPage(),
       );
     },
-    AppRoute.signIn.path: (BuildContext _) => const SignInPage(),
-    AppRoute.privacyPolity.path: (BuildContext _) => const PrivacyPolicyPage(),
+    AppRoute.signIn.path: (BuildContext _) =>
+        const PublicThemeWrapper(child: SignInPage()),
+    AppRoute.privacyPolity.path: (BuildContext _) =>
+        const PublicThemeWrapper(child: PrivacyPolicyPage()),
     AppRoute.privacyChoices.path: (BuildContext _) =>
-        const PrivacyChoicesPage(),
-    AppRoute.marketing.path: (BuildContext _) => const MarketingUrlPage(),
-    AppRoute.support.path: (BuildContext _) => const SupportPage(),
+        const PublicThemeWrapper(child: PrivacyChoicesPage()),
+    AppRoute.marketing.path: (BuildContext _) =>
+        const PublicThemeWrapper(child: MarketingUrlPage()),
+    AppRoute.support.path: (BuildContext _) =>
+        const PublicThemeWrapper(child: SupportPage()),
     AppRoute.addInvestment.path: (BuildContext _) {
       return BlocProvider<InvestmentsBloc>(
         create: (BuildContext _) => investmentsBloc,

@@ -21,13 +21,14 @@ class _AppVersionTextState extends State<AppVersionText> {
   Widget build(BuildContext context) {
     if (_version == null) {
       return const SizedBox.shrink();
+    } else {
+      return Text(
+        'v$_version',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+        ),
+      );
     }
-    return Text(
-      'v$_version',
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-      ),
-    );
   }
 
   Future<void> _loadVersion() async {

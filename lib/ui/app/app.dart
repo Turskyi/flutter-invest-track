@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
+import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/ui/app/app_view.dart';
 import 'package:nested/nested.dart';
 
@@ -26,12 +27,14 @@ class App extends StatefulWidget {
     required this.authenticationRepository,
     required this.authenticationBloc,
     required this.menuBloc,
+    required this.themeBloc,
     super.key,
   });
 
   final AuthenticationRepository authenticationRepository;
   final AuthenticationBloc authenticationBloc;
   final MenuBloc menuBloc;
+  final ThemeBloc themeBloc;
   final Map<String, WidgetBuilder> routeMap;
 
   @override
@@ -63,6 +66,7 @@ class _AppState extends State<App> {
               return widget.menuBloc..add(const LoadingInitialMenuStateEvent());
             },
           ),
+          BlocProvider<ThemeBloc>(create: (BuildContext _) => widget.themeBloc),
         ],
         child: AppView(
           routeMap: widget.routeMap,

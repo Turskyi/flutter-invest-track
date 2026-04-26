@@ -24,13 +24,13 @@ class GradientBackgroundScaffold extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: <Color>[
-            colorScheme.primaryContainer.withOpacity(0.8),
+            colorScheme.primaryContainer.withValues(alpha: 0.8),
             colorScheme.secondary,
           ],
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
