@@ -28,6 +28,7 @@
     "welcome_message": "Ласкаво просимо до InvestTrack - вашого супутника в розумних інвестиціях.",
     "email_label": "Електронна пошта",
     "password_label": "Пароль",
+    "keep_me_signed_in": "Запам'ятати мене",
     "consent_prompt_data_collection": "Я даю згоду на збір моїх даних.",
     "consent_learn_more": "Дізнатися більше.",
     "continue_button": "Продовжити",

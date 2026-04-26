@@ -25,6 +25,15 @@ final class SignInPasswordChanged extends SignInEvent {
   List<Object> get props => <Object>[password];
 }
 
+final class SignInKeepMeSignedInChanged extends SignInEvent {
+  const SignInKeepMeSignedInChanged(this.keepMeSignedIn);
+
+  final bool keepMeSignedIn;
+
+  @override
+  List<Object> get props => <Object>[keepMeSignedIn];
+}
+
 final class SignInSubmitted extends SignInEvent {
   const SignInSubmitted();
 }

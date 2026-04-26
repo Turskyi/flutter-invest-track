@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
-import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
+import 'package:investtrack/res/constants/hero_tags.dart' as hero;
 import 'package:investtrack/router/slide_page_route.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
 import 'package:investtrack/ui/investments/investment/info_row.dart';
@@ -139,7 +139,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         children: <Widget>[
                           if (investment.companyLogoUrl.isNotEmpty)
                             Hero(
-                              tag: '${hero_tags.companyLogo}${investment.id}',
+                              tag: '${hero.companyLogo}${investment.id}',
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: ColoredBox(
@@ -148,6 +148,14 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                                     investment.companyLogoUrl,
                                     width: 100,
                                     height: 100,
+                                    errorBuilder:
+                                        (
+                                          BuildContext _,
+                                          Object _,
+                                          StackTrace? _,
+                                        ) {
+                                          return const SizedBox();
+                                        },
                                   ),
                                 ),
                               ),

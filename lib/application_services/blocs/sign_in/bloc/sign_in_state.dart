@@ -8,27 +8,31 @@ final class SignInState extends Equatable {
     this.email = const EmailAddress.pure(),
     this.password = const Password.pure(),
     this.isValid = false,
+    this.keepMeSignedIn = false,
   });
 
   final FormzSubmissionStatus status;
   final EmailAddress email;
   final Password password;
   final bool isValid;
+  final bool keepMeSignedIn;
 
   SignInState copyWith({
     FormzSubmissionStatus? status,
     EmailAddress? email,
     Password? password,
     bool? isValid,
+    bool? keepMeSignedIn,
   }) => SignInState(
     status: status ?? this.status,
     email: email ?? this.email,
     password: password ?? this.password,
     isValid: isValid ?? this.isValid,
+    keepMeSignedIn: keepMeSignedIn ?? this.keepMeSignedIn,
   );
 
   @override
-  List<Object> get props => <Object>[status, email, password];
+  List<Object> get props => <Object>[status, email, password, keepMeSignedIn];
 }
 
 final class SignInErrorState extends SignInState {
@@ -37,6 +41,7 @@ final class SignInErrorState extends SignInState {
     super.email,
     super.password,
     super.isValid,
+    super.keepMeSignedIn,
     this.errorMessage = 'Authentication Failure',
   });
 
@@ -48,12 +53,14 @@ final class SignInErrorState extends SignInState {
     EmailAddress? email,
     Password? password,
     bool? isValid,
+    bool? keepMeSignedIn,
     String? errorMessage,
   }) => SignInErrorState(
     status: status ?? this.status,
     email: email ?? this.email,
     password: password ?? this.password,
     isValid: isValid ?? this.isValid,
+    keepMeSignedIn: keepMeSignedIn ?? this.keepMeSignedIn,
     errorMessage: errorMessage ?? this.errorMessage,
   );
 
@@ -63,6 +70,7 @@ final class SignInErrorState extends SignInState {
     email,
     password,
     isValid,
+    keepMeSignedIn,
     errorMessage,
   ];
 }

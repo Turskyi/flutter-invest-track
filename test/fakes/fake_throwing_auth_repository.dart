@@ -24,7 +24,11 @@ class FakeThrowingAuthRepository implements AuthenticationRepository {
   }
 
   @override
-  Future<User> signIn({required String email, required String password}) async {
+  Future<User> signIn({
+    required String email,
+    required String password,
+    bool keepMeSignedIn = false,
+  }) async {
     if (signInError != null) {
       // ignore: only_throw_errors
       throw signInError!;
@@ -38,6 +42,9 @@ class FakeThrowingAuthRepository implements AuthenticationRepository {
 
   @override
   bool canSendCode() => false;
+
+  @override
+  String get userId => 'fake-id';
 
   @override
   Future<MessageResponse> deleteAccount(String userId) =>

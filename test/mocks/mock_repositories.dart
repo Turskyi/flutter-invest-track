@@ -9,6 +9,9 @@ class MockAuthenticationRepository extends Mock
   @override
   Stream<AuthenticationStatus> get status =>
       Stream<AuthenticationStatus>.value(const AuthenticatedStatus());
+
+  @override
+  String get userId => 'fake-id';
 }
 
 class MockUnauthenticatedRepository extends Mock
@@ -16,6 +19,9 @@ class MockUnauthenticatedRepository extends Mock
   @override
   Stream<AuthenticationStatus> get status =>
       Stream<AuthenticationStatus>.value(const UnauthenticatedStatus());
+
+  @override
+  String get userId => '';
 }
 
 class MockStreamAuthRepository extends Mock
@@ -26,6 +32,9 @@ class MockStreamAuthRepository extends Mock
 
   @override
   Stream<AuthenticationStatus> get status => _stream;
+
+  @override
+  String get userId => 'fake-id';
 }
 
 class MockUserRepository extends Mock implements UserRepository {}

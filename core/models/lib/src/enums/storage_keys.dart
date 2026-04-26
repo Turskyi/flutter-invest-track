@@ -3,7 +3,8 @@ enum StorageKeys {
   signUpId('sign_up_id'),
   userId('user_id'),
   email('email'),
-  languageIsoCode('language_iso_code');
+  languageIsoCode('language_iso_code'),
+  keepMeSignedIn('keep_me_signed_in');
 
   const StorageKeys(this.key);
 

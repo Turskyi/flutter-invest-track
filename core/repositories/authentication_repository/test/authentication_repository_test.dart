@@ -112,6 +112,20 @@ void main() {
         );
       });
 
+      test('clears keep me signed in flag from storage', () async {
+        await preferences.setBool(
+          entity.StorageKeys.keepMeSignedIn.key,
+          true,
+        );
+
+        await repository.signOut();
+
+        expect(
+          preferences.getBool(entity.StorageKeys.keepMeSignedIn.key),
+          isNull,
+        );
+      });
+
       test('emits UnauthenticatedStatus', () async {
         final List<AuthenticationStatus> emitted = <AuthenticationStatus>[];
 
@@ -142,6 +156,15 @@ class _FakePreferences implements SharedPreferences {
 
   @override
   Future<bool> setString(String key, String value) async {
+    _store[key] = value;
+    return true;
+  }
+
+  @override
+  bool? getBool(String key) => _store[key] as bool?;
+
+  @override
+  Future<bool> setBool(String key, bool value) async {
     _store[key] = value;
     return true;
   }

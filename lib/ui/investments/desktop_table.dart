@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
+import 'package:investtrack/res/constants/hero_tags.dart' as hero;
 import 'package:investtrack/ui/widgets/horizontal_overflow_indicator.dart';
 import 'package:investtrack/utils/price_utils.dart';
 import 'package:models/models.dart';
@@ -226,17 +227,20 @@ class _DesktopTableState extends State<DesktopTable> {
           : null,
       cells: <DataCell>[
         DataCell(
-          CircleAvatar(
-            backgroundColor: Colors.white,
-            backgroundImage: investment.companyLogoUrl.isNotEmpty
-                ? NetworkImage(investment.companyLogoUrl)
-                : const AssetImage(
-                    '${constants.imagePath}company-logo-placeholder.jpeg',
-                  ),
-            radius: 16,
+          Hero(
+            tag: '${hero.companyLogo}${investment.id}',
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              backgroundImage: investment.companyLogoUrl.isNotEmpty
+                  ? NetworkImage(investment.companyLogoUrl)
+                  : const AssetImage(
+                      '${constants.imagePath}company-logo-placeholder.jpeg',
+                    ),
+              radius: 16,
+            ),
           ),
         ),
-        DataCell(SelectableText(investment.companyName)),
+        DataCell(Text(investment.companyName)),
         DataCell(Text(investment.stockExchange)),
         DataCell(SelectableText(investment.ticker)),
         DataCell(

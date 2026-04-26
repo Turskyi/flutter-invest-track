@@ -10,6 +10,7 @@ import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/sign_in/continue_button.dart';
 import 'package:investtrack/ui/sign_in/email_input.dart';
+import 'package:investtrack/ui/sign_in/keep_me_signed_in_checkbox.dart';
 import 'package:investtrack/ui/sign_in/password_input.dart';
 import 'package:investtrack/ui/sign_in/sign_in_footer_buttons.dart';
 import 'package:investtrack/ui/sign_in/sign_up_prompt.dart';
@@ -109,7 +110,9 @@ class _SignInFormState extends State<SignInForm>
                     icon: Icons.lock,
                     child: const PasswordInput(),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  const KeepMeSignedInCheckbox(),
+                  const SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[

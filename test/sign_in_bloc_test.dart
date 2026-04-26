@@ -12,6 +12,24 @@ const String _validPassword = 'Password123!';
 
 void main() {
   group('SignInBloc', () {
+    test('initial state is pure', () {
+      expect(
+        SignInBloc(
+          authenticationRepository: FakeThrowingAuthRepository(),
+        ).state,
+        const SignInState(),
+      );
+    });
+
+    blocTest<SignInBloc, SignInState>(
+      'emits keepMeSignedIn true when SignInKeepMeSignedInChanged is added',
+      build: () =>
+          SignInBloc(authenticationRepository: FakeThrowingAuthRepository()),
+      act: (SignInBloc bloc) =>
+          bloc.add(const SignInKeepMeSignedInChanged(true)),
+      expect: () => <SignInState>[const SignInState(keepMeSignedIn: true)],
+    );
+
     group('ClerkError handling during sign-in submission', () {
       const String serverErrorText = 'Invalid credentials';
       const ClerkError clerkError = ClerkError(

@@ -28,6 +28,7 @@
     "welcome_message": "Welcome to InvestTrack - your companion in smart investments.",
     "email_label": "Email",
     "password_label": "Password",
+    "keep_me_signed_in": "Keep me signed in",
     "consent_prompt_data_collection": "I consent to the collection of my data.",
     "consent_learn_more": "Learn more.",
     "continue_button": "Continue",

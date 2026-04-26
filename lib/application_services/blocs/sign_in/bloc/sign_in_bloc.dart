@@ -29,6 +29,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       super(const SignInState()) {
     on<SignInEmailChanged>(_onEmailChanged);
     on<SignInPasswordChanged>(_onPasswordChanged);
+    on<SignInKeepMeSignedInChanged>(_onKeepMeSignedInChanged);
     on<SignInSubmitted>(_onSubmitted);
   }
 
@@ -37,9 +38,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   void _onEmailChanged(SignInEmailChanged event, Emitter<SignInState> emit) {
     final EmailAddress email = EmailAddress.dirty(event.email);
     emit(
-      SignInState(
+      state.copyWith(
         email: email,
-        password: state.password,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[
           state.password,
           email,
@@ -55,8 +55,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     final Password password = Password.dirty(event.password);
 
     emit(
-      SignInState(
-        email: state.email,
+      state.copyWith(
         password: password,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[
           password,
@@ -64,6 +63,13 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         ]),
       ),
     );
+  }
+
+  void _onKeepMeSignedInChanged(
+    SignInKeepMeSignedInChanged event,
+    Emitter<SignInState> emit,
+  ) {
+    emit(state.copyWith(keepMeSignedIn: event.keepMeSignedIn));
   }
 
   Future<void> _onSubmitted(
@@ -76,6 +82,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         final User user = await _authenticationRepository.signIn(
           email: state.email.value,
           password: state.password.value,
+          keepMeSignedIn: state.keepMeSignedIn,
         );
 
         if (user.isNotAnonymous) {
