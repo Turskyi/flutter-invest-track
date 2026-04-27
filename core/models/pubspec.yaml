@@ -9,7 +9,6 @@ environment:
 dependencies:
   collection: ^1.19.1
   equatable: ^2.0.8
-  flutter_easy_translate: ^1.0.8
   formz: ^0.8.0
   json_annotation: ^4.11.0
 

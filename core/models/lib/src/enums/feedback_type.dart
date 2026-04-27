@@ -1,5 +1,3 @@
-import 'package:flutter_easy_translate/flutter_easy_translate.dart';
-
 /// What type of feedback the user wants to provide.
 enum FeedbackType {
   bugReport,
@@ -8,9 +6,9 @@ enum FeedbackType {
   String get value {
     switch (this) {
       case FeedbackType.bugReport:
-        return translate('feedback.bugReport');
+        return 'feedback.bugReport';
       case FeedbackType.featureRequest:
-        return translate('feedback.featureRequest');
+        return 'feedback.featureRequest';
     }
   }
 }

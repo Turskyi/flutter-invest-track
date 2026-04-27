@@ -56,7 +56,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                           items: FeedbackType.values.map((FeedbackType type) {
                             return DropdownMenuItem<FeedbackType>(
                               value: type,
-                              child: Text(type.value),
+                              child: Text(translate(type.value)),
                             );
                           }).toList(),
                           onChanged: _onFeedbackTypeChanged,
