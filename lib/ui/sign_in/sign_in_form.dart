@@ -227,7 +227,7 @@ class _SignInFormState extends State<SignInForm>
         contentWidget = SelectableText.rich(
           TextSpan(
             style: Theme.of(context).textTheme.bodyMedium,
-            children: _buildErrorTextSpans(errorMessage, context),
+            children: _buildErrorTextSpans(errorMessage),
           ),
         );
       }
@@ -250,10 +250,7 @@ class _SignInFormState extends State<SignInForm>
     }
   }
 
-  List<InlineSpan> _buildErrorTextSpans(
-    String errorMessage,
-    BuildContext context,
-  ) {
+  List<InlineSpan> _buildErrorTextSpans(String errorMessage) {
     final List<InlineSpan> spans = <InlineSpan>[];
     final RegExp urlRegExp = RegExp(
       // (?<![.,!?;:]) is a negative lookbehind.

@@ -31,6 +31,9 @@ class AuthenticationRepository {
   String? _inMemoryEmail;
 
   Stream<AuthenticationStatus> get status async* {
+    if (_auth == null) {
+      await _authInit();
+    }
     final bool isAuthenticated = _checkInitialAuthenticationStatus();
 
     if (isAuthenticated) {
@@ -50,6 +53,13 @@ class AuthenticationRepository {
   }) async {
     await _saveKeepMeSignedIn(keepMeSignedIn);
     await _authInit(forceReinit: true);
+
+    // If already signed in, sign out first to ensure a clean state and avoid
+    // the "already signed in" error from Clerk.
+    if (_auth?.session != null) {
+      await _auth?.signOut();
+    }
+
     final String trimmedEmail = email.trim();
 
     final String trimmedPassword = password.trim();
@@ -193,7 +203,11 @@ class AuthenticationRepository {
     final String token = _inMemoryToken ??
         _preferences.getString(entity.StorageKeys.authToken.key) ??
         '';
-    return token.isNotEmpty;
+
+    // Check if we have a valid session in Clerk as well.
+    final bool hasClerkSession = _auth?.session != null;
+
+    return token.isNotEmpty || hasClerkSession;
   }
 
   Future<bool> _saveToken(String token) {

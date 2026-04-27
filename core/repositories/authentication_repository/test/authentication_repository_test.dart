@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:models/models.dart' as entity;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -129,16 +131,24 @@ void main() {
       test('emits UnauthenticatedStatus', () async {
         final List<AuthenticationStatus> emitted = <AuthenticationStatus>[];
 
-        // status yields the initial event synchronously inside the async*
+        // status yields the initial event inside the async*
         // generator, so listen before calling signOut.
-        repository.status.listen(emitted.add);
+        final StreamSubscription<AuthenticationStatus> subscription =
+            repository.status.listen(emitted.add);
 
         // Allow the async* generator to yield its initial event.
-        await Future<void>.delayed(Duration.zero);
+        // We might need a bit more time now since it's async.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
         await repository.signOut();
 
+        // Allow some time for the signOut event to be emitted.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        expect(emitted, isNotEmpty);
         expect(emitted.last, isA<UnauthenticatedStatus>());
+
+        await subscription.cancel();
       });
     });
   });

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 const Color _primaryBlue = Color(0xFF0D47A1);
 const Color _secondaryGold = Color(0xFFC79100);
 
-const Color _primaryBlack = Color(0xFF000000);
-const Color _secondaryRed = Color(0xFFD32F2F);
+const Color _primaryRed = Colors.red;
+const Color _secondaryBlack = Colors.black;
 
 ThemeData get vibrantTheme => _buildTheme(
   primary: _primaryBlue,
@@ -14,8 +14,8 @@ ThemeData get vibrantTheme => _buildTheme(
 );
 
 ThemeData get stealthTheme => _buildTheme(
-  primary: _primaryBlack,
-  secondary: _secondaryRed,
+  primary: _primaryRed,
+  secondary: _secondaryBlack,
   background: const Color(0xFF000000),
   surface: const Color(0xFF121212),
 );
@@ -32,7 +32,10 @@ ThemeData _buildTheme({
       secondary: secondary,
       surface: surface,
       onPrimary: Colors.white,
-      onSecondary: Colors.black,
+      onSecondary:
+          ThemeData.estimateBrightnessForColor(secondary) == Brightness.dark
+          ? Colors.white
+          : Colors.black,
       onSurface: Colors.white,
       outline: Colors.white.withValues(alpha: 0.12),
       primaryContainer: primary.withValues(alpha: 0.8),
