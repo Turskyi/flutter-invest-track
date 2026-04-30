@@ -5,7 +5,12 @@ sealed class AuthenticationStatus {
 
   factory AuthenticationStatus.deleting() = DeletingAuthenticatedUserStatus;
 
-  factory AuthenticationStatus.authenticated() = AuthenticatedStatus;
+  factory AuthenticationStatus.authenticated({
+    String userId = '',
+    String email = '',
+  }) {
+    return AuthenticatedStatus(userId: userId, email: email);
+  }
 
   factory AuthenticationStatus.unauthenticated() = UnauthenticatedStatus;
 
@@ -19,7 +24,10 @@ class UnknownAuthenticationStatus extends AuthenticationStatus {
 }
 
 class AuthenticatedStatus extends AuthenticationStatus {
-  const AuthenticatedStatus();
+  const AuthenticatedStatus({this.userId = '', this.email = ''});
+
+  final String userId;
+  final String email;
 }
 
 class DeletingAuthenticatedUserStatus extends AuthenticationStatus {

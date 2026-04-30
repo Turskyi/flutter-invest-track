@@ -37,7 +37,7 @@ class AuthenticationRepository {
     final bool isAuthenticated = _checkInitialAuthenticationStatus();
 
     if (isAuthenticated) {
-      yield AuthenticationStatus.authenticated();
+      yield AuthenticationStatus.authenticated(userId: userId, email: _email);
     } else {
       yield AuthenticationStatus.unauthenticated();
     }
@@ -98,7 +98,9 @@ class AuthenticationRepository {
     }
 
     await _saveEmail(trimmedEmail);
-    _controller.add(AuthenticationStatus.authenticated());
+    _controller.add(
+      AuthenticationStatus.authenticated(userId: userId, email: trimmedEmail),
+    );
     return entity.User(id: userId, email: trimmedEmail);
   }
 
@@ -167,8 +169,14 @@ class AuthenticationRepository {
       final String? userId = clerkClient?.user?.id;
 
       if (userId?.isNotEmpty == true) {
-        await _saveUserId(userId ?? '');
-        _controller.add(AuthenticationStatus.authenticated());
+        final String resolvedUserId = userId ?? '';
+        await _saveUserId(resolvedUserId);
+        _controller.add(
+          AuthenticationStatus.authenticated(
+            userId: resolvedUserId,
+            email: _email,
+          ),
+        );
         await _removeSignUpId();
       } else {
         _controller.add(AuthenticationStatus.unauthenticated());

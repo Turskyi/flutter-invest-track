@@ -44,7 +44,6 @@ void main() {
 
   final AuthenticationBloc authenticationBloc = AuthenticationBloc(
     authenticationRepository: authenticationRepository,
-    userRepository: userRepository,
   );
   final MockMenuBloc menuBloc = MockMenuBloc();
   final ThemeBloc themeBloc = ThemeBloc(settingsRepository);

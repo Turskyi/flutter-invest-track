@@ -9,11 +9,18 @@ import 'package:user_repository/user_repository.dart';
 class MockAuthenticationRepository extends Mock
     implements AuthenticationRepository {
   @override
-  Stream<AuthenticationStatus> get status =>
-      Stream<AuthenticationStatus>.value(const AuthenticatedStatus());
+  Stream<AuthenticationStatus> get status => Stream<AuthenticationStatus>.value(
+    const AuthenticatedStatus(userId: 'fake-id', email: 'fake@test.com'),
+  );
 
   @override
   String get userId => 'fake-id';
+
+  @override
+  Future<void> signOut() => Future<void>.value();
+
+  @override
+  Future<void> dispose() async {}
 }
 
 class MockUnauthenticatedRepository extends Mock

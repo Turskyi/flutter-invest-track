@@ -34,9 +34,7 @@ class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   AuthenticationBloc({
     required AuthenticationRepository authenticationRepository,
-    required UserRepository userRepository,
   }) : _authenticationRepository = authenticationRepository,
-       _userRepository = userRepository,
        super(const AuthenticationState.unknown()) {
     on<AuthenticationSubscriptionRequested>(_onSubscriptionRequested);
     on<AuthenticationSignOutPressed>(_onLogoutPressed);
@@ -44,7 +42,6 @@ class AuthenticationBloc
   }
 
   final AuthenticationRepository _authenticationRepository;
-  final UserRepository _userRepository;
 
   /// `emit.onEach` creates a stream subscription internally and takes care of
   /// canceling it when either [AuthenticationBloc] or the status stream is
@@ -69,7 +66,7 @@ class AuthenticationBloc
           case UnauthenticatedStatus():
             return emit(const AuthenticationState.unauthenticated());
           case AuthenticatedStatus():
-            final User user = _getUser();
+            final User user = User(id: status.userId, email: status.email);
 
             return emit(
               user.isNotAnonymous
@@ -104,6 +101,4 @@ class AuthenticationBloc
 
     emit(AuthenticationState.accountDeleted(response.message));
   }
-
-  User _getUser() => _userRepository.getUser();
 }
