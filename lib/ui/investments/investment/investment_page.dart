@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/ui/investments/investment/investment_details_page.dart';
+import 'package:investtrack/ui/widgets/blurred_app_bar.dart';
 import 'package:investtrack/ui/widgets/gradient_background_scaffold.dart';
 
 class InvestmentPage extends StatelessWidget {
@@ -31,7 +32,7 @@ class InvestmentPage extends StatelessWidget {
           // Fancy loading placeholder.
           return GradientBackgroundScaffold(
             // We need to add the whole `AppBar` so that "arrow back" appeared.
-            appBar: AppBar(),
+            appBar: BlurredAppBar(title: Text(translate('title'))),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -68,7 +69,10 @@ class InvestmentPage extends StatelessWidget {
     InvestmentsState state,
   ) {
     if (state is InvestmentDeleted) {
-      Navigator.of(context).pop(true);
+      final NavigatorState navigator = Navigator.of(context);
+      if (navigator.canPop()) {
+        navigator.pop(true);
+      }
     }
   }
 }

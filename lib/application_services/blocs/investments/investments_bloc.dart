@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
@@ -63,6 +64,18 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   final AuthenticationBloc _authenticationBloc;
   final bool _isDemo;
 
+  List<Investment> _mergeInvestments(
+    List<Investment> current,
+    List<Investment> updated,
+  ) {
+    return current.map((Investment c) {
+      final Investment? u = updated.firstWhereOrNull(
+        (Investment u) => u.id == c.id,
+      );
+      return u ?? c;
+    }).toList();
+  }
+
   FutureOr<void> _updateInvestment(
     UpdateInvestmentEvent event,
     Emitter<InvestmentsState> emit,
@@ -123,6 +136,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       final List<Investment> updatedInvestmentsWithPurchasePrices =
           <Investment>[];
       for (final Investment investment in investmentBatch) {
+        if (!_isInvestmentStillValid(investment.id)) continue;
+
         final bool hasNoPurchasePrice =
             investment.purchasePrice == null || investment.purchasePrice == 0;
         if (investment.isPurchased && hasNoPurchasePrice) {
@@ -159,7 +174,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
       emit(
         InvestmentsUpdated(
-          investments: updatedInvestmentsWithPurchasePrices,
+          investments: _mergeInvestments(
+            state.investments,
+            updatedInvestmentsWithPurchasePrices,
+          ),
           hasReachedMax: hasReachedMax,
         ),
       );
@@ -169,6 +187,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           <Investment>[];
       for (int i = 0; i < updatedInvestmentsWithPurchasePrices.length; i++) {
         final Investment investment = updatedInvestmentsWithPurchasePrices[i];
+        if (!_isInvestmentStillValid(investment.id)) continue;
+
         final String ticker = investment.ticker;
         try {
           final YahooFinanceResponse currentValueResponse =
@@ -197,7 +217,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       // Emit updated investments with current prices.
       emit(
         InvestmentsUpdated(
-          investments: updatedInvestmentsWithCurrentPrices,
+          investments: _mergeInvestments(
+            state.investments,
+            updatedInvestmentsWithCurrentPrices,
+          ),
           hasReachedMax: hasReachedMax,
         ),
       );
@@ -224,7 +247,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
       emit(
         InvestmentsUpdated(
-          investments: updatedInvestmentsWithGainOrLoss,
+          investments: _mergeInvestments(
+            state.investments,
+            updatedInvestmentsWithGainOrLoss,
+          ),
           hasReachedMax: hasReachedMax,
         ),
       );
@@ -255,7 +281,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
         emit(
           InvestmentsUpdated(
-            investments: updatedInvestmentsWithCadGainOrLoss,
+            investments: _mergeInvestments(
+              state.investments,
+              updatedInvestmentsWithCadGainOrLoss,
+            ),
             hasReachedMax: hasReachedMax,
           ),
         );
@@ -373,6 +402,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     double currentPrice = investment.currentPrice ?? 0;
     try {
       if (currentPrice == 0) {
+        if (!_isInvestmentStillValid(investment.id) ||
+            _isInvestmentBeingDeleted(investment.id)) {
+          return;
+        }
         final YahooFinanceResponse currentValue =
             await _retryWithBackoff<YahooFinanceResponse>(() {
               return const YahooFinanceDailyReader().getDailyDTOs(ticker);
@@ -381,13 +414,17 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         currentPrice = currentValue.candlesData.lastOrNull?.close ?? 0;
       }
 
+      if (!_isInvestmentStillValid(investment.id) ||
+          _isInvestmentBeingDeleted(investment.id)) {
+        return;
+      }
       final InvestmentsState investmentsState = state;
 
       if (currentPrice != 0 && investmentsState is InvestmentsLoaded) {
         emit(
           CurrentValueLoaded(
             currentPrice: currentPrice,
-            selectedInvestment: investment,
+            selectedInvestment: investment.copyWith(currentPrice: currentPrice),
             investments: investmentsState.investments,
             hasReachedMax: investmentsState.hasReachedMax,
           ),
@@ -395,18 +432,29 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       }
 
       if (investment.isPurchased) {
+        if (!_isInvestmentStillValid(investment.id) ||
+            _isInvestmentBeingDeleted(investment.id)) {
+          return;
+        }
         final double cadExchangeRate = await _exchangeRateRepository
             .getExchangeRate(
               fromCurrency: CurrencyCode.usd.value,
               toCurrency: CurrencyCode.cad.value,
             );
+
+        if (!_isInvestmentStillValid(investment.id) ||
+            _isInvestmentBeingDeleted(investment.id)) {
+          return;
+        }
         final InvestmentsState investmentsState = state;
 
         if (investmentsState is InvestmentsLoaded) {
           emit(
             ExchangeRateLoaded(
               currentPrice: currentPrice,
-              selectedInvestment: investment,
+              selectedInvestment: investment.copyWith(
+                currentPrice: currentPrice,
+              ),
               investments: investmentsState.investments,
               exchangeRate: cadExchangeRate,
               hasReachedMax: investmentsState.hasReachedMax,
@@ -417,6 +465,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         double purchasePrice = investment.purchasePrice ?? 0;
 
         if (purchasePrice == 0) {
+          if (!_isInvestmentStillValid(investment.id) ||
+              _isInvestmentBeingDeleted(investment.id)) {
+            return;
+          }
           final YahooFinanceResponse purchaseValue =
               await _retryWithBackoff<YahooFinanceResponse>(() {
                 return const YahooFinanceDailyReader().getDailyDTOs(
@@ -428,6 +480,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           purchasePrice = purchaseValue.candlesData.firstOrNull?.close ?? 0;
         }
 
+        if (!_isInvestmentStillValid(investment.id) ||
+            _isInvestmentBeingDeleted(investment.id)) {
+          return;
+        }
         final InvestmentsState investmentsState2 = state;
 
         if (purchasePrice != 0 &&
@@ -436,7 +492,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           emit(
             InvestmentUpdated(
               purchasePrice: purchasePrice,
-              selectedInvestment: investment,
+              selectedInvestment: investment.copyWith(
+                currentPrice: currentPrice,
+                purchasePrice: purchasePrice,
+              ),
               investments: investmentsState2.investments,
               currentPrice: currentPrice,
               exchangeRate: cadExchangeRate,
@@ -446,10 +505,18 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         }
       }
 
+      if (!_isInvestmentStillValid(investment.id) ||
+          _isInvestmentBeingDeleted(investment.id)) {
+        return;
+      }
       final double priceChange = await _investmentsRepository.fetchPriceChange(
         ticker,
       );
 
+      if (!_isInvestmentStillValid(investment.id) ||
+          _isInvestmentBeingDeleted(investment.id)) {
+        return;
+      }
       final InvestmentsState investmentsState3 = state;
 
       if (investmentsState3 is InvestmentUpdated) {
@@ -457,7 +524,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       } else if (investmentsState3 is InvestmentsLoaded) {
         emit(
           InvestmentUpdated(
-            selectedInvestment: investment,
+            selectedInvestment: investment.copyWith(currentPrice: currentPrice),
             investments: investmentsState3.investments,
             currentPrice: currentPrice,
             hasReachedMax: investmentsState3.hasReachedMax,
@@ -467,7 +534,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       }
     } catch (e, s) {
       debugPrint(
-        'Error while fetching current price for ticker: '
+        'Error while fetching details (price/exchange) for ticker: '
         '$ticker.\n'
         'Error: $e\n'
         'Stacktrace: $s.',
@@ -475,8 +542,17 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     }
 
     try {
+      if (!_isInvestmentStillValid(investment.id) ||
+          _isInvestmentBeingDeleted(investment.id)) {
+        return;
+      }
       final double changePercentage = await _investmentsRepository
           .fetchChangePercentage(ticker);
+
+      if (!_isInvestmentStillValid(investment.id) ||
+          _isInvestmentBeingDeleted(investment.id)) {
+        return;
+      }
       final InvestmentsState investmentsState4 = state;
 
       if (investmentsState4 is InvestmentUpdated) {
@@ -484,11 +560,11 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       } else if (investmentsState4 is InvestmentsLoaded) {
         emit(
           InvestmentUpdated(
-            selectedInvestment: investment,
+            selectedInvestment: investment.copyWith(currentPrice: currentPrice),
             investments: investmentsState4.investments,
             currentPrice: currentPrice,
             hasReachedMax: investmentsState4.hasReachedMax,
-            priceChange: changePercentage,
+            changePercentage: changePercentage,
           ),
         );
       }
@@ -741,25 +817,89 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       return;
     }
 
-    final MessageResponse response = await _investmentsRepository.delete(
-      investment.copyWith(userId: userId),
-    );
-    // Remove the investment from the existing list of investments.
-    final List<Investment> updatedInvestments = List<Investment>.from(
-      state.investments,
-    )..remove(investment);
-
-    final InvestmentsState investmentsState = state;
-    if (investmentsState is InvestmentsLoaded) {
-      // Emit the new state with the updated list of investments.
-      emit(
-        InvestmentDeleted(
-          investment: investment,
-          message: response.message,
-          investments: updatedInvestments,
-          hasReachedMax: investmentsState.hasReachedMax,
-        ),
+    try {
+      final MessageResponse response = await _investmentsRepository.delete(
+        investment.copyWith(userId: userId),
       );
+
+      if (!_isInvestmentStillValid(investment.id)) {
+        return;
+      }
+
+      // Remove the investment from the existing list of investments.
+      final List<Investment> updatedInvestments = List<Investment>.from(
+        state.investments,
+      )..removeWhere((Investment i) => i.id == investment.id);
+
+      final InvestmentsState investmentsState = state;
+      if (investmentsState is InvestmentsLoaded) {
+        // Emit the new state with the updated list of investments.
+        emit(
+          InvestmentDeleted(
+            investment: investment,
+            message: response.message,
+            investments: updatedInvestments,
+            hasReachedMax: investmentsState.hasReachedMax,
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      // Handle 404 (already deleted) as a success or a silent failure.
+      if (e.response?.statusCode == HttpStatus.notFound) {
+        debugPrint('Investment already deleted (404). Updating state.');
+
+        if (!_isInvestmentStillValid(investment.id)) return;
+
+        final List<Investment> updatedInvestments = List<Investment>.from(
+          state.investments,
+        )..removeWhere((Investment i) => i.id == investment.id);
+
+        final InvestmentsState investmentsState = state;
+        if (investmentsState is InvestmentsLoaded) {
+          emit(
+            InvestmentDeleted(
+              investment: investment,
+              message: 'Investment already removed.',
+              investments: updatedInvestments,
+              hasReachedMax: investmentsState.hasReachedMax,
+            ),
+          );
+        }
+      } else {
+        debugPrint('Error deleting investment: $e');
+        if (!_isInvestmentStillValid(investment.id)) return;
+        final List<Investment> currentInvestments = List<Investment>.from(
+          state.investments,
+        );
+        final InvestmentsState currentState = state;
+        if (currentState is InvestmentsLoaded) {
+          emit(
+            InvestmentError(
+              errorMessage: 'Failed to delete investment: $e',
+              investment: investment,
+              investments: currentInvestments,
+              hasReachedMax: currentState.hasReachedMax,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Unexpected error deleting investment: $e');
+      if (!_isInvestmentStillValid(investment.id)) return;
+      final List<Investment> currentInvestments = List<Investment>.from(
+        state.investments,
+      );
+      final InvestmentsState currentState = state;
+      if (currentState is InvestmentsLoaded) {
+        emit(
+          InvestmentError(
+            errorMessage: 'Failed to delete investment.',
+            investment: investment,
+            investments: currentInvestments,
+            hasReachedMax: currentState.hasReachedMax,
+          ),
+        );
+      }
     }
   }
 
@@ -941,5 +1081,21 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         ),
       );
     }
+  }
+
+  /// Checks if an investment still exists in the current state.
+  ///
+  /// Guard clauses (early exits) are used throughout this bloc instead
+  /// of explicit 'else' blocks to avoid deep nesting (the 'Pyramid of Doom'),
+  /// especially across multiple asynchronous gaps. This keeps the primary
+  /// logic readable at a lower indentation level.
+  bool _isInvestmentStillValid(int id) {
+    return state.investments.any((Investment i) => i.id == id);
+  }
+
+  bool _isInvestmentBeingDeleted(int id) {
+    final InvestmentsState currentState = state;
+    return currentState is InvestmentDeleting &&
+        currentState.investmentId == id;
   }
 }

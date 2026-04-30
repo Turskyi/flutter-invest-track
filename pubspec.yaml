@@ -88,10 +88,8 @@ dependencies:
   yahoo_finance_data_reader: ^1.0.14
 
 dependency_overrides:
-  #  I have tried the 0.20.2, but it does not let me upgrade.
   intl: ^0.20.2
-  # Tried ^3.0.0, did not compile.
-  source_gen: ^4.2.2
+  source_gen: ^4.2.3
 
 dev_dependencies:
 

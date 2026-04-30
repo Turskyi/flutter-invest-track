@@ -62,24 +62,33 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
           currentPrice = state.currentPrice;
         } else if (state is InvestmentUpdated) {
           currentPrice = state.currentPrice;
+        } else {
+          // Fallback to cached investment price if state is not explicitly
+          // loaded.
+          currentPrice = investment.currentPrice ?? 0;
         }
 
         double exchangeRate = 1;
         if (state is ExchangeRateLoaded) {
           exchangeRate = state.exchangeRate;
+        } else if (state is InvestmentUpdated) {
+          exchangeRate = state.exchangeRate ?? 1;
         }
 
         double totalValuePurchase = 0;
-        if (state is InvestmentUpdated &&
-            state.purchasePrice != null &&
-            state.exchangeRate != null) {
-          final double purchasePrice = state.purchasePrice!;
-          final double stateExchangeRate = state.exchangeRate!;
+        if (state is InvestmentUpdated) {
+          final double purchasePrice = state.purchasePrice ?? 0;
+          final double stateExchangeRate = state.exchangeRate ?? 1;
 
           totalValuePurchase = quantity * purchasePrice;
           currentPrice = state.currentPrice;
           totalValueCurrent = quantity * state.currentPrice;
           exchangeRate = stateExchangeRate;
+        } else {
+          // Robust calculation fallback during state transitions.
+          final double purchasePrice = investment.purchasePrice ?? 0;
+          totalValuePurchase = quantity * purchasePrice;
+          totalValueCurrent = quantity * currentPrice;
         }
 
         final double totalValueCad = totalValueCurrent * exchangeRate;
@@ -322,8 +331,6 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
           backgroundColor: Colors.red,
         ),
       );
-    } else if (state is InvestmentDeleted) {
-      Navigator.of(context).pop(true);
     }
   }
 

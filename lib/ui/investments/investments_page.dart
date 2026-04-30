@@ -246,8 +246,9 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
             final List<Investment> allInvestments = state.investments;
 
             return RefreshIndicator(
-              onRefresh: () async =>
-                  context.read<InvestmentsBloc>().add(const LoadInvestments()),
+              onRefresh: () async {
+                context.read<InvestmentsBloc>().add(const LoadInvestments());
+              },
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
                   if (constraints.maxWidth > 800.0) {
@@ -261,8 +262,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                           const LoadMoreInvestments(),
                         );
                       },
-                      onInvestmentTap: (Investment investment) =>
-                          _navigateToInvestmentDetails(context, investment),
+                      onInvestmentTap: _navigateToInvestmentDetails,
                     );
                   } else {
                     return NotificationListener<ScrollNotification>(
@@ -405,11 +405,8 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
     );
   }
 
-  void _navigateToInvestmentDetails(
-    BuildContext context,
-    Investment investment,
-  ) {
-    Navigator.of(context).push(
+  Future<void> _navigateToInvestmentDetails(Investment investment) async {
+    final bool? deleted = await Navigator.of(context).push<bool?>(
       SlidePageRoute<bool?>(
         page: BlocProvider<InvestmentsBloc>.value(
           value: context.read<InvestmentsBloc>()
@@ -418,6 +415,11 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         ),
       ),
     );
+
+    if (deleted == true && mounted) {
+      // If an investment was deleted, refresh the list to ensure UI is in sync.
+      context.read<InvestmentsBloc>().add(const LoadInvestments());
+    }
   }
 
   void _navigateToAddEditPage() {
@@ -446,10 +448,10 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
     );
   }
 
-  void _showDemoSignInPrompt() {
+  Future<void> _showDemoSignInPrompt() {
     final NavigatorState navigator = Navigator.of(context);
     final ScaffoldMessengerState? messenger = _scaffoldMessenger;
-    showModalBottomSheet<void>(
+    return showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),

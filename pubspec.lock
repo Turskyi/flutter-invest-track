@@ -349,14 +349,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.1"
-  flutter_easy_translate:
-    dependency: transitive
-    description:
-      name: flutter_easy_translate
-      sha256: ccc7d17db788c16b72a84e2da3e207bc2eb39101b0b76cdcf9e94fceebb8b715
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.8"
   flutter_email_sender:
     dependency: "direct main"
     description:
@@ -965,10 +957,10 @@ packages:
     dependency: "direct overridden"
     description:
       name: source_gen
-      sha256: "732792cfd197d2161a65bb029606a46e0a18ff30ef9e141a7a82172b05ea8ecd"
+      sha256: ec37cc0e6694374cbef59ed79685572c870a54ede6fa30a3e420feb3adffea02
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.2"
+    version: "4.2.3"
   source_helper:
     dependency: transitive
     description:
