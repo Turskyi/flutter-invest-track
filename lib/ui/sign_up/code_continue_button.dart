@@ -25,10 +25,12 @@ class CodeContinueButton extends StatelessWidget {
 
     return ElevatedButton(
       key: const Key('codeForm_continue_raisedButton'),
-      onPressed: isValid
-          ? () => context.read<SignUpBloc>().add(const CodeSubmitted())
-          : null,
+      onPressed: isValid ? () => _onContinuePressed(context) : null,
       child: Text(translate('sign_in_form.continue_button')),
     );
+  }
+
+  void _onContinuePressed(BuildContext context) {
+    return context.read<SignUpBloc>().add(const CodeSubmitted());
   }
 }
