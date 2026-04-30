@@ -24,7 +24,7 @@ class InputField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: isDark ? Colors.grey[800] : Colors.grey[200],
+            color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(

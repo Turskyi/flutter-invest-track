@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/ui/investments/investment/investment_details_page.dart';
 import 'package:investtrack/ui/widgets/gradient_background_scaffold.dart';
@@ -31,15 +32,21 @@ class InvestmentPage extends StatelessWidget {
           return GradientBackgroundScaffold(
             // We need to add the whole `AppBar` so that "arrow back" appeared.
             appBar: AppBar(),
-            body: const Center(
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.insert_chart, size: 50, color: Colors.blueAccent),
-                  SizedBox(height: 20),
+                  const Icon(
+                    Icons.insert_chart,
+                    size: 50,
+                    color: Colors.blueAccent,
+                  ),
+                  const SizedBox(height: 20),
                   Text(
-                    'Loading investment details...',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    translate('investments.loading_details'),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                   ),
                 ],
               ),

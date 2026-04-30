@@ -165,6 +165,7 @@
     "quantity_validation_error": "Будь ласка, введіть дійсне позитивне число.",
     "select_purchase_date": "Будь ласка, виберіть дату купівлі",
     "purchase_date_future": "Дата купівлі не може бути в майбутньому",
+    "loading_details": "Завантаження деталей інвестиції...",
     "loading": "Завантаження..."
   },
   "add_investment": {

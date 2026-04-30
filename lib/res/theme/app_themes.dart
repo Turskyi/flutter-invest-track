@@ -9,6 +9,7 @@ const Color _secondaryBlack = Colors.black;
 ThemeData get vibrantTheme => _buildTheme(
   primary: _primaryBlue,
   secondary: _secondaryGold,
+  tertiary: _secondaryGold,
   background: const Color(0xFF121212),
   surface: const Color(0xFF1E1E1E),
 );
@@ -16,6 +17,7 @@ ThemeData get vibrantTheme => _buildTheme(
 ThemeData get stealthTheme => _buildTheme(
   primary: _primaryRed,
   secondary: _secondaryBlack,
+  tertiary: _primaryRed,
   background: const Color(0xFF000000),
   surface: const Color(0xFF121212),
 );
@@ -23,6 +25,7 @@ ThemeData get stealthTheme => _buildTheme(
 ThemeData _buildTheme({
   required Color primary,
   required Color secondary,
+  required Color tertiary,
   required Color background,
   required Color surface,
 }) {
@@ -30,6 +33,7 @@ ThemeData _buildTheme({
     colorScheme: ColorScheme.dark(
       primary: primary,
       secondary: secondary,
+      tertiary: tertiary,
       surface: surface,
       onPrimary: Colors.white,
       onSecondary:

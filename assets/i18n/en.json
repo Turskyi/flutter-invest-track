@@ -165,6 +165,7 @@
     "quantity_validation_error": "Please enter a valid positive number.",
     "select_purchase_date": "Please select a purchase date",
     "purchase_date_future": "Purchase date cannot be in the future",
+    "loading_details": "Loading investment details...",
     "loading": "Loading..."
   },
   "add_investment": {

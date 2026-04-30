@@ -32,7 +32,7 @@ class RatingIcon extends StatelessWidget {
         break;
     }
     return IconButton(
-      color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
+      color: isSelected ? Theme.of(context).colorScheme.tertiary : Colors.grey,
       onPressed: onTap,
       icon: Icon(icon),
       iconSize: 36,

@@ -7,8 +7,8 @@ class ShimmerInvestment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
       child: Card(
         elevation: 4.0,
         margin: const EdgeInsets.all(8.0),

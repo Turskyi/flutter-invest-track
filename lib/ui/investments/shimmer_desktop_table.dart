@@ -49,8 +49,8 @@ class _ShimmerDesktopTableState extends State<ShimmerDesktopTable> {
               controller: _horizontalScrollController,
               scrollDirection: Axis.horizontal,
               child: Shimmer.fromColors(
-                baseColor: Colors.grey[700]!,
-                highlightColor: Colors.grey[500]!,
+                baseColor: Colors.grey.shade700,
+                highlightColor: Colors.grey.shade500,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

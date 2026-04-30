@@ -15,7 +15,7 @@ class MarkdownWidget extends StatelessWidget {
       data: content,
       styleSheet: MarkdownStyleSheet.fromTheme(themeData).copyWith(
         p: themeData.textTheme.bodyLarge,
-        listBullet: TextStyle(color: themeData.colorScheme.secondary),
+        listBullet: TextStyle(color: themeData.colorScheme.tertiary),
         a: const TextStyle(
           // Green for links.
           color: Colors.green,
