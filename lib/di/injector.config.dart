@@ -125,7 +125,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i636.AuthenticationBloc>(
       () => _i636.AuthenticationBloc(
         authenticationRepository: gh<_i223.AuthenticationRepository>(),
-        userRepository: gh<_i164.UserRepository>(),
       ),
     );
     gh.factory<_i141.SignInBloc>(
