@@ -7,6 +7,7 @@ import 'package:investtrack/application_services/blocs/authentication/bloc/authe
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
+import 'package:investtrack/di/injector.dart' as di;
 import 'package:investtrack/di/injector.dart';
 import 'package:investtrack/localization/localization_delelegate_getter.dart'
     as localization;
@@ -33,7 +34,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize dependency injection and wait for `SharedPreferences`.
-  final GetIt dependencies = await injectDependencies();
+  final GetIt dependencies = await di.injectDependencies();
 
   final LocalizationDelegate localizationDelegate = await localization
       .getLocalizationDelegate();

@@ -135,6 +135,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i445.SignUpBloc>(
       () => _i445.SignUpBloc(
         authenticationRepository: gh<_i223.AuthenticationRepository>(),
+        initialEmail: gh<String>(),
+        initialPassword: gh<String>(),
       ),
     );
     gh.factoryParam<_i91.InvestmentsBloc, bool, dynamic>(

@@ -1,0 +1,51 @@
+# InvestTrack Project Rules
+
+## Core Principles
+• Never lie, be brutally honest.
+• Code organization matters. Every class must have its own dedicated file (exceptions: State class of a StatefulWidget and enum-like classes such as Bloc events/states).
+
+## Flutter & Bloc
+• Use **Bloc**, NEVER use Cubit.
+• Never use helper methods that return widgets (e.g., `Widget _buildItem()`). Create a dedicated widget class instead.
+• For Row and Column, do not insert multiple `SizedBox` widgets for spacing. Use the `spacing:` property instead.
+• Do not use full-screen loading indicators (`CircularProgressIndicator`) for short delays. Use subtle loading indicators integrated into the existing UI.
+
+    - No hardcoded colors
+
+## Styling & UI
+• Never use hardcoded font sizes (e.g., `fontSize: 28`). Use values from `textTheme` (e.g., `textTheme.titleLarge?.fontSize`).
+• Avoid hardcoded UI colors and text styles unless absolutely necessary.
+• Prefer concise and elegant UI transitions.
+
+## Code Quality & Types
+• Always specify types explicitly.
+• Prefer `Object?` over `dynamic`.
+• Prefer `.firstOrNull` over `.first`.
+• Do not use `Key? key`. Use `super.key`.
+• **Nullable Handling**: Never use `!`. Use nullable handling (`?`) or assign to a local variable and check for null.
+• **Type Casting**: Never use `as`. If unavoidable, guard it properly:
+  ```dart
+  if (value is SomeType) {
+    final SomeType typedValue = value;
+  }
+  ```
+• **Logic Structure**: Prefer explicit `else` blocks. Instead of guard clauses with early returns for negative conditions, use positive conditions with an explicit `else`.
+  Example:
+  ```dart
+  // Prefer this:
+  if (isConditionMet) {
+    // logic
+  } else {
+    return null;
+  }
+
+  // Over this:
+  if (!isConditionMet) {
+    return null;
+  }
+  // logic
+  ```
+
+## Member Ordering
+• Sort members of the class in an order that makes sense.
+• `dispose` comes after `build`, so it should NEVER be placed before `build`.

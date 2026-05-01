@@ -22,5 +22,43 @@ Future<LocalizationDelegate> getLocalizationDelegate() async {
             .map((Language language) => language.isoLanguageCode)
             .toList(),
       );
+
+  // Apply subdomain override on Web.
+  final String? subdomainCode = _getSubdomainLanguageCode();
+
+  if (subdomainCode != null) {
+    final Locale subdomainLocale = Locale(subdomainCode);
+
+    if (localizationDelegate.currentLocale.languageCode != subdomainCode) {
+      await localizationDelegate.changeLocale(subdomainLocale);
+    }
+  }
+
   return localizationDelegate;
+}
+
+String? _getSubdomainLanguageCode() {
+  if (kIsWeb) {
+    final String host = Uri.base.host;
+    final List<String> hostParts = host.split('.');
+
+    // Check for at least [subdomain, domain, tld] e.g. uk.investtracks.com
+    if (hostParts.length >= 3) {
+      final String subdomain = hostParts.first.toLowerCase();
+
+      final bool isSupported = Language.values.any(
+        (Language l) => l.isoLanguageCode == subdomain,
+      );
+
+      if (isSupported) {
+        return subdomain;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
 }
