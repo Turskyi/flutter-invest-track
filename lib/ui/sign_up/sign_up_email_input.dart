@@ -41,7 +41,6 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
       ],
       onChanged: _onEmailChanged,
       decoration: InputDecoration(
-        labelText: translate('sign_in_form.email_label'),
         errorText: displayError != null
             ? translate('sign_in_form.invalid_email')
             : null,

@@ -39,7 +39,6 @@ class _SignUpPasswordInputState extends State<SignUpPasswordInput> {
           context.read<SignUpBloc>().add(SignUpPasswordChanged(password)),
       obscureText: _obscureText,
       decoration: InputDecoration(
-        labelText: translate('sign_in_form.password_label'),
         errorText: displayError != null
             ? translate('sign_in_form.invalid_password')
             : null,

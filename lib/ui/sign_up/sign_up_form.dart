@@ -10,6 +10,7 @@ import 'package:investtrack/ui/sign_up/sign_up_continue_button.dart';
 import 'package:investtrack/ui/sign_up/sign_up_email_input.dart';
 import 'package:investtrack/ui/sign_up/sign_up_password_input.dart';
 import 'package:investtrack/ui/widgets/app_version_text.dart';
+import 'package:investtrack/ui/widgets/input_field.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignUpForm extends StatelessWidget {
@@ -21,6 +22,7 @@ class SignUpForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return BlocListener<SignUpBloc, SignUpState>(
       listener: _signUpStateListener,
       child: Align(
@@ -33,21 +35,29 @@ class SignUpForm extends StatelessWidget {
               children: <Widget>[
                 Text(
                   translate('sign_up_form.title'),
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: TextStyle(
+                    fontSize: textTheme.headlineSmall?.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   translate('sign_up_form.subtitle'),
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: textTheme.bodyLarge?.fontSize),
                 ),
                 const SizedBox(height: 24),
-                SignUpEmailInput(initialValue: email),
-                const Padding(padding: EdgeInsets.all(12)),
-                SignUpPasswordInput(initialValue: password),
-                const Padding(padding: EdgeInsets.all(12)),
+                InputField(
+                  label: translate('sign_in_form.email_label'),
+                  icon: Icons.email,
+                  child: SignUpEmailInput(initialValue: email),
+                ),
+                const SizedBox(height: 20),
+                InputField(
+                  label: translate('sign_in_form.password_label'),
+                  icon: Icons.lock,
+                  child: SignUpPasswordInput(initialValue: password),
+                ),
+                const SizedBox(height: 20),
                 const SignUpContinueButton(),
                 const Padding(padding: EdgeInsets.all(24)),
                 Text(translate('sign_up_form.sign_in_prompt_text_1')),
