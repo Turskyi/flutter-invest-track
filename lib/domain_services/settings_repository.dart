@@ -5,5 +5,9 @@ abstract interface class SettingsRepository {
 
   Language getLanguage();
 
+  AppTheme getAppTheme();
+
   Future<bool> saveLanguageIsoCode(String languageIsoCode);
+
+  Future<bool> saveAppTheme(AppTheme theme);
 }

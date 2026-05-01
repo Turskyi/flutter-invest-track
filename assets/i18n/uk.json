@@ -28,6 +28,7 @@
     "welcome_message": "Ласкаво просимо до InvestTrack - вашого супутника в розумних інвестиціях.",
     "email_label": "Електронна пошта",
     "password_label": "Пароль",
+    "keep_me_signed_in": "Запам'ятати мене",
     "consent_prompt_data_collection": "Я даю згоду на збір моїх даних.",
     "consent_learn_more": "Дізнатися більше.",
     "continue_button": "Продовжити",
@@ -74,8 +75,10 @@
   "code_form": {
     "title": "Підтвердіть вашу пошту",
     "subtitle": "Введіть код підтвердження, надісланий на вашу пошту",
+    "input_label": "Код підтвердження",
     "no_code_prompt": "Не отримали код?",
-    "resend_button": "Надіслати знов"
+    "resend_button": "Надіслати знов",
+    "invalid_code": "Невірний код"
   },
   "sign_up_modal": {
     "title": "Реєстрація через Web",
@@ -89,6 +92,9 @@
     "privacy_policy": "Політика конфіденційності",
     "feedback": "Відгук",
     "language": "Мова",
+    "theme": "Тема",
+    "theme_vibrant": "Яскрава",
+    "theme_stealth": "Темна",
     "sign_out": "Вийти",
     "no_email": "Немає пошти",
     "delete_account": "Видалити обліковий запис",
@@ -161,6 +167,7 @@
     "quantity_validation_error": "Будь ласка, введіть дійсне позитивне число.",
     "select_purchase_date": "Будь ласка, виберіть дату купівлі",
     "purchase_date_future": "Дата купівлі не може бути в майбутньому",
+    "loading_details": "Завантаження деталей інвестиції...",
     "loading": "Завантаження..."
   },
   "add_investment": {

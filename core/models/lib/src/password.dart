@@ -2,7 +2,7 @@ import 'package:formz/formz.dart';
 import 'package:models/src/validation_error.dart';
 
 class Password extends FormzInput<String, PasswordValidationError> {
-  const Password.pure() : super.pure('');
+  const Password.pure([super.value = '']) : super.pure();
 
   const Password.dirty([super.value = '']) : super.dirty();
 

@@ -1,14 +1,26 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:investtrack/domain_services/exchange_rate_repository.dart';
 import 'package:investtrack/domain_services/investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:mockito/mockito.dart';
+import 'package:models/models.dart';
 import 'package:user_repository/user_repository.dart';
 
 class MockAuthenticationRepository extends Mock
     implements AuthenticationRepository {
   @override
-  Stream<AuthenticationStatus> get status =>
-      Stream<AuthenticationStatus>.value(const AuthenticatedStatus());
+  Stream<AuthenticationStatus> get status => Stream<AuthenticationStatus>.value(
+    const AuthenticatedStatus(userId: 'fake-id', email: 'fake@test.com'),
+  );
+
+  @override
+  String get userId => 'fake-id';
+
+  @override
+  Future<void> signOut() => Future<void>.value();
+
+  @override
+  Future<void> dispose() async {}
 }
 
 class MockUnauthenticatedRepository extends Mock
@@ -16,6 +28,9 @@ class MockUnauthenticatedRepository extends Mock
   @override
   Stream<AuthenticationStatus> get status =>
       Stream<AuthenticationStatus>.value(const UnauthenticatedStatus());
+
+  @override
+  String get userId => '';
 }
 
 class MockStreamAuthRepository extends Mock
@@ -26,6 +41,9 @@ class MockStreamAuthRepository extends Mock
 
   @override
   Stream<AuthenticationStatus> get status => _stream;
+
+  @override
+  String get userId => 'fake-id';
 }
 
 class MockUserRepository extends Mock implements UserRepository {}
@@ -33,3 +51,11 @@ class MockUserRepository extends Mock implements UserRepository {}
 class MockInvestmentsRepository extends Mock implements InvestmentsRepository {}
 
 class MockExchangeRepository extends Mock implements ExchangeRateRepository {}
+
+class MockSettingsRepository extends Mock implements SettingsRepository {
+  @override
+  AppTheme getAppTheme() => AppTheme.vibrant;
+
+  @override
+  Language getLanguage() => Language.fromIsoLanguageCode('en');
+}

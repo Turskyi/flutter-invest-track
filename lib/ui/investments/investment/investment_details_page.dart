@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
-import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
+import 'package:investtrack/res/constants/hero_tags.dart' as hero;
 import 'package:investtrack/router/slide_page_route.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
 import 'package:investtrack/ui/investments/investment/info_row.dart';
@@ -62,24 +62,33 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
           currentPrice = state.currentPrice;
         } else if (state is InvestmentUpdated) {
           currentPrice = state.currentPrice;
+        } else {
+          // Fallback to cached investment price if state is not explicitly
+          // loaded.
+          currentPrice = investment.currentPrice ?? 0;
         }
 
         double exchangeRate = 1;
         if (state is ExchangeRateLoaded) {
           exchangeRate = state.exchangeRate;
+        } else if (state is InvestmentUpdated) {
+          exchangeRate = state.exchangeRate ?? 1;
         }
 
         double totalValuePurchase = 0;
-        if (state is InvestmentUpdated &&
-            state.purchasePrice != null &&
-            state.exchangeRate != null) {
-          final double purchasePrice = state.purchasePrice!;
-          final double stateExchangeRate = state.exchangeRate!;
+        if (state is InvestmentUpdated) {
+          final double purchasePrice = state.purchasePrice ?? 0;
+          final double stateExchangeRate = state.exchangeRate ?? 1;
 
           totalValuePurchase = quantity * purchasePrice;
           currentPrice = state.currentPrice;
           totalValueCurrent = quantity * state.currentPrice;
           exchangeRate = stateExchangeRate;
+        } else {
+          // Robust calculation fallback during state transitions.
+          final double purchasePrice = investment.purchasePrice ?? 0;
+          totalValuePurchase = quantity * purchasePrice;
+          totalValueCurrent = quantity * currentPrice;
         }
 
         final double totalValueCad = totalValueCurrent * exchangeRate;
@@ -139,7 +148,7 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                         children: <Widget>[
                           if (investment.companyLogoUrl.isNotEmpty)
                             Hero(
-                              tag: '${hero_tags.companyLogo}${investment.id}',
+                              tag: '${hero.companyLogo}${investment.id}',
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: ColoredBox(
@@ -148,6 +157,14 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
                                     investment.companyLogoUrl,
                                     width: 100,
                                     height: 100,
+                                    errorBuilder:
+                                        (
+                                          BuildContext _,
+                                          Object _,
+                                          StackTrace? _,
+                                        ) {
+                                          return const SizedBox();
+                                        },
                                   ),
                                 ),
                               ),
@@ -314,8 +331,6 @@ class _InvestmentDetailsPageState extends State<InvestmentDetailsPage>
           backgroundColor: Colors.red,
         ),
       );
-    } else if (state is InvestmentDeleted) {
-      Navigator.of(context).pop(true);
     }
   }
 

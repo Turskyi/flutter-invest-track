@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:authentication_repository/src/authentication_status.dart';
 import 'package:authentication_repository/src/env/env.dart';
+import 'package:authentication_repository/src/shared_prefs_persistor.dart';
 import 'package:clerk_auth/clerk_auth.dart' as clerk;
 import 'package:clerk_auth/clerk_auth.dart';
 import 'package:models/models.dart' as entity;
@@ -25,11 +26,18 @@ class AuthenticationRepository {
 
   clerk.Auth? _auth;
 
+  String? _inMemoryToken;
+  String? _inMemoryUserId;
+  String? _inMemoryEmail;
+
   Stream<AuthenticationStatus> get status async* {
+    if (_auth == null) {
+      await _authInit();
+    }
     final bool isAuthenticated = _checkInitialAuthenticationStatus();
 
     if (isAuthenticated) {
-      yield AuthenticationStatus.authenticated();
+      yield AuthenticationStatus.authenticated(userId: userId, email: _email);
     } else {
       yield AuthenticationStatus.unauthenticated();
     }
@@ -41,8 +49,17 @@ class AuthenticationRepository {
   Future<entity.User> signIn({
     required String email,
     required String password,
+    bool keepMeSignedIn = false,
   }) async {
-    await _authInit();
+    await _saveKeepMeSignedIn(keepMeSignedIn);
+    await _authInit(forceReinit: true);
+
+    // If already signed in, sign out first to ensure a clean state and avoid
+    // the "already signed in" error from Clerk.
+    if (_auth?.session != null) {
+      await _auth?.signOut();
+    }
+
     final String trimmedEmail = email.trim();
 
     final String trimmedPassword = password.trim();
@@ -81,7 +98,9 @@ class AuthenticationRepository {
     }
 
     await _saveEmail(trimmedEmail);
-    _controller.add(AuthenticationStatus.authenticated());
+    _controller.add(
+      AuthenticationStatus.authenticated(userId: userId, email: trimmedEmail),
+    );
     return entity.User(id: userId, email: trimmedEmail);
   }
 
@@ -150,8 +169,14 @@ class AuthenticationRepository {
       final String? userId = clerkClient?.user?.id;
 
       if (userId?.isNotEmpty == true) {
-        await _saveUserId(userId ?? '');
-        _controller.add(AuthenticationStatus.authenticated());
+        final String resolvedUserId = userId ?? '';
+        await _saveUserId(resolvedUserId);
+        _controller.add(
+          AuthenticationStatus.authenticated(
+            userId: resolvedUserId,
+            email: _email,
+          ),
+        );
         await _removeSignUpId();
       } else {
         _controller.add(AuthenticationStatus.unauthenticated());
@@ -173,6 +198,7 @@ class AuthenticationRepository {
     await _removeToken();
     await _removeEmail();
     await _removeUserId();
+    await _removeKeepMeSignedIn();
     _controller.add(AuthenticationStatus.unauthenticated());
   }
 
@@ -182,19 +208,32 @@ class AuthenticationRepository {
   }
 
   bool _checkInitialAuthenticationStatus() {
-    final String token = _preferences.getString(
-          entity.StorageKeys.authToken.key,
-        ) ??
+    final String token = _inMemoryToken ??
+        _preferences.getString(entity.StorageKeys.authToken.key) ??
         '';
-    return token.isNotEmpty;
+
+    // Check if we have a valid session in Clerk as well.
+    final bool hasClerkSession = _auth?.session != null;
+
+    return token.isNotEmpty || hasClerkSession;
   }
 
   Future<bool> _saveToken(String token) {
-    return _preferences.setString(entity.StorageKeys.authToken.key, token);
+    if (_keepMeSignedIn) {
+      return _preferences.setString(entity.StorageKeys.authToken.key, token);
+    } else {
+      _inMemoryToken = token;
+      return Future<bool>.value(true);
+    }
   }
 
   Future<bool> _saveUserId(String userId) {
-    return _preferences.setString(entity.StorageKeys.userId.key, userId);
+    if (_keepMeSignedIn) {
+      return _preferences.setString(entity.StorageKeys.userId.key, userId);
+    } else {
+      _inMemoryUserId = userId;
+      return Future<bool>.value(true);
+    }
   }
 
   Future<bool> _saveSignUpId(String id) {
@@ -202,26 +241,55 @@ class AuthenticationRepository {
   }
 
   Future<bool> _saveEmail(String email) {
-    return _preferences.setString(entity.StorageKeys.email.key, email);
+    if (_keepMeSignedIn) {
+      return _preferences.setString(entity.StorageKeys.email.key, email);
+    } else {
+      _inMemoryEmail = email;
+      return Future<bool>.value(true);
+    }
+  }
+
+  Future<bool> _saveKeepMeSignedIn(bool value) {
+    return _preferences.setBool(entity.StorageKeys.keepMeSignedIn.key, value);
   }
 
   String get _email {
-    return _preferences.getString(entity.StorageKeys.email.key) ?? '';
+    return _inMemoryEmail ??
+        _preferences.getString(entity.StorageKeys.email.key) ??
+        '';
   }
 
-  Future<bool> _removeToken() =>
-      _preferences.remove(entity.StorageKeys.authToken.key);
+  String get userId {
+    return _inMemoryUserId ??
+        _preferences.getString(entity.StorageKeys.userId.key) ??
+        '';
+  }
+
+  bool get _keepMeSignedIn {
+    return _preferences.getBool(entity.StorageKeys.keepMeSignedIn.key) ?? false;
+  }
+
+  Future<bool> _removeToken() {
+    _inMemoryToken = null;
+    return _preferences.remove(entity.StorageKeys.authToken.key);
+  }
 
   Future<bool> _removeSignUpId() => _preferences.remove(
         entity.StorageKeys.signUpId.key,
       );
 
   Future<bool> _removeEmail() {
+    _inMemoryEmail = null;
     return _preferences.remove(entity.StorageKeys.email.key);
   }
 
-  Future<bool> _removeUserId() =>
-      _preferences.remove(entity.StorageKeys.userId.key);
+  Future<bool> _removeUserId() {
+    _inMemoryUserId = null;
+    return _preferences.remove(entity.StorageKeys.userId.key);
+  }
+
+  Future<bool> _removeKeepMeSignedIn() =>
+      _preferences.remove(entity.StorageKeys.keepMeSignedIn.key);
 
   Future<entity.MessageResponse> deleteAccount(String userId) {
     _controller.add(AuthenticationStatus.deleting());
@@ -236,12 +304,19 @@ class AuthenticationRepository {
     return signUpId.isNotEmpty;
   }
 
-  Future<void> _authInit() async {
+  Future<void> _authInit({bool forceReinit = false}) async {
+    if (forceReinit && _auth != null) {
+      _auth?.terminate();
+      _auth = null;
+    }
+
     if (_auth == null) {
       _auth = clerk.Auth(
-        config: const clerk.AuthConfig(
+        config: clerk.AuthConfig(
           publishableKey: Env.clerkPublishableKey,
-          persistor: Persistor.none,
+          persistor: _keepMeSignedIn
+              ? SharedPrefsPersistor(_preferences)
+              : Persistor.none,
         ),
       );
       await _auth?.initialize();

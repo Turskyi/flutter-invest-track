@@ -9,6 +9,7 @@ import 'package:investtrack/router/slide_page_route.dart';
 import 'package:investtrack/ui/investments/investment/investment_page.dart';
 import 'package:investtrack/ui/investments/investment_tile/custom_badge.dart';
 import 'package:investtrack/ui/investments/investment_tile/investment_detail.dart';
+import 'package:investtrack/utils/price_utils.dart' as util;
 import 'package:investtrack/utils/price_utils.dart';
 import 'package:models/models.dart';
 
@@ -106,7 +107,7 @@ class InvestmentCard extends StatelessWidget {
                         Text(
                           investment.companyName,
                           style: themeData.textTheme.headlineMedium?.copyWith(
-                            color: themeData.colorScheme.secondary,
+                            color: themeData.colorScheme.tertiary,
                           ),
                         ),
                       ],
@@ -119,7 +120,7 @@ class InvestmentCard extends StatelessWidget {
                 InvestmentDetail(
                   label: translate('investment_card.purchase_price_usd'),
                   value: isPurchased
-                      ? formatPrice(price: purchasePrice)
+                      ? util.formatPrice(price: purchasePrice)
                       : translate('desktop_table.not_available'),
                   icon: Icons.money,
                 ),

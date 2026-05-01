@@ -19,10 +19,10 @@ class FeedbackForm extends StatefulWidget {
   final ScrollController? scrollController;
 
   @override
-  State<FeedbackForm> createState() => _CustomFeedbackFormState();
+  State<FeedbackForm> createState() => _FeedbackFormState();
 }
 
-class _CustomFeedbackFormState extends State<FeedbackForm> {
+class _FeedbackFormState extends State<FeedbackForm> {
   FeedbackDetails _customFeedback = const FeedbackDetails();
 
   @override
@@ -47,55 +47,37 @@ class _CustomFeedbackFormState extends State<FeedbackForm> {
                   Text(translate('feedback.whatKind')),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
+                    spacing: 8,
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(right: 8),
-                        child: Text('*'),
-                      ),
+                      const Text('*'),
                       Flexible(
                         child: DropdownButton<FeedbackType>(
                           value: _customFeedback.feedbackType,
-                          items: FeedbackType.values
-                              .map(
-                                (FeedbackType type) =>
-                                    DropdownMenuItem<FeedbackType>(
-                                      value: type,
-                                      child: Text(type.value),
-                                    ),
-                              )
-                              .toList(),
-                          onChanged: (FeedbackType? feedbackType) => setState(
-                            () => _customFeedback = _customFeedback.copyWith(
-                              feedbackType: feedbackType,
-                            ),
-                          ),
+                          items: FeedbackType.values.map((FeedbackType type) {
+                            return DropdownMenuItem<FeedbackType>(
+                              value: type,
+                              child: Text(translate(type.value)),
+                            );
+                          }).toList(),
+                          onChanged: _onFeedbackTypeChanged,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   Text(translate('feedback.whatIsYourFeedback')),
-                  TextField(
-                    onChanged: (String newFeedback) => _customFeedback =
-                        _customFeedback.copyWith(feedbackText: newFeedback),
-                  ),
+                  TextField(onChanged: _onFeedbackTextChanged),
                   const SizedBox(height: 16),
                   Text(translate('feedback.howDoesThisFeel')),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: FeedbackRating.values
-                        .map(
-                          (FeedbackRating r) => RatingIcon(
-                            rating: r,
-                            isSelected: _customFeedback.rating == r,
-                            onTap: () => setState(
-                              () => _customFeedback = _customFeedback.copyWith(
-                                rating: r,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
+                    children: FeedbackRating.values.map((FeedbackRating r) {
+                      return RatingIcon(
+                        rating: r,
+                        isSelected: _customFeedback.rating == r,
+                        onTap: () => _onRatingChanged(r),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
@@ -105,15 +87,35 @@ class _CustomFeedbackFormState extends State<FeedbackForm> {
         TextButton(
           // disable this button until the user has specified a feedback type
           onPressed: _customFeedback.feedbackType != null
-              ? () => widget.onSubmit(
-                  _customFeedback.feedbackText ?? '',
-                  extras: _customFeedback.toMap(),
-                )
+              ? _submitFeedback
               : null,
           child: Text(translate('submit')),
         ),
         const SizedBox(height: 8),
       ],
     );
+  }
+
+  void _onFeedbackTextChanged(String newFeedback) {
+    _customFeedback = _customFeedback.copyWith(feedbackText: newFeedback);
+  }
+
+  Future<void> _submitFeedback() {
+    return widget.onSubmit(
+      _customFeedback.feedbackText ?? '',
+      extras: _customFeedback.toMap(),
+    );
+  }
+
+  void _onRatingChanged(FeedbackRating rating) {
+    return setState(
+      () => _customFeedback = _customFeedback.copyWith(rating: rating),
+    );
+  }
+
+  void _onFeedbackTypeChanged(FeedbackType? feedbackType) {
+    return setState(() {
+      _customFeedback = _customFeedback.copyWith(feedbackType: feedbackType);
+    });
   }
 }

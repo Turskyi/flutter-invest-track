@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:investtrack/application_services/blocs/authentication/authentication.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
+import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/localization/localization_delelegate_getter.dart';
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/public_routes.dart';
@@ -39,11 +40,13 @@ void main() {
       MockInvestmentsRepository();
   final MockExchangeRepository exchangeRateRepository =
       MockExchangeRepository();
+  final MockSettingsRepository settingsRepository = MockSettingsRepository();
+
   final AuthenticationBloc authenticationBloc = AuthenticationBloc(
     authenticationRepository: authenticationRepository,
-    userRepository: userRepository,
   );
   final MockMenuBloc menuBloc = MockMenuBloc();
+  final ThemeBloc themeBloc = ThemeBloc(settingsRepository);
 
   final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
     AppRoute.investments.path: (_) => BlocProvider<InvestmentsBloc>(
@@ -69,6 +72,7 @@ void main() {
   );
   GetIt.instance.registerSingleton<AuthenticationBloc>(authenticationBloc);
   GetIt.instance.registerSingleton<UserRepository>(userRepository);
+
   GetIt.instance.registerSingleton<MenuBloc>(menuBloc);
 
   testWidgets('App loads and displays the sign-in page', (
@@ -83,7 +87,9 @@ void main() {
             routeMap: routeMap,
             authenticationRepository: authenticationRepository,
             authenticationBloc: authenticationBloc,
-            menuBloc: menuBloc, // Provide the mock MenuBloc
+            menuBloc: menuBloc,
+            // Provide the mock MenuBloc
+            themeBloc: themeBloc,
           ),
         ),
         localizationDelegate,

@@ -17,13 +17,14 @@ class EmailInput extends StatelessWidget {
     );
 
     return TextField(
+      key: const Key('signInForm_emailInput_textField'),
       keyboardType: TextInputType.emailAddress,
       inputFormatters: <TextInputFormatter>[
         LengthLimitingTextInputFormatter(constants.emailMaxLength),
       ],
-      key: const Key('signInForm_emailInput_textField'),
-      onChanged: (String email) =>
-          context.read<SignInBloc>().add(SignInEmailChanged(email)),
+      onChanged: (String email) {
+        _onEmailChanged(context, email);
+      },
       decoration: InputDecoration(
         labelText: translate('sign_in_form.email_label'),
         errorText: displayError != null
@@ -31,5 +32,9 @@ class EmailInput extends StatelessWidget {
             : null,
       ),
     );
+  }
+
+  void _onEmailChanged(BuildContext context, String email) {
+    return context.read<SignInBloc>().add(SignInEmailChanged(email));
   }
 }

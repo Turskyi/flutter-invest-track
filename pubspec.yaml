@@ -27,7 +27,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build
 # suffix.
-version: 1.1.4+14
+version: 1.1.5+15
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -64,14 +64,13 @@ dependencies:
       ref: master
   formz: ^0.8.0
   get_it: ^9.2.1
-  injectable: ^2.7.1+4
-  injectable_generator: ^2.12.1
-  #  Tried 0.20.2, did not compile.
+  injectable: ^3.0.0
+  injectable_generator: ^3.0.2
   intl: ^0.20.2
   json_annotation: ^4.11.0
 
   meta: any
-  mockito: ^5.6.4
+  mockito: any
   models:
     path: core/models
   nested: ^1.0.0
@@ -88,14 +87,12 @@ dependencies:
   yahoo_finance_data_reader: ^1.0.14
 
 dependency_overrides:
-  #  I have tried the 0.20.2, but it does not let me upgrade.
   intl: ^0.20.2
-  # Tried ^3.0.0, did not compile.
-  source_gen: ^4.2.2
+  source_gen: ^4.2.3
 
 dev_dependencies:
-  # Tried ^2.6.0, could not compile.
-  build_runner: ^2.13.1
+
+  build_runner: ^2.15.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -104,7 +101,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  # Tried ^6.10.0 did not compile.
+
   json_serializable: ^6.13.1
 
 # For information on the generic Dart part of this file, see the

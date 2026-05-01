@@ -14,6 +14,8 @@ class InputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -22,7 +24,7 @@ class InputField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: Colors.grey[800],
+            color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(

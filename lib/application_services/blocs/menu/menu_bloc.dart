@@ -63,7 +63,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       final StringBuffer feedbackBody = StringBuffer()
         ..writeln(
           '${type is FeedbackType ? translate('feedback.type') : ''}:'
-          ' ${type is FeedbackType ? type.value : ''}',
+          ' ${type is FeedbackType ? translate(type.value) : ''}',
         )
         ..writeln()
         ..writeln(feedback.text)
@@ -75,7 +75,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         ..writeln(
           '${rating is FeedbackRating ? translate('feedback.rating') : ''}'
           '${rating is FeedbackRating ? ':' : ''}'
-          ' ${rating is FeedbackRating ? rating.value : ''}',
+          ' ${rating is FeedbackRating ? translate(rating.value) : ''}',
         );
 
       final Email email = Email(

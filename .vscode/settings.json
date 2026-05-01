@@ -18,7 +18,8 @@
     "typescript",
     "xml",
     "jsonc",
-    "github-actions-workflow"
+    "github-actions-workflow",
+    "dart"
   ],
   "spellright.parserByClass": {
     "Log": {
@@ -28,6 +29,9 @@
       "parser": "plain"
     },
     "github-actions-workflow": {
+      "parser": "plain"
+    },
+    "dart": {
       "parser": "plain"
     }
   }

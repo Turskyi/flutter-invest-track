@@ -24,6 +24,8 @@ import 'package:investtrack/application_services/blocs/sign_in/bloc/sign_in_bloc
     as _i141;
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart'
     as _i445;
+import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart'
+    as _i606;
 import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart'
     as _i451;
 import 'package:investtrack/application_services/repositories/demo_investments_repository.dart'
@@ -108,6 +110,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i682.MenuBloc>(
       () => _i682.MenuBloc(gh<_i113.SettingsRepository>()),
     );
+    gh.factory<_i606.ThemeBloc>(
+      () => _i606.ThemeBloc(gh<_i113.SettingsRepository>()),
+    );
     gh.lazySingleton<_i223.AuthenticationRepository>(
       () => authenticationRepositoryModule.getAuthenticationRepository(
         gh<_i651.RetrofitClient>(),
@@ -120,7 +125,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i636.AuthenticationBloc>(
       () => _i636.AuthenticationBloc(
         authenticationRepository: gh<_i223.AuthenticationRepository>(),
-        userRepository: gh<_i164.UserRepository>(),
       ),
     );
     gh.factory<_i141.SignInBloc>(

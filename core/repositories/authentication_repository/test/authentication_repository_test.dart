@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:models/models.dart' as entity;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -112,19 +114,41 @@ void main() {
         );
       });
 
-      test('emits UnauthenticatedStatus', () async {
-        final List<AuthenticationStatus> emitted = <AuthenticationStatus>[];
-
-        // status yields the initial event synchronously inside the async*
-        // generator, so listen before calling signOut.
-        repository.status.listen(emitted.add);
-
-        // Allow the async* generator to yield its initial event.
-        await Future<void>.delayed(Duration.zero);
+      test('clears keep me signed in flag from storage', () async {
+        await preferences.setBool(
+          entity.StorageKeys.keepMeSignedIn.key,
+          true,
+        );
 
         await repository.signOut();
 
+        expect(
+          preferences.getBool(entity.StorageKeys.keepMeSignedIn.key),
+          isNull,
+        );
+      });
+
+      test('emits UnauthenticatedStatus', () async {
+        final List<AuthenticationStatus> emitted = <AuthenticationStatus>[];
+
+        // status yields the initial event inside the async*
+        // generator, so listen before calling signOut.
+        final StreamSubscription<AuthenticationStatus> subscription =
+            repository.status.listen(emitted.add);
+
+        // Allow the async* generator to yield its initial event.
+        // We might need a bit more time now since it's async.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await repository.signOut();
+
+        // Allow some time for the signOut event to be emitted.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        expect(emitted, isNotEmpty);
         expect(emitted.last, isA<UnauthenticatedStatus>());
+
+        await subscription.cancel();
       });
     });
   });
@@ -142,6 +166,15 @@ class _FakePreferences implements SharedPreferences {
 
   @override
   Future<bool> setString(String key, String value) async {
+    _store[key] = value;
+    return true;
+  }
+
+  @override
+  bool? getBool(String key) => _store[key] as bool?;
+
+  @override
+  Future<bool> setBool(String key, bool value) async {
     _store[key] = value;
     return true;
   }

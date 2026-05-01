@@ -22,7 +22,6 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
   void initState() {
     super.initState();
     _textEditingController.text = widget.initialValue;
-    context.read<SignUpBloc>().add(SignUpEmailChanged(widget.initialValue));
   }
 
   @override
@@ -39,10 +38,8 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
       inputFormatters: <TextInputFormatter>[
         LengthLimitingTextInputFormatter(constants.emailMaxLength),
       ],
-      onChanged: (String email) =>
-          context.read<SignUpBloc>().add(SignUpEmailChanged(email)),
+      onChanged: _onEmailChanged,
       decoration: InputDecoration(
-        labelText: translate('sign_in_form.email_label'),
         errorText: displayError != null
             ? translate('sign_in_form.invalid_email')
             : null,
@@ -54,5 +51,9 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
   void dispose() {
     _textEditingController.dispose();
     super.dispose();
+  }
+
+  void _onEmailChanged(String email) {
+    return context.read<SignUpBloc>().add(SignUpEmailChanged(email));
   }
 }

@@ -6,6 +6,7 @@ import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/privacy/privacy_home_button.dart';
 import 'package:investtrack/ui/privacy/sign_in_to_delete_button.dart';
+import 'package:investtrack/ui/privacy/widgets/privacy_section.dart';
 import 'package:investtrack/ui/sign_in/language_selector_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,19 +42,19 @@ class PrivacyChoicesPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(translate('privacy_choices.intro')),
                 const SizedBox(height: 24),
-                _PrivacySection(
+                PrivacySection(
                   title: translate('privacy_choices.section_what_we_collect'),
                   child: Text(
                     translate('privacy_choices.what_we_collect_body'),
                   ),
                 ),
                 const SizedBox(height: 24),
-                _PrivacySection(
+                PrivacySection(
                   title: translate('privacy_choices.section_data_sharing'),
                   child: Text(translate('privacy_choices.data_sharing_body')),
                 ),
                 const SizedBox(height: 24),
-                _PrivacySection(
+                PrivacySection(
                   title: translate('privacy_choices.section_delete_account'),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +75,7 @@ class PrivacyChoicesPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _PrivacySection(
+                PrivacySection(
                   title: translate('privacy_choices.section_contact'),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,28 +143,6 @@ class PrivacyChoicesPage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _PrivacySection extends StatelessWidget {
-  const _PrivacySection({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        child,
-      ],
     );
   }
 }

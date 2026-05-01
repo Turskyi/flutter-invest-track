@@ -28,6 +28,7 @@
     "welcome_message": "Welcome to InvestTrack - your companion in smart investments.",
     "email_label": "Email",
     "password_label": "Password",
+    "keep_me_signed_in": "Keep me signed in",
     "consent_prompt_data_collection": "I consent to the collection of my data.",
     "consent_learn_more": "Learn more.",
     "continue_button": "Continue",
@@ -74,8 +75,10 @@
   "code_form": {
     "title": "Verify your email",
     "subtitle": "Enter the verification code sent to your email",
+    "input_label": "Verification Code",
     "no_code_prompt": "Didn't receive a code?",
-    "resend_button": "Resend"
+    "resend_button": "Resend",
+    "invalid_code": "Invalid code"
   },
   "sign_up_modal": {
     "title": "Sign Up via Web",
@@ -89,6 +92,9 @@
     "privacy_policy": "Privacy Policy",
     "feedback": "Feedback",
     "language": "Language",
+    "theme": "Theme",
+    "theme_vibrant": "Vibrant",
+    "theme_stealth": "Stealth",
     "sign_out": "Sign out",
     "no_email": "No Email",
     "delete_account": "Delete Account",
@@ -161,6 +167,7 @@
     "quantity_validation_error": "Please enter a valid positive number.",
     "select_purchase_date": "Please select a purchase date",
     "purchase_date_future": "Purchase date cannot be in the future",
+    "loading_details": "Loading investment details...",
     "loading": "Loading..."
   },
   "add_investment": {

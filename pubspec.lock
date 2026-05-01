@@ -116,10 +116,10 @@ packages:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "521daf8d189deb79ba474e43a696b41c49fb3987818dbacf3308f1e03673a75e"
+      sha256: "1523ce62448ebac2c15a8ba5fbad8acac169788658a7dd2a1c2d9c2a9318b9a6"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.1"
+    version: "2.15.0"
   built_collection:
     dependency: transitive
     description:
@@ -349,14 +349,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.1"
-  flutter_easy_translate:
-    dependency: transitive
-    description:
-      name: flutter_easy_translate
-      sha256: ccc7d17db788c16b72a84e2da3e207bc2eb39101b0b76cdcf9e94fceebb8b715
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.8"
   flutter_email_sender:
     dependency: "direct main"
     description:
@@ -497,18 +489,18 @@ packages:
     dependency: "direct main"
     description:
       name: injectable
-      sha256: "32b36a9d87f18662bee0b1951b81f47a01f2bf28cd6ea94f60bc5453c7bf598c"
+      sha256: "1da6399509e44ddb0d8a4a35291d7122c4efb5c625a9d733bf5e48d4a72e379e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.1+4"
+    version: "3.0.0"
   injectable_generator:
     dependency: "direct main"
     description:
       name: injectable_generator
-      sha256: fcc0d1edcef2c863dec846b0dec27cb2390d9e9b62e61da5cfc2b9a06b9533c2
+      sha256: "433ad4d94837ff187803b2bf04c6707db6fad8d245f1d693e2e34053bc07ec28"
       url: "https://pub.dev"
     source: hosted
-    version: "2.12.1"
+    version: "3.0.2"
   intl:
     dependency: "direct main"
     description:
@@ -569,10 +561,10 @@ packages:
     dependency: transitive
     description:
       name: lean_builder
-      sha256: ee4117b03e93a4eb83e1a78c8e7a1dc22188d43bb142309982be48673a1b3a53
+      sha256: c16e95ddf7b2d49dd551357b7212fe2ce9f13ec7ad1b1e660c157184031e96c0
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.7"
+    version: "0.1.10"
   lints:
     dependency: transitive
     description:
@@ -965,10 +957,10 @@ packages:
     dependency: "direct overridden"
     description:
       name: source_gen
-      sha256: "732792cfd197d2161a65bb029606a46e0a18ff30ef9e141a7a82172b05ea8ecd"
+      sha256: ec37cc0e6694374cbef59ed79685572c870a54ede6fa30a3e420feb3adffea02
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.2"
+    version: "4.2.3"
   source_helper:
     dependency: transitive
     description:

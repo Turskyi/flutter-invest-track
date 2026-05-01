@@ -13,22 +13,29 @@ class CodeContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
+
     final bool isValid = context.select(
       (SignUpBloc bloc) => bloc.state.isValid,
     );
 
     final bool isInProgress =
         isValid &&
-        context.select((SignUpBloc bloc) => bloc.state.status.isInProgress);
+        context.select((SignUpBloc bloc) {
+          return bloc.state.status.isInProgress;
+        });
 
-    if (isInProgress) return const CircularProgressIndicator();
+    if (isInProgress) {
+      return const CircularProgressIndicator();
+    } else {
+      return ElevatedButton(
+        key: const Key('codeForm_continue_raisedButton'),
+        onPressed: isValid ? () => _onContinuePressed(context) : null,
+        child: Text(translate('sign_in_form.continue_button')),
+      );
+    }
+  }
 
-    return ElevatedButton(
-      key: const Key('codeForm_continue_raisedButton'),
-      onPressed: isValid
-          ? () => context.read<SignUpBloc>().add(const CodeSubmitted())
-          : null,
-      child: Text(translate('sign_in_form.continue_button')),
-    );
+  void _onContinuePressed(BuildContext context) {
+    return context.read<SignUpBloc>().add(const CodeSubmitted());
   }
 }

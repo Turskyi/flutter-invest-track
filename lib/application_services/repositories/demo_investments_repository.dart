@@ -1,9 +1,8 @@
 import 'package:investtrack/domain_services/investments_repository.dart';
 import 'package:investtrack/entities/demo_investments.dart';
+import 'package:investtrack/entities/demo_message_response.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
-
-import '../../entities/demo_message_response.dart';
 
 /// A read-only in-memory repository used in demo mode.
 /// Returns a hardcoded portfolio so unauthenticated users can explore the app

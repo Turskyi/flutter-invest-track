@@ -1,5 +1,6 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:clerk_auth/clerk_auth.dart' show AuthError;
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -28,6 +29,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       super(const SignInState()) {
     on<SignInEmailChanged>(_onEmailChanged);
     on<SignInPasswordChanged>(_onPasswordChanged);
+    on<SignInKeepMeSignedInChanged>(_onKeepMeSignedInChanged);
     on<SignInSubmitted>(_onSubmitted);
   }
 
@@ -36,9 +38,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   void _onEmailChanged(SignInEmailChanged event, Emitter<SignInState> emit) {
     final EmailAddress email = EmailAddress.dirty(event.email);
     emit(
-      SignInState(
+      state.copyWith(
         email: email,
-        password: state.password,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[
           state.password,
           email,
@@ -54,8 +55,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     final Password password = Password.dirty(event.password);
 
     emit(
-      SignInState(
-        email: state.email,
+      state.copyWith(
         password: password,
         isValid: Formz.validate(<FormzInput<String, ValidationError>>[
           password,
@@ -63,6 +63,13 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         ]),
       ),
     );
+  }
+
+  void _onKeepMeSignedInChanged(
+    SignInKeepMeSignedInChanged event,
+    Emitter<SignInState> emit,
+  ) {
+    emit(state.copyWith(keepMeSignedIn: event.keepMeSignedIn));
   }
 
   Future<void> _onSubmitted(
@@ -75,6 +82,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         final User user = await _authenticationRepository.signIn(
           email: state.email.value,
           password: state.password.value,
+          keepMeSignedIn: state.keepMeSignedIn,
         );
 
         if (user.isNotAnonymous) {
@@ -155,6 +163,16 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
               ),
             );
           }
+        } else if (error is AuthError) {
+          emit(
+            SignInErrorState(
+              status: FormzSubmissionStatus.failure,
+              email: state.email,
+              password: state.password,
+              isValid: state.isValid,
+              errorMessage: error.toString(),
+            ),
+          );
         } else {
           emit(state.copyWith(status: FormzSubmissionStatus.failure));
         }

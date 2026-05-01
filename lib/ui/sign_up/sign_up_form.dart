@@ -3,13 +3,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:formz/formz.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/sign_up/sign_up_continue_button.dart';
 import 'package:investtrack/ui/sign_up/sign_up_email_input.dart';
 import 'package:investtrack/ui/sign_up/sign_up_password_input.dart';
+import 'package:investtrack/ui/widgets/app_version_text.dart';
+import 'package:investtrack/ui/widgets/input_field.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignUpForm extends StatelessWidget {
@@ -21,6 +22,7 @@ class SignUpForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return BlocListener<SignUpBloc, SignUpState>(
       listener: _signUpStateListener,
       child: Align(
@@ -33,21 +35,29 @@ class SignUpForm extends StatelessWidget {
               children: <Widget>[
                 Text(
                   translate('sign_up_form.title'),
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: TextStyle(
+                    fontSize: textTheme.headlineSmall?.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   translate('sign_up_form.subtitle'),
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: textTheme.bodyLarge?.fontSize),
                 ),
                 const SizedBox(height: 24),
-                SignUpEmailInput(initialValue: email),
-                const Padding(padding: EdgeInsets.all(12)),
-                SignUpPasswordInput(initialValue: password),
-                const Padding(padding: EdgeInsets.all(12)),
+                InputField(
+                  label: translate('sign_in_form.email_label'),
+                  icon: Icons.email,
+                  child: SignUpEmailInput(initialValue: email),
+                ),
+                const SizedBox(height: 20),
+                InputField(
+                  label: translate('sign_in_form.password_label'),
+                  icon: Icons.lock,
+                  child: SignUpPasswordInput(initialValue: password),
+                ),
+                const SizedBox(height: 20),
                 const SignUpContinueButton(),
                 const Padding(padding: EdgeInsets.all(24)),
                 Text(translate('sign_up_form.sign_in_prompt_text_1')),
@@ -59,6 +69,8 @@ class SignUpForm extends StatelessWidget {
                   ),
                   child: Text(translate('sign_up_form.sign_in_prompt_text_2')),
                 ),
+                const SizedBox(height: 24),
+                const AppVersionText(),
               ],
             ),
           ),
@@ -68,7 +80,7 @@ class SignUpForm extends StatelessWidget {
   }
 
   void _signUpStateListener(BuildContext context, SignUpState state) {
-    if (state.status.isFailure || state is SignUpErrorState) {
+    if (state is SignUpErrorState) {
       Widget contentWidget;
       const String officialWebsiteUrl = constants.website;
       if (kIsWeb) {
@@ -78,7 +90,9 @@ class SignUpForm extends StatelessWidget {
             children: <TextSpan>[
               TextSpan(
                 text: translate('sign_up_form.error_sign_up_unavailable_web_1'),
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
               ),
               TextSpan(
                 text: officialWebsiteUrl,
@@ -88,12 +102,7 @@ class SignUpForm extends StatelessWidget {
                 ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () async {
-                    final Uri url = Uri.parse(officialWebsiteUrl);
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url, webOnlyWindowName: '_blank');
-                    } else {
-                      debugPrint('Could not launch $officialWebsiteUrl');
-                    }
+                    await _launchUrl(officialWebsiteUrl);
                   },
               ),
             ],
@@ -101,22 +110,36 @@ class SignUpForm extends StatelessWidget {
         );
       } else {
         String errorMessage;
-        if (state is SignUpErrorState) {
-          errorMessage = state.errorMessage;
-        } else {
-          errorMessage = translate('sign_up_form.error_sign_up_failure');
-        }
+        errorMessage = state.errorMessage.replaceAll(
+          ' (ERROR RECEIVED FROM SERVER)',
+          '',
+        );
         contentWidget = SelectableText(errorMessage);
       }
 
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
             content: contentWidget,
-            duration: const Duration(seconds: 10),
-          ),
-        );
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, webOnlyWindowName: '_blank');
+    } else {
+      debugPrint('Could not launch $urlString');
     }
   }
 }

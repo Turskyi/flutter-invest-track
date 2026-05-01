@@ -10,6 +10,7 @@ import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/ui/sign_in/continue_button.dart';
 import 'package:investtrack/ui/sign_in/email_input.dart';
+import 'package:investtrack/ui/sign_in/keep_me_signed_in_checkbox.dart';
 import 'package:investtrack/ui/sign_in/password_input.dart';
 import 'package:investtrack/ui/sign_in/sign_in_footer_buttons.dart';
 import 'package:investtrack/ui/sign_in/sign_up_prompt.dart';
@@ -109,7 +110,9 @@ class _SignInFormState extends State<SignInForm>
                     icon: Icons.lock,
                     child: const PasswordInput(),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  const KeepMeSignedInCheckbox(),
+                  const SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -190,7 +193,9 @@ class _SignInFormState extends State<SignInForm>
             children: <TextSpan>[
               TextSpan(
                 text: translate('sign_in_form.error_sign_in_unavailable_web_1'),
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
               ),
               TextSpan(
                 text: officialWebsiteUrl,
@@ -222,7 +227,7 @@ class _SignInFormState extends State<SignInForm>
         contentWidget = SelectableText.rich(
           TextSpan(
             style: Theme.of(context).textTheme.bodyMedium,
-            children: _buildErrorTextSpans(errorMessage, context),
+            children: _buildErrorTextSpans(errorMessage),
           ),
         );
       }
@@ -245,10 +250,7 @@ class _SignInFormState extends State<SignInForm>
     }
   }
 
-  List<InlineSpan> _buildErrorTextSpans(
-    String errorMessage,
-    BuildContext context,
-  ) {
+  List<InlineSpan> _buildErrorTextSpans(String errorMessage) {
     final List<InlineSpan> spans = <InlineSpan>[];
     final RegExp urlRegExp = RegExp(
       // (?<![.,!?;:]) is a negative lookbehind.
