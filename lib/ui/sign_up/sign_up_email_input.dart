@@ -22,7 +22,6 @@ class _SignUpEmailInputState extends State<SignUpEmailInput> {
   void initState() {
     super.initState();
     _textEditingController.text = widget.initialValue;
-    context.read<SignUpBloc>().add(SignUpEmailChanged(widget.initialValue));
   }
 
   @override

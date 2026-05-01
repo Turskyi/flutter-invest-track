@@ -27,6 +27,8 @@ class SignUpPage extends StatelessWidget {
         child: BlocProvider<SignUpBloc>(
           create: (BuildContext context) => SignUpBloc(
             authenticationRepository: context.read<AuthenticationRepository>(),
+            initialEmail: email,
+            initialPassword: password,
           ),
           child: SignUpForm(email: email, password: password),
         ),

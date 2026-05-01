@@ -21,7 +21,6 @@ class _SignUpPasswordInputState extends State<SignUpPasswordInput> {
   void initState() {
     super.initState();
     _textEditingController.text = widget.initialValue;
-    context.read<SignUpBloc>().add(SignUpPasswordChanged(widget.initialValue));
   }
 
   @override

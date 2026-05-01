@@ -3,7 +3,7 @@ import 'package:models/res/constants.dart' as constants;
 import 'package:models/src/validation_error.dart';
 
 class EmailAddress extends FormzInput<String, EmailValidationError> {
-  const EmailAddress.pure() : super.pure('');
+  const EmailAddress.pure([super.value = '']) : super.pure();
 
   const EmailAddress.dirty([super.value = '']) : super.dirty();
 
