@@ -23,13 +23,17 @@ class CodePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: BlocProvider<SignUpBloc>(
-          create: (BuildContext context) => SignUpBloc(
-            authenticationRepository: context.read<AuthenticationRepository>(),
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: BlocProvider<SignUpBloc>(
+            create: (BuildContext context) => SignUpBloc(
+              authenticationRepository: context
+                  .read<AuthenticationRepository>(),
+            ),
+            child: CodeForm(email: email),
           ),
-          child: CodeForm(email: email),
         ),
       ),
     );
