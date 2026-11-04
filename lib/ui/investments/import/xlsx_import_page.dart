@@ -71,27 +71,18 @@ class _XlsxImportPageState extends State<XlsxImportPage> {
     });
 
     try {
-      final FilePickerResult? result = await FilePicker.pickFiles(
+      final List<PlatformFile> files = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: <String>['xlsx'],
-        withData: true,
       );
 
-      if (result == null || result.files.isEmpty) {
+      if (files.isEmpty) {
         setState(() => _isLoadingFile = false);
         return;
       }
 
-      final PlatformFile file = result.files.single;
-      final Uint8List? bytes = file.bytes;
-
-      if (bytes == null) {
-        setState(() {
-          _isLoadingFile = false;
-          _parseError = translate('import.error_no_bytes');
-        });
-        return;
-      }
+      final PlatformFile file = files.single;
+      final Uint8List bytes = await file.readAsBytes();
 
       final List<InvestmentImportData> parsed = XlsxService().parseBytes(bytes);
 
