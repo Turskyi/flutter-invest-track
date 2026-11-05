@@ -8,3 +8,7 @@
 
 # AndroidX / Support libraries
 -keep class androidx.versionedparcelable.** { *; }
+
+# Play Core / Deferred Components
+-dontwarn com.google.android.play.core.**
+-keep class com.google.android.play.core.** { *; }
