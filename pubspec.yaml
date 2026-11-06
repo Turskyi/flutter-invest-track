@@ -1,5 +1,5 @@
 name: investtrack
-description: "InvestTrack is a cross-platform Flutter application that helps 
+description: "InvestTracks is a cross-platform Flutter application that helps 
 users track their stock portfolios in real-time. It fetches live stock prices, 
 displays investment performance, and calculates gains or losses in multiple 
 currencies. The app is primarily designed for Web, iOS, and Android, but it 

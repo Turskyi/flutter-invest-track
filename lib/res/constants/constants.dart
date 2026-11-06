@@ -7,7 +7,7 @@ const String telegramSupportUrl = 'https://t.me/+rkZH9QPzYOpjNTQy';
 const String githubIssuesUrl =
     'https://github.com/Turskyi/flutter-invest-track/issues';
 const String companyDomain = 'turskyi.com';
-const String appName = 'InvestTrack';
+const String appName = 'InvestTracks';
 const String authServiceLink = 'https://clerk.com';
 const String authServiceName = 'Clerk';
 const String remoteDbServiceName = 'Vercel Postgres';

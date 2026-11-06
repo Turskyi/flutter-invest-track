@@ -1,4 +1,4 @@
-# InvestTrack — Project Guidelines
+# InvestTracks — Project Guidelines
 
 ## Workflow
 

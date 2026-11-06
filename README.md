@@ -9,9 +9,9 @@
 [![Deploy to Firebase Hosting on merge](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/flutter-invest-track">
 
-# InvestTrack (Flutter Version).
+# InvestTracks (Flutter Version).
 
-InvestTrack is a cross-platform Flutter application that helps users track
+InvestTracks is a cross-platform Flutter application that helps users track
 their stock portfolios in real-time. It fetches live stock prices, displays
 investment performance, and calculates gains or losses in multiple
 currencies.  
@@ -23,7 +23,7 @@ their investments on the go.
 ### Accessing the application:
 
 - [Official Web Version](https://investtracks.com): This is the primary web
-  version of **InvestTrack**, built with Next.js. It shares the same backend as
+  version of **InvestTracks**, built with Next.js. It shares the same backend as
   this Flutter application and also provides links to the mobile apps.
 - [Flutter Web Version](https://invest-track-application.web.app/):
   This is a web build of the Flutter application, demonstrating the
