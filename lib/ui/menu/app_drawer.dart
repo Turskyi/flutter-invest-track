@@ -8,6 +8,7 @@ import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
 import 'package:investtrack/ui/sign_in/language_selector_button.dart';
+import 'package:investtrack/ui/widgets/app_version_text.dart';
 import 'package:models/models.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -118,35 +119,44 @@ class AppDrawer extends StatelessWidget {
           const Divider(height: 16),
           SafeArea(
             top: false,
-            child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-              builder: (BuildContext context, AuthenticationState state) {
-                const double progressIndicatorSize = 24.0;
-                final AuthenticationStatus status = state.status;
-                final bool isDeleting =
-                    status is DeletingAuthenticatedUserStatus;
-                return ListTile(
-                  leading: Icon(
-                    Icons.delete_forever,
-                    color: theme.colorScheme.error,
-                  ),
-                  title: Text(
-                    translate('menu.delete_account'),
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
-                  trailing: isDeleting
-                      ? const SizedBox(
-                          width: progressIndicatorSize,
-                          height: progressIndicatorSize,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : null,
-                  onTap: isDeleting
-                      ? null
-                      : () async {
-                          await _handleDeleteAccount(context);
-                        },
-                );
-              },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                  builder: (BuildContext context, AuthenticationState state) {
+                    const double progressIndicatorSize = 24.0;
+                    final AuthenticationStatus status = state.status;
+                    final bool isDeleting =
+                        status is DeletingAuthenticatedUserStatus;
+                    return ListTile(
+                      leading: Icon(
+                        Icons.delete_forever,
+                        color: theme.colorScheme.error,
+                      ),
+                      title: Text(
+                        translate('menu.delete_account'),
+                        style: TextStyle(color: theme.colorScheme.error),
+                      ),
+                      trailing: isDeleting
+                          ? const SizedBox(
+                              width: progressIndicatorSize,
+                              height: progressIndicatorSize,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : null,
+                      onTap: isDeleting
+                          ? null
+                          : () async {
+                              await _handleDeleteAccount(context);
+                            },
+                    );
+                  },
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 12.0),
+                  child: AppVersionText(),
+                ),
+              ],
             ),
           ),
         ],
