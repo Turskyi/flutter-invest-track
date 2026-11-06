@@ -2,29 +2,68 @@ part of 'investments_bloc.dart';
 
 @immutable
 sealed class InvestmentsState {
-  const InvestmentsState({this.investments = const <Investment>[]});
+  const InvestmentsState({
+    this.investments = const <Investment>[],
+    this.lastUpdated,
+  });
 
+  /// The list of investments currently loaded in state.
   final List<Investment> investments;
+
+  /// The timestamp when investment and market price data were
+  /// last successfully updated.
+  ///
+  /// ### Why is this nullable?
+  /// It is nullable (`DateTime?`) because:
+  /// - **Initial State (`null`)**: When the app first launches or enters
+  ///   [InvestmentsLoading] before any network request has completed,
+  ///   no timestamp exists yet.
+  /// - **Error State (`null` or preserved)**: If initial loading fails,
+  ///   no timestamp is established.
+  ///
+  /// ### What does `null` mean?
+  /// A `null` value indicates that data has not yet been fetched or
+  /// refreshed during the current session, or that no successful update
+  /// timestamp has been recorded.
+  ///
+  /// ### How is it handled?
+  /// - **In UI**: The presentation layer (`InvestmentsPage`) checks
+  ///   `if (state.lastUpdated != null)` before attempting to render the
+  ///   "Last updated" subtitle in the app bar. If `null`, the subtitle
+  ///   is omitted.
+  /// - **In Bloc / State Transitions**: When data is loaded or refreshed
+  ///   in `InvestmentsBloc`, `DateTime.now()` is assigned to `lastUpdated`
+  ///   and propagated across state updates via `copyWith` to maintain
+  ///   freshness context.
+  final DateTime? lastUpdated;
 }
 
 final class InvestmentsLoading extends InvestmentsState {
-  const InvestmentsLoading();
+  const InvestmentsLoading({super.lastUpdated});
 }
 
 final class InvestmentsError extends InvestmentsState {
-  const InvestmentsError({required this.errorMessage, super.investments});
+  const InvestmentsError({
+    required this.errorMessage,
+    super.investments,
+    super.lastUpdated,
+  });
 
   final String errorMessage;
 }
 
 final class UnauthenticatedInvestmentsAccessState extends InvestmentsError {
-  const UnauthenticatedInvestmentsAccessState({required super.errorMessage});
+  const UnauthenticatedInvestmentsAccessState({
+    required super.errorMessage,
+    super.lastUpdated,
+  });
 }
 
 final class InvestmentsLoaded extends InvestmentsState {
   const InvestmentsLoaded({
     required this.hasReachedMax,
     super.investments,
+    super.lastUpdated,
     this.isLoadingMore = false,
   });
 
@@ -37,11 +76,13 @@ final class InvestmentsLoaded extends InvestmentsState {
     bool? isLoadingMore,
     bool? hasReachedMax,
     List<Investment>? investments,
+    DateTime? lastUpdated,
   }) {
     return InvestmentsLoaded(
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       investments: investments ?? this.investments,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }
@@ -51,6 +92,7 @@ final class InvestmentsUpdated extends InvestmentsLoaded {
     required super.hasReachedMax,
     required super.investments,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 }
 
@@ -59,6 +101,7 @@ final class CreatingInvestment extends InvestmentsLoaded {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 }
 
@@ -68,6 +111,7 @@ base class SubmittingInvestment extends InvestmentsLoaded {
     required super.investments,
     super.hasReachedMax = false,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 
   final int investmentId;
@@ -79,6 +123,7 @@ final class UpdatingInvestment extends SubmittingInvestment {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 }
 
@@ -88,6 +133,7 @@ final class InvestmentDeleting extends SubmittingInvestment {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 }
 
@@ -98,6 +144,7 @@ final class InvestmentDeleted extends InvestmentsLoaded {
     required this.message,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 
   final String message;
@@ -110,6 +157,7 @@ final class SelectedInvestmentState extends InvestmentsLoaded {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 
   final Investment selectedInvestment;
@@ -121,6 +169,7 @@ final class ValueLoadingState extends SelectedInvestmentState {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 }
 
@@ -131,6 +180,7 @@ final class CurrentValueLoaded extends ValueLoadingState {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 
   final double currentPrice;
@@ -144,6 +194,7 @@ final class ExchangeRateLoaded extends CurrentValueLoaded {
     required super.investments,
     required super.hasReachedMax,
     super.isLoadingMore = false,
+    super.lastUpdated,
   });
 
   final double exchangeRate;
@@ -160,6 +211,7 @@ final class InvestmentUpdated extends SelectedInvestmentState {
     super.isLoadingMore = false,
     this.priceChange = 0,
     this.changePercentage = 0,
+    super.lastUpdated,
   });
 
   final double? purchasePrice;
@@ -179,6 +231,7 @@ final class InvestmentUpdated extends SelectedInvestmentState {
     double? changePercentage,
     Investment? selectedInvestment,
     List<Investment>? investments,
+    DateTime? lastUpdated,
   }) {
     return InvestmentUpdated(
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
@@ -190,6 +243,7 @@ final class InvestmentUpdated extends SelectedInvestmentState {
       changePercentage: changePercentage ?? this.changePercentage,
       selectedInvestment: selectedInvestment ?? this.selectedInvestment,
       investments: investments ?? this.investments,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }

@@ -168,7 +168,10 @@
     "select_purchase_date": "Please select a purchase date",
     "purchase_date_future": "Purchase date cannot be in the future",
     "loading_details": "Loading investment details...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "last_updated_today_at": "Updated today at",
+    "last_updated_at": "Updated",
+    "refresh_tooltip": "Refresh market data"
   },
   "add_investment": {
     "title": "Add Investment",

@@ -87,7 +87,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     LoadInvestments event,
     Emitter<InvestmentsState> emit,
   ) async {
-    emit(const InvestmentsLoading());
+    emit(InvestmentsLoading(lastUpdated: state.lastUpdated));
+    final DateTime now = DateTime.now();
 
     if (_isDemo) {
       try {
@@ -97,10 +98,13 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           InvestmentsLoaded(
             investments: investments.investments,
             hasReachedMax: true,
+            lastUpdated: now,
           ),
         );
       } catch (error) {
-        emit(InvestmentsError(errorMessage: error.toString()));
+        emit(
+          InvestmentsError(errorMessage: error.toString(), lastUpdated: now),
+        );
       }
       return;
     }
@@ -129,6 +133,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         InvestmentsLoaded(
           investments: investmentBatch,
           hasReachedMax: hasReachedMax,
+          lastUpdated: now,
         ),
       );
 
@@ -179,6 +184,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             updatedInvestmentsWithPurchasePrices,
           ),
           hasReachedMax: hasReachedMax,
+          lastUpdated: now,
         ),
       );
 
@@ -222,6 +228,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             updatedInvestmentsWithCurrentPrices,
           ),
           hasReachedMax: hasReachedMax,
+          lastUpdated: now,
         ),
       );
 
@@ -252,6 +259,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             updatedInvestmentsWithGainOrLoss,
           ),
           hasReachedMax: hasReachedMax,
+          lastUpdated: now,
         ),
       );
 
@@ -286,6 +294,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               updatedInvestmentsWithCadGainOrLoss,
             ),
             hasReachedMax: hasReachedMax,
+            lastUpdated: now,
           ),
         );
       } catch (e, stackTrace) {

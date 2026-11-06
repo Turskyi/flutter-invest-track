@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
@@ -92,6 +93,21 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
     }
   }
 
+  String _formatLastUpdated(DateTime lastUpdated) {
+    final DateTime now = DateTime.now();
+    final bool isToday =
+        lastUpdated.year == now.year &&
+        lastUpdated.month == now.month &&
+        lastUpdated.day == now.day;
+    if (isToday) {
+      final String timeStr = DateFormat.jm().format(lastUpdated);
+      return '${translate('investments.last_updated_today_at')} $timeStr';
+    } else {
+      final String dateStr = DateFormat('MMM d, y, HH:mm').format(lastUpdated);
+      return '${translate('investments.last_updated_at')} $dateStr';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     LocalizationProvider.of(context);
@@ -108,9 +124,42 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(translate('title')),
+            Expanded(
+              child: BlocBuilder<InvestmentsBloc, InvestmentsState>(
+                builder: (BuildContext context, InvestmentsState state) {
+                  final DateTime? lastUpdated = state.lastUpdated;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(translate('title')),
+                      if (lastUpdated != null)
+                        Text(
+                          _formatLastUpdated(lastUpdated),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.6),
+                                fontSize: 11,
+                              ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ),
           ],
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: translate('investments.refresh_tooltip'),
+            onPressed: () {
+              context.read<InvestmentsBloc>().add(const LoadInvestments());
+            },
+          ),
+        ],
       ),
       drawer: widget.isDemo
           ? null

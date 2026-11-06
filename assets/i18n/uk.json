@@ -168,7 +168,10 @@
     "select_purchase_date": "Будь ласка, виберіть дату купівлі",
     "purchase_date_future": "Дата купівлі не може бути в майбутньому",
     "loading_details": "Завантаження деталей інвестиції...",
-    "loading": "Завантаження..."
+    "loading": "Завантаження...",
+    "last_updated_today_at": "Оновлено сьогодні о",
+    "last_updated_at": "Оновлено",
+    "refresh_tooltip": "Оновити ринкові дані"
   },
   "add_investment": {
     "title": "Додати вкладення",
