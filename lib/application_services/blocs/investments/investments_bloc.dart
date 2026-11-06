@@ -148,28 +148,20 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         if (investment.isPurchased && hasNoPurchasePrice) {
           final String investmentTicker = investment.ticker;
           try {
-            final YahooFinanceResponse response =
-                await _retryWithBackoff<YahooFinanceResponse>(() {
-                  return const YahooFinanceDailyReader().getDailyDTOs(
-                    investmentTicker,
-                    startDate: investment.purchaseDate,
-                  );
-                });
-
-            final double purchasePrice =
-                response.candlesData.firstOrNull?.close ?? 0;
+            final double purchasePrice = await _fetchPriceWithFallback(
+              investmentTicker,
+              startDate: investment.purchaseDate,
+            );
 
             updatedInvestmentsWithPurchasePrices.add(
               investment.copyWith(purchasePrice: purchasePrice),
             );
-          } catch (e, stackTrace) {
+          } catch (e) {
             debugPrint(
-              'Error while fetching purchase price for ticker: '
-              '$investmentTicker.\n'
-              'Error: $e\n'
-              'Stacktrace: $stackTrace.',
+              'Error while fetching purchase price for '
+              'ticker $investmentTicker: $e. '
+              'Falling back to original investment.',
             );
-            // Fallback to original.
             updatedInvestmentsWithPurchasePrices.add(investment);
           }
         } else {
@@ -197,25 +189,16 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
         final String ticker = investment.ticker;
         try {
-          final YahooFinanceResponse currentValueResponse =
-              await _retryWithBackoff<YahooFinanceResponse>(() {
-                return const YahooFinanceDailyReader().getDailyDTOs(ticker);
-              });
-
-          final double currentPrice =
-              currentValueResponse.candlesData.lastOrNull?.close ?? 0;
+          final double currentPrice = await _fetchPriceWithFallback(ticker);
 
           updatedInvestmentsWithCurrentPrices.add(
             investment.copyWith(currentPrice: currentPrice),
           );
-        } catch (e, stackTrace) {
+        } catch (e) {
           debugPrint(
-            'Error while fetching current price for ticker: '
-            '$ticker.\n'
-            'Error: $e\n'
-            'Stacktrace: $stackTrace.',
+            'Error while fetching current price for ticker $ticker: $e. '
+            'Falling back to original investment.',
           );
-          // Fallback.
           updatedInvestmentsWithCurrentPrices.add(investment);
         }
       }
@@ -415,12 +398,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             _isInvestmentBeingDeleted(investment.id)) {
           return;
         }
-        final YahooFinanceResponse currentValue =
-            await _retryWithBackoff<YahooFinanceResponse>(() {
-              return const YahooFinanceDailyReader().getDailyDTOs(ticker);
-            });
-
-        currentPrice = currentValue.candlesData.lastOrNull?.close ?? 0;
+        currentPrice = await _fetchPriceWithFallback(ticker);
       }
 
       if (!_isInvestmentStillValid(investment.id) ||
@@ -478,15 +456,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               _isInvestmentBeingDeleted(investment.id)) {
             return;
           }
-          final YahooFinanceResponse purchaseValue =
-              await _retryWithBackoff<YahooFinanceResponse>(() {
-                return const YahooFinanceDailyReader().getDailyDTOs(
-                  ticker,
-                  startDate: investment.purchaseDate,
-                );
-              });
-
-          purchasePrice = purchaseValue.candlesData.firstOrNull?.close ?? 0;
+          purchasePrice = await _fetchPriceWithFallback(
+            ticker,
+            startDate: investment.purchaseDate,
+          );
         }
 
         if (!_isInvestmentStillValid(investment.id) ||
@@ -612,36 +585,24 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       final String ticker = createdInvestment.ticker;
       final DateTime? purchaseDate = createdInvestment.purchaseDate;
 
-      final YahooFinanceResponse currentValue =
-          await _retryWithBackoff<YahooFinanceResponse>(() {
-            return const YahooFinanceDailyReader().getDailyDTOs(ticker);
-          });
-
-      final double currentPrice =
-          currentValue.candlesData.lastOrNull?.close ?? 0;
+      final double currentPrice = await _fetchPriceWithFallback(ticker);
 
       final int quantity = createdInvestment.quantity;
       final double totalValueCurrent = quantity * currentPrice;
 
       try {
-        final YahooFinanceResponse dateValueResponse =
-            await _retryWithBackoff<YahooFinanceResponse>(() {
-              return const YahooFinanceDailyReader().getDailyDTOs(
-                ticker,
-                startDate: purchaseDate,
-              );
-            });
+        final double purchasePrice = await _fetchPriceWithFallback(
+          ticker,
+          startDate: purchaseDate,
+        );
 
         // Check if the response contains valid data.
-        if (dateValueResponse.candlesData.isEmpty ||
-            dateValueResponse.candlesData.firstOrNull?.close == 0) {
+        if (purchasePrice == 0) {
           throw Exception(
             'No valid historical data for ticker: $ticker on $purchaseDate',
           );
         }
 
-        final double purchasePrice =
-            dateValueResponse.candlesData.firstOrNull?.close ?? 0;
         final double totalValuePurchase = quantity * purchasePrice;
         final double gainOrLoss = totalValueCurrent - totalValuePurchase;
 
@@ -968,6 +929,53 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     throw Exception('Max retries exceeded.');
   }
 
+  Future<double> _fetchPriceWithFallback(
+    String ticker, {
+    DateTime? startDate,
+  }) async {
+    final String? dateStr = startDate != null
+        ? DateFormat('yyyy-MM-dd').format(startDate)
+        : null;
+    try {
+      final double price = await _investmentsRepository.fetchFinance(
+        ticker: ticker,
+        date: dateStr,
+      );
+      if (price != 0) {
+        return price;
+      }
+      throw Exception('Backend /api/finance returned 0 for $ticker');
+    } catch (backendError) {
+      debugPrint(
+        'Backend /api/finance failed for $ticker (startDate: $startDate): '
+        '$backendError. Falling back to YahooFinanceDailyReader...',
+      );
+      try {
+        final YahooFinanceResponse response =
+            await _retryWithBackoff<YahooFinanceResponse>(() {
+              return const YahooFinanceDailyReader().getDailyDTOs(
+                ticker,
+                startDate: startDate,
+              );
+            });
+        final double price = startDate == null
+            ? (response.candlesData.lastOrNull?.close ?? 0)
+            : (response.candlesData.firstOrNull?.close ?? 0);
+        debugPrint(
+          'Successfully retrieved fallback price for $ticker '
+          'via YahooFinanceDailyReader: $price',
+        );
+        return price;
+      } catch (clientError) {
+        debugPrint(
+          'YahooFinanceDailyReader fallback also failed for $ticker: '
+          '$clientError',
+        );
+        return 0;
+      }
+    }
+  }
+
   Future<void> _bulkImportInvestments(
     BulkImportInvestmentsEvent event,
     Emitter<InvestmentsState> emit,
@@ -1014,14 +1022,9 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         );
 
         try {
-          final YahooFinanceResponse currentValueResponse =
-              await _retryWithBackoff<YahooFinanceResponse>(
-                () => const YahooFinanceDailyReader().getDailyDTOs(
-                  importData.ticker,
-                ),
-              );
-          final double currentPrice =
-              currentValueResponse.candlesData.lastOrNull?.close ?? 0;
+          final double currentPrice = await _fetchPriceWithFallback(
+            importData.ticker,
+          );
 
           final int quantity = importData.quantity;
           final double totalCurrentValue = quantity * currentPrice;
@@ -1035,15 +1038,10 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
           if (quantity > 0 && purchaseDate != null) {
             try {
-              final YahooFinanceResponse historicalResponse =
-                  await _retryWithBackoff<YahooFinanceResponse>(
-                    () => const YahooFinanceDailyReader().getDailyDTOs(
-                      importData.ticker,
-                      startDate: purchaseDate,
-                    ),
-                  );
-              purchasePrice =
-                  historicalResponse.candlesData.firstOrNull?.close ?? 0;
+              purchasePrice = await _fetchPriceWithFallback(
+                importData.ticker,
+                startDate: purchaseDate,
+              );
               totalValueOnPurchase = quantity * purchasePrice;
               gainOrLoss = totalCurrentValue - totalValueOnPurchase;
             } catch (e) {

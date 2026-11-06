@@ -139,6 +139,14 @@ class _FakeRestClient implements entity.RestClient {
   @override
   Future<entity.ChangePercentage> fetchChangePercentage(String ticker) async =>
       throw UnimplementedError();
+
+  @override
+  Future<entity.FinanceResult> fetchFinance({
+    required String ticker,
+    String? date,
+  }) async {
+    throw UnimplementedError();
+  }
 }
 
 class _FakePreferences implements SharedPreferences {

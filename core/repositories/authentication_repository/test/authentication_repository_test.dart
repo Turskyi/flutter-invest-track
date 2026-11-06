@@ -251,6 +251,14 @@ class _FakeRestClient implements entity.RestClient {
   @override
   Future<entity.ChangePercentage> fetchChangePercentage(String ticker) =>
       throw UnimplementedError();
+
+  @override
+  Future<entity.FinanceResult> fetchFinance({
+    required String ticker,
+    String? date,
+  }) {
+    throw UnimplementedError();
+  }
 }
 
 class _FakeLoginResponse extends entity.LoginResponse {

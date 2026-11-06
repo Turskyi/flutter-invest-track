@@ -19,4 +19,16 @@ abstract interface class InvestmentsRepository {
   Future<double> fetchPriceChange(String ticker);
 
   Future<double> fetchChangePercentage(String ticker);
+
+  /// Fetches financial data (current or historical stock price)
+  /// for a given ticker.
+  ///
+  /// **Request Example**:
+  /// `fetchFinance(ticker: "BMV", date: "2023-06-02")`
+  /// or
+  /// `fetchFinance(ticker: "AAPL")`
+  ///
+  /// **Response Example**:
+  /// Returns `double` representing the stock price (e.g. `253.5`).
+  Future<double> fetchFinance({required String ticker, String? date});
 }

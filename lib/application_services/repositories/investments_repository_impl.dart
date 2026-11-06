@@ -128,4 +128,11 @@ class InvestmentsRepositoryImpl implements InvestmentsRepository {
         .fetchChangePercentage(ticker)
         .then((ChangePercentage response) => response.changePercentage);
   }
+
+  @override
+  Future<double> fetchFinance({required String ticker, String? date}) {
+    return _restClient
+        .fetchFinance(ticker: ticker, date: date)
+        .then((FinanceResult response) => response.currentPrice);
+  }
 }

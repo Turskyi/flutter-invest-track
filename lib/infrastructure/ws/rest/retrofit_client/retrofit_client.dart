@@ -5,6 +5,7 @@ import 'package:investtrack/infrastructure/ws/models/responses/created_investmen
 import 'package:investtrack/infrastructure/ws/models/responses/delete_account_response/delete_account_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/delete_investment_response/delete_investment_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/exchange_rate_response/exchange_rate_response.dart';
+import 'package:investtrack/infrastructure/ws/models/responses/finance_response/finance_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/investments_response/investments_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/price_change_response/price_change_response.dart';
 import 'package:investtrack/infrastructure/ws/models/responses/sign_out_response/sign_out_response.dart';
@@ -91,4 +92,25 @@ abstract class RetrofitClient implements RestClient {
   Future<ChangePercentageResponse> fetchChangePercentage(
     @Query('ticker') String ticker,
   );
+
+  /// Fetches financial data (current or historical stock price)
+  /// from the backend API.
+  ///
+  /// **Request Example**:
+  /// `GET /api/finance?ticker=BMV&date=2023-06-02`
+  /// or
+  /// `GET /api/finance?ticker=AAPL`
+  ///
+  /// **Response Example**:
+  /// ```json
+  /// {
+  ///   "currentPrice": 253.5
+  /// }
+  /// ```
+  @override
+  @GET('finance')
+  Future<FinanceResponse> fetchFinance({
+    @Query('ticker') required String ticker,
+    @Query('date') String? date,
+  });
 }

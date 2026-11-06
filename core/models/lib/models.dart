@@ -3,6 +3,7 @@ library;
 export 'src/abstract/change_percentage.dart';
 export 'src/abstract/code_response.dart';
 export 'src/abstract/exchange_rate.dart';
+export 'src/abstract/finance_result.dart';
 export 'src/abstract/investment_result.dart';
 export 'src/abstract/investments.dart';
 export 'src/abstract/login_response.dart';

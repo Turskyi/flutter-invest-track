@@ -140,4 +140,9 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
 
   @override
   Future<double> fetchChangePercentage(String ticker) async => 0.0;
+
+  @override
+  Future<double> fetchFinance({required String ticker, String? date}) async {
+    return 0.0;
+  }
 }
