@@ -64,7 +64,7 @@ class _DesktopTableState extends State<DesktopTable> {
         );
     return SingleChildScrollView(
       controller: _verticalScrollController,
-      padding: const EdgeInsets.only(top: 80, bottom: 80),
+      padding: const EdgeInsets.only(top: kToolbarHeight, bottom: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
