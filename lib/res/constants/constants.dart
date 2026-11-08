@@ -24,6 +24,9 @@ const int itemsPerPage = 6;
 const int pageOffset = 1;
 const String imagePath = 'assets/images/';
 
+/// Demo user ID constant used in demo mode.
+const String demoUserId = 'demo';
+
 /// Blur intensity constant.
 const double blurSigma = 3.0;
 const double maxWidth = 700.0;

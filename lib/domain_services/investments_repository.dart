@@ -31,4 +31,25 @@ abstract interface class InvestmentsRepository {
   /// **Response Example**:
   /// Returns `double` representing the stock price (e.g. `253.5`).
   Future<double> fetchFinance({required String ticker, String? date});
+
+  /// Local Drift Database Caching Interface
+  Stream<List<Investment>> watchLocalInvestments(String userId);
+
+  Future<List<Investment>> getLocalInvestments(String userId);
+
+  Future<void> saveLocalInvestments({
+    required String userId,
+    required List<Investment> investments,
+  });
+
+  Future<void> saveLocalInvestment(Investment investment);
+
+  Future<void> deleteLocalInvestment({required int id, required String userId});
+
+  Future<DateTime?> getLastFetchedAt(String userId);
+
+  Future<void> setLastFetchedAt({
+    required String userId,
+    required DateTime time,
+  });
 }

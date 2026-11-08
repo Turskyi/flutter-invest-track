@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
@@ -87,229 +88,354 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     LoadInvestments event,
     Emitter<InvestmentsState> emit,
   ) async {
-    emit(InvestmentsLoading(lastUpdated: state.lastUpdated));
-    final DateTime now = DateTime.now();
+    final String userId = _isDemo
+        ? constants.demoUserId
+        : _authenticationBloc.state.userId;
 
-    if (_isDemo) {
-      try {
-        final Investments investments = await _investmentsRepository
-            .getInvestments(userId: 'demo');
+    if (userId.isNotEmpty || _isDemo) {
+      final List<Investment> localInvestments = await _investmentsRepository
+          .getLocalInvestments(userId);
+      final DateTime? lastFetchedAt = await _investmentsRepository
+          .getLastFetchedAt(userId);
+
+      if (localInvestments.isNotEmpty) {
         emit(
           InvestmentsLoaded(
-            investments: investments.investments,
+            investments: localInvestments,
+            // Assume complete for local cached snapshot until pagination syncs.
             hasReachedMax: true,
-            lastUpdated: now,
+            lastUpdated: lastFetchedAt,
+            // SWR: background refresh is active while displaying cached data.
+            isRefreshing: true,
           ),
         );
-      } catch (error) {
+
+        if (!event.forceRefresh && lastFetchedAt != null) {
+          final Duration timeSinceLastFetch = DateTime.now().difference(
+            lastFetchedAt,
+          );
+          if (timeSinceLastFetch < const Duration(minutes: 5)) {
+            emit(
+              InvestmentsLoaded(
+                investments: localInvestments,
+                hasReachedMax: true,
+                lastUpdated: lastFetchedAt,
+                // Cache is fresh; background refresh is not needed.
+                isRefreshing: false,
+              ),
+            );
+            return;
+          }
+        }
+      } else {
         emit(
-          InvestmentsError(errorMessage: error.toString(), lastUpdated: now),
+          InvestmentsLoading(
+            lastUpdated: state.lastUpdated,
+            // Initial load in progress.
+            isRefreshing: true,
+          ),
         );
       }
-      return;
-    }
 
-    final String userId = _authenticationBloc.state.userId;
-    if (userId.isEmpty) {
-      emit(
-        const UnauthenticatedInvestmentsAccessState(
-          errorMessage: 'User ID not found.',
-        ),
-      );
-      return;
-    }
+      final DateTime now = DateTime.now();
 
-    try {
-      // Fetch the first batch of investments using the user ID.
-      final Investments investments = await _investmentsRepository
-          .getInvestments(userId: userId);
+      if (_isDemo) {
+        try {
+          final Investments investments = await _investmentsRepository
+              .getInvestments(userId: constants.demoUserId);
+          await _investmentsRepository.saveLocalInvestments(
+            userId: constants.demoUserId,
+            investments: investments.investments,
+          );
+          await _investmentsRepository.setLastFetchedAt(
+            userId: constants.demoUserId,
+            time: now,
+          );
+          emit(
+            InvestmentsLoaded(
+              investments: investments.investments,
+              hasReachedMax: true,
+              lastUpdated: now,
+              isRefreshing: false,
+            ),
+          );
+        } catch (error) {
+          if (localInvestments.isNotEmpty) {
+            emit(
+              InvestmentsLoaded(
+                investments: localInvestments,
+                hasReachedMax: true,
+                lastUpdated: lastFetchedAt,
+                isRefreshing: false,
+              ),
+            );
+          } else {
+            emit(
+              InvestmentsError(
+                errorMessage: error.toString(),
+                lastUpdated: now,
+              ),
+            );
+          }
+        }
+        return;
+      }
 
-      final List<Investment> investmentBatch = investments.investments;
-      final int currentPage = investments.currentPage;
-      final int totalPages = investments.totalPages;
-      final bool hasReachedMax = currentPage >= totalPages;
+      try {
+        // Fetch the first batch of investments using the user ID.
+        final Investments investments = await _investmentsRepository
+            .getInvestments(userId: userId);
 
-      emit(
-        InvestmentsLoaded(
+        final List<Investment> investmentBatch = investments.investments;
+        final int currentPage = investments.currentPage;
+        final int totalPages = investments.totalPages;
+        final bool hasReachedMax = currentPage >= totalPages;
+
+        await _investmentsRepository.saveLocalInvestments(
+          userId: userId,
           investments: investmentBatch,
-          hasReachedMax: hasReachedMax,
-          lastUpdated: now,
-        ),
-      );
+        );
 
-      // --- STEP 1: Ensure purchase prices are cached ---
-      final List<Investment> updatedInvestmentsWithPurchasePrices =
-          <Investment>[];
-      for (final Investment investment in investmentBatch) {
-        if (!_isInvestmentStillValid(investment.id)) continue;
+        emit(
+          InvestmentsLoaded(
+            investments: investmentBatch,
+            hasReachedMax: hasReachedMax,
+            lastUpdated: now,
+            isRefreshing: true,
+          ),
+        );
 
-        final bool hasNoPurchasePrice =
-            investment.purchasePrice == null || investment.purchasePrice == 0;
-        if (investment.isPurchased && hasNoPurchasePrice) {
-          final String investmentTicker = investment.ticker;
-          try {
-            final double purchasePrice = await _fetchPriceWithFallback(
-              investmentTicker,
-              startDate: investment.purchaseDate,
-            );
+        // --- STEP 1: Ensure purchase prices are cached ---
+        final List<Investment> updatedInvestmentsWithPurchasePrices =
+            <Investment>[];
+        for (final Investment investment in investmentBatch) {
+          if (!_isInvestmentStillValid(investment.id)) continue;
 
-            updatedInvestmentsWithPurchasePrices.add(
-              investment.copyWith(purchasePrice: purchasePrice),
-            );
-          } catch (e) {
-            debugPrint(
-              'Error while fetching purchase price for '
-              'ticker $investmentTicker: $e. '
-              'Falling back to original investment.',
-            );
+          final bool hasNoPurchasePrice =
+              investment.purchasePrice == null || investment.purchasePrice == 0;
+          if (investment.isPurchased && hasNoPurchasePrice) {
+            final String investmentTicker = investment.ticker;
+            try {
+              final double purchasePrice = await _fetchPriceWithFallback(
+                investmentTicker,
+                startDate: investment.purchaseDate,
+              );
+
+              updatedInvestmentsWithPurchasePrices.add(
+                investment.copyWith(purchasePrice: purchasePrice),
+              );
+            } catch (e) {
+              debugPrint(
+                'Error while fetching purchase price for '
+                'ticker $investmentTicker: $e. '
+                'Falling back to original investment.',
+              );
+              updatedInvestmentsWithPurchasePrices.add(investment);
+            }
+          } else {
             updatedInvestmentsWithPurchasePrices.add(investment);
           }
-        } else {
-          updatedInvestmentsWithPurchasePrices.add(investment);
         }
-      }
 
-      emit(
-        InvestmentsUpdated(
-          investments: _mergeInvestments(
-            state.investments,
-            updatedInvestmentsWithPurchasePrices,
-          ),
-          hasReachedMax: hasReachedMax,
-          lastUpdated: now,
-        ),
-      );
+        final List<Investment> mergedPurchasePrices = _mergeInvestments(
+          state.investments,
+          updatedInvestmentsWithPurchasePrices,
+        );
 
-      // --- STEP 2: Throttle current price requests ---
-      final List<Investment> updatedInvestmentsWithCurrentPrices =
-          <Investment>[];
-      for (int i = 0; i < updatedInvestmentsWithPurchasePrices.length; i++) {
-        final Investment investment = updatedInvestmentsWithPurchasePrices[i];
-        if (!_isInvestmentStillValid(investment.id)) continue;
-
-        final String ticker = investment.ticker;
-        try {
-          final double currentPrice = await _fetchPriceWithFallback(ticker);
-
-          updatedInvestmentsWithCurrentPrices.add(
-            investment.copyWith(currentPrice: currentPrice),
-          );
-        } catch (e) {
-          debugPrint(
-            'Error while fetching current price for ticker $ticker: $e. '
-            'Falling back to original investment.',
-          );
-          updatedInvestmentsWithCurrentPrices.add(investment);
-        }
-      }
-
-      // Emit updated investments with current prices.
-      emit(
-        InvestmentsUpdated(
-          investments: _mergeInvestments(
-            state.investments,
-            updatedInvestmentsWithCurrentPrices,
-          ),
-          hasReachedMax: hasReachedMax,
-          lastUpdated: now,
-        ),
-      );
-
-      // --- STEP 3: Calculate gain/loss ---
-      final List<Investment> updatedInvestmentsWithGainOrLoss =
-          updatedInvestmentsWithCurrentPrices.map((Investment investment) {
-            final double? currentPrice = investment.currentPrice;
-            final double? purchasePrice = investment.purchasePrice;
-
-            if (investment.isPurchased &&
-                currentPrice != null &&
-                purchasePrice != null) {
-              final int quantity = investment.quantity;
-              final double totalValueCurrent = quantity * currentPrice;
-              final double totalValuePurchase = quantity * purchasePrice;
-              final double gainOrLoss = totalValueCurrent - totalValuePurchase;
-
-              return investment.copyWith(gainOrLossUsd: gainOrLoss);
-            } else {
-              return investment;
-            }
-          }).toList();
-
-      emit(
-        InvestmentsUpdated(
-          investments: _mergeInvestments(
-            state.investments,
-            updatedInvestmentsWithGainOrLoss,
-          ),
-          hasReachedMax: hasReachedMax,
-          lastUpdated: now,
-        ),
-      );
-
-      // --- STEP 4: Calculate CAD gain/loss with one exchange-rate lookup ---
-      try {
-        final double cadExchangeRate = await _exchangeRateRepository
-            .getExchangeRate(
-              fromCurrency: CurrencyCode.usd.value,
-              toCurrency: CurrencyCode.cad.value,
-            );
-
-        final List<Investment> updatedInvestmentsWithCadGainOrLoss =
-            updatedInvestmentsWithGainOrLoss.map((Investment investment) {
-              final double? gainOrLossUsd = investment.gainOrLossUsd;
-              final bool canCalculateCadGainOrLoss =
-                  investment.isPurchased && gainOrLossUsd != null;
-
-              if (investment.gainOrLossCad != null ||
-                  !canCalculateCadGainOrLoss) {
-                return investment;
-              } else {
-                return investment.copyWith(
-                  gainOrLossCad: gainOrLossUsd * cadExchangeRate,
-                );
-              }
-            }).toList();
+        await _investmentsRepository.saveLocalInvestments(
+          userId: userId,
+          investments: mergedPurchasePrices,
+        );
 
         emit(
           InvestmentsUpdated(
-            investments: _mergeInvestments(
-              state.investments,
-              updatedInvestmentsWithCadGainOrLoss,
-            ),
+            investments: mergedPurchasePrices,
             hasReachedMax: hasReachedMax,
             lastUpdated: now,
+            isRefreshing: true,
           ),
         );
-      } catch (e, stackTrace) {
-        debugPrint(
-          'Error while fetching USD to CAD exchange rate.\n'
-          'Error: $e\n'
-          'Stacktrace: $stackTrace.',
-        );
-      }
-    } catch (error, stackTrace) {
-      debugPrint(
-        'Error $error. Stacktrace for an error in $runtimeType: $stackTrace.',
-      );
 
-      if (error is DioException) {
-        final int? statusCode = error.response?.statusCode;
-        if (statusCode == HttpStatus.tooManyRequests) {
+        // --- STEP 2: Throttle current price requests ---
+        final List<Investment> updatedInvestmentsWithCurrentPrices =
+            <Investment>[];
+        for (int i = 0; i < updatedInvestmentsWithPurchasePrices.length; i++) {
+          final Investment investment = updatedInvestmentsWithPurchasePrices[i];
+          if (!_isInvestmentStillValid(investment.id)) continue;
+
+          final String ticker = investment.ticker;
+          try {
+            final double currentPrice = await _fetchPriceWithFallback(ticker);
+
+            updatedInvestmentsWithCurrentPrices.add(
+              investment.copyWith(currentPrice: currentPrice),
+            );
+          } catch (e) {
+            debugPrint(
+              'Error while fetching current price for ticker $ticker: $e. '
+              'Falling back to original investment.',
+            );
+            updatedInvestmentsWithCurrentPrices.add(investment);
+          }
+        }
+
+        final List<Investment> mergedCurrentPrices = _mergeInvestments(
+          state.investments,
+          updatedInvestmentsWithCurrentPrices,
+        );
+
+        await _investmentsRepository.saveLocalInvestments(
+          userId: userId,
+          investments: mergedCurrentPrices,
+        );
+
+        emit(
+          InvestmentsUpdated(
+            investments: mergedCurrentPrices,
+            hasReachedMax: hasReachedMax,
+            lastUpdated: now,
+            isRefreshing: true,
+          ),
+        );
+
+        // --- STEP 3: Calculate gain/loss ---
+        final List<Investment> updatedInvestmentsWithGainOrLoss =
+            updatedInvestmentsWithCurrentPrices.map((Investment investment) {
+              final double? currentPrice = investment.currentPrice;
+              final double? purchasePrice = investment.purchasePrice;
+
+              if (investment.isPurchased &&
+                  currentPrice != null &&
+                  purchasePrice != null) {
+                final int quantity = investment.quantity;
+                final double totalValueCurrent = quantity * currentPrice;
+                final double totalValuePurchase = quantity * purchasePrice;
+                final double gainOrLoss =
+                    totalValueCurrent - totalValuePurchase;
+
+                return investment.copyWith(gainOrLossUsd: gainOrLoss);
+              } else {
+                return investment;
+              }
+            }).toList();
+
+        final List<Investment> mergedGainOrLoss = _mergeInvestments(
+          state.investments,
+          updatedInvestmentsWithGainOrLoss,
+        );
+
+        await _investmentsRepository.saveLocalInvestments(
+          userId: userId,
+          investments: mergedGainOrLoss,
+        );
+
+        emit(
+          InvestmentsUpdated(
+            investments: mergedGainOrLoss,
+            hasReachedMax: hasReachedMax,
+            lastUpdated: now,
+            isRefreshing: true,
+          ),
+        );
+
+        // --- STEP 4: Calculate CAD gain/loss with one exchange-rate lookup ---
+        List<Investment> finalInvestmentsList = mergedGainOrLoss;
+        try {
+          final double cadExchangeRate = await _exchangeRateRepository
+              .getExchangeRate(
+                fromCurrency: CurrencyCode.usd.value,
+                toCurrency: CurrencyCode.cad.value,
+              );
+
+          final List<Investment> updatedInvestmentsWithCadGainOrLoss =
+              updatedInvestmentsWithGainOrLoss.map((Investment investment) {
+                final double? gainOrLossUsd = investment.gainOrLossUsd;
+                final bool canCalculateCadGainOrLoss =
+                    investment.isPurchased && gainOrLossUsd != null;
+
+                if (investment.gainOrLossCad != null ||
+                    !canCalculateCadGainOrLoss) {
+                  return investment;
+                } else {
+                  return investment.copyWith(
+                    gainOrLossCad: gainOrLossUsd * cadExchangeRate,
+                  );
+                }
+              }).toList();
+
+          finalInvestmentsList = _mergeInvestments(
+            state.investments,
+            updatedInvestmentsWithCadGainOrLoss,
+          );
+        } catch (e, stackTrace) {
+          debugPrint(
+            'Error while fetching USD to CAD exchange rate.\n'
+            'Error: $e\n'
+            'Stacktrace: $stackTrace.',
+          );
+        }
+
+        await _investmentsRepository.saveLocalInvestments(
+          userId: userId,
+          investments: finalInvestmentsList,
+        );
+        await _investmentsRepository.setLastFetchedAt(
+          userId: userId,
+          time: now,
+        );
+
+        emit(
+          InvestmentsLoaded(
+            investments: finalInvestmentsList,
+            hasReachedMax: hasReachedMax,
+            lastUpdated: now,
+            // Background sync completed successfully.
+            isRefreshing: false,
+          ),
+        );
+      } catch (error, stackTrace) {
+        debugPrint(
+          'Error $error. Stacktrace for an error in $runtimeType: $stackTrace.',
+        );
+
+        if (state.investments.isNotEmpty) {
           emit(
-            const InvestmentsError(
-              errorMessage: 'Too many requests - please try again shortly.',
+            InvestmentsLoaded(
+              investments: state.investments,
+              hasReachedMax: true,
+              lastUpdated: state.lastUpdated,
+              // Background sync failed; stop refreshing and show cached data.
+              isRefreshing: false,
             ),
           );
           return;
         }
-        emit(
-          InvestmentsError(
-            errorMessage: 'HTTP ${statusCode ?? 'Error'}: ${error.message}',
-          ),
-        );
-      } else {
-        emit(InvestmentsError(errorMessage: error.toString()));
+
+        if (error is DioException) {
+          final int? statusCode = error.response?.statusCode;
+          if (statusCode == HttpStatus.tooManyRequests) {
+            emit(
+              const InvestmentsError(
+                errorMessage: 'Too many requests - please try again shortly.',
+              ),
+            );
+            return;
+          }
+          emit(
+            InvestmentsError(
+              errorMessage: 'HTTP ${statusCode ?? 'Error'}: ${error.message}',
+            ),
+          );
+        } else {
+          emit(InvestmentsError(errorMessage: error.toString()));
+        }
       }
+    } else {
+      emit(
+        UnauthenticatedInvestmentsAccessState(
+          errorMessage: translate('investments.user_id_not_found'),
+        ),
+      );
     }
   }
 
@@ -323,8 +449,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       final String userId = _authenticationBloc.state.user.id;
       if (userId.isEmpty) {
         emit(
-          const UnauthenticatedInvestmentsAccessState(
-            errorMessage: 'User ID not found',
+          UnauthenticatedInvestmentsAccessState(
+            errorMessage: translate('investments.user_id_not_found'),
           ),
         );
         return;
@@ -780,8 +906,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
 
     if (userId.isEmpty) {
       emit(
-        const UnauthenticatedInvestmentsAccessState(
-          errorMessage: 'User ID not found.',
+        UnauthenticatedInvestmentsAccessState(
+          errorMessage: translate('investments.user_id_not_found'),
         ),
       );
       return;
@@ -983,8 +1109,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     final String userId = _authenticationBloc.state.user.id;
     if (userId.isEmpty) {
       emit(
-        const UnauthenticatedInvestmentsAccessState(
-          errorMessage: 'User ID not found.',
+        UnauthenticatedInvestmentsAccessState(
+          errorMessage: translate('investments.user_id_not_found'),
         ),
       );
     } else {
