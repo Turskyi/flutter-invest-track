@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -6,13 +9,16 @@ import 'package:investtrack/application_services/blocs/authentication/bloc/authe
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:investtrack/ui/privacy/privacy_policy_page.dart';
 import 'package:investtrack/ui/sign_in/language_selector_button.dart';
 import 'package:investtrack/ui/widgets/app_version_text.dart';
 import 'package:models/models.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  const AppDrawer({required this.homeWidgetService, super.key});
+
+  final HomeWidgetService homeWidgetService;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +81,12 @@ class AppDrawer extends StatelessWidget {
                   title: Text(translate('menu.feedback')),
                   onTap: () => _showFeedbackDialog(context),
                 ),
+                if (!kIsWeb && Platform.isAndroid)
+                  ListTile(
+                    leading: const Icon(Icons.widgets),
+                    title: Text(translate('menu.pin_home_widget')),
+                    onTap: () => _requestPinWidget(context),
+                  ),
                 ListTile(
                   leading: const Icon(Icons.language),
                   title: Text(translate('menu.language')),
@@ -200,6 +212,13 @@ class AppDrawer extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Future<void> _requestPinWidget(BuildContext context) async {
+    Navigator.of(context).pop();
+    await homeWidgetService.requestPinWidget(
+      qualifiedAndroidName: constants.kQualifiedAndroidWidgetName,
     );
   }
 

@@ -37,8 +37,13 @@ import 'package:models/models.dart';
 /// `context.select((AuthenticationBloc bloc) => bloc.state.user.id)` will
 /// trigger updates if the user id changes.
 class InvestmentsPage extends StatefulWidget {
-  const InvestmentsPage({super.key, this.isDemo = false});
+  const InvestmentsPage({
+    required this.homeWidgetService,
+    super.key,
+    this.isDemo = false,
+  });
 
+  final HomeWidgetService homeWidgetService;
   final bool isDemo;
 
   static Route<void> route({
@@ -61,7 +66,7 @@ class InvestmentsPage extends StatefulWidget {
               settingsRepository,
             )..add(const LoadInvestments());
           },
-          child: const InvestmentsPage(),
+          child: InvestmentsPage(homeWidgetService: homeWidgetService),
         );
       },
       transitionsBuilder:
@@ -163,7 +168,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
           ? null
           : BlocListener<MenuBloc, MenuState>(
               listener: _menuStateListener,
-              child: const AppDrawer(),
+              child: AppDrawer(homeWidgetService: widget.homeWidgetService),
             ),
       body: BlocConsumer<InvestmentsBloc, InvestmentsState>(
         listener: _handleInvestmentsState,

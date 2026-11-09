@@ -67,7 +67,7 @@ void main() {
             settingsRepository,
           )..add(const LoadInvestments());
         },
-        child: const InvestmentsPage(),
+        child: InvestmentsPage(homeWidgetService: homeWidgetService),
       );
     },
     AppRoute.signIn.path: (_) => const SignInPage(),

@@ -27,7 +27,9 @@ Map<String, WidgetBuilder> getRouteMap({
         create: (BuildContext _) {
           return investmentsBloc..add(const LoadInvestments());
         },
-        child: const InvestmentsPage(),
+        child: InvestmentsPage(
+          homeWidgetService: GetIt.I.get<HomeWidgetService>(),
+        ),
       );
     },
     AppRoute.signIn.path: (BuildContext _) =>
@@ -55,7 +57,10 @@ Map<String, WidgetBuilder> getRouteMap({
         GetIt.I.get<SettingsRepository>(),
         isDemo: true,
       )..add(const LoadInvestments()),
-      child: const InvestmentsPage(isDemo: true),
+      child: InvestmentsPage(
+        homeWidgetService: GetIt.I.get<HomeWidgetService>(),
+        isDemo: true,
+      ),
     ),
   };
 }
