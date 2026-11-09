@@ -9,9 +9,13 @@ import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/di/injector.dart' as di;
 import 'package:investtrack/di/injector.dart';
+import 'package:investtrack/domain_services/exchange_rate_repository.dart';
+import 'package:investtrack/domain_services/investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:investtrack/localization/localization_delelegate_getter.dart'
     as localization;
 import 'package:investtrack/router/routes.dart' as router;
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:investtrack/ui/app/app.dart';
 import 'package:investtrack/ui/feedback/feedback_form.dart';
 
@@ -47,6 +51,15 @@ Future<void> main() async {
   final MenuBloc menuBloc = dependencies.get<MenuBloc>();
   final ThemeBloc themeBloc = dependencies.get<ThemeBloc>();
 
+  final InvestmentsRepository investmentsRepository = dependencies
+      .get<InvestmentsRepository>();
+  final ExchangeRateRepository exchangeRateRepository = dependencies
+      .get<ExchangeRateRepository>();
+  final HomeWidgetService homeWidgetService = dependencies
+      .get<HomeWidgetService>();
+  final SettingsRepository settingsRepository = dependencies
+      .get<SettingsRepository>();
+
   final InvestmentsBloc investmentsBloc = dependencies.get<InvestmentsBloc>(
     param1: false,
   );
@@ -56,6 +69,10 @@ Future<void> main() async {
     authenticationBloc: authenticationBloc,
   );
 
+  // `LocalizedApp` and `BetterFeedback` wrap App at the entry point because
+  // `localizationDelegate` is initialized asynchronously in `main()`.
+  // Moving them inside App would require asynchronous state loading at the
+  // root widget level, introducing startup flicker.
   runApp(
     LocalizedApp(
       localizationDelegate,
@@ -77,6 +94,10 @@ Future<void> main() async {
           authenticationBloc: authenticationBloc,
           menuBloc: menuBloc,
           themeBloc: themeBloc,
+          investmentsRepository: investmentsRepository,
+          exchangeRateRepository: exchangeRateRepository,
+          homeWidgetService: homeWidgetService,
+          settingsRepository: settingsRepository,
         ),
       ),
     ),

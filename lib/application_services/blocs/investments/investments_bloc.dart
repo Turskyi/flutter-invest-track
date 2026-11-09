@@ -11,9 +11,11 @@ import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/domain_services/exchange_rate_repository.dart';
 import 'package:investtrack/domain_services/investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:investtrack/infrastructure/investment_import_data.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/types.dart' as types;
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:models/models.dart';
 import 'package:yahoo_finance_data_reader/yahoo_finance_data_reader.dart';
 
@@ -47,7 +49,9 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   InvestmentsBloc(
     this._investmentsRepository,
     this._exchangeRateRepository,
-    this._authenticationBloc, {
+    this._authenticationBloc,
+    this._homeWidgetService,
+    this._settingsRepository, {
     @factoryParam bool isDemo = false,
   }) : _isDemo = isDemo,
        super(const InvestmentsLoading()) {
@@ -63,7 +67,28 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
   final InvestmentsRepository _investmentsRepository;
   final ExchangeRateRepository _exchangeRateRepository;
   final AuthenticationBloc _authenticationBloc;
+  final HomeWidgetService _homeWidgetService;
+  final SettingsRepository _settingsRepository;
   final bool _isDemo;
+
+  Future<void> _updateHomeWidget() async {
+    try {
+      final String userId = _isDemo
+          ? constants.demoUserId
+          : _authenticationBloc.state.userId;
+
+      final AppTheme appTheme = _settingsRepository.getAppTheme();
+
+      await _homeWidgetService.updateHomeWidget(
+        appDatabase: _investmentsRepository.appDatabase,
+        userId: userId,
+        appTheme: appTheme,
+        settingsRepository: _settingsRepository,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Error updating home widget: $e\n$stackTrace');
+    }
+  }
 
   List<Investment> _mergeInvestments(
     List<Investment> current,
@@ -383,6 +408,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           userId: userId,
           time: now,
         );
+
+        await _updateHomeWidget();
 
         emit(
           InvestmentsLoaded(

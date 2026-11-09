@@ -4,97 +4,50 @@
 
 ### 1. Avoid Non-Null Assertions (`!`)
 
-- **Rule**: Never use the non-null assertion operator (`!`) in Dart/Flutter
-  code.
-- **Rationale**: Non-null assertions can cause runtime crashes
-  (`NullCheckOperatorFailed`) if unexpected null states occur.
-- **Preferred Pattern**: Extract nullable properties into local variables and
-  check them against `null` before use, allowing Dart's flow analysis (type
-  promotion) to safely infer non-null types.
-
-**Example**:
+- **Rule**: Never use the non-null assertion operator (`!`) in Dart/Flutter code.
+- **Preferred Pattern**: Extract nullable properties into local variables and check against `null` before use.
 
 ```dart
-// ❌ Avoid:
-if (state.lastUpdated != null) {
-Text(_formatLastUpdated(state.lastUpdated!))
-}
-
-// ✅ Preferred:
 final DateTime? lastUpdated = state.lastUpdated;
 if (lastUpdated != null) {
-Text(_formatLastUpdated(lastUpdated))
+  Text(_formatLastUpdated(lastUpdated));
 }
 ```
 
 ### 2. Named Parameters for Multi-Parameter Methods
 
-- **Rule**: When a method or function has more than one parameter, all of its
-  parameters must be named (using `{...}` syntax).
-- **Rationale**: Named parameters improve readability and prevent invocation
-  bugs caused by swapping positional arguments of the same type.
-
-**Example**:
+- **Rule**: When a method has more than one parameter, all parameters must be named (`{...}`).
 
 ```dart
-// ❌ Avoid:
-void updateUser(String userId, String name, int age) {}
-updateUser('123', 'John', 30);
-
-// ✅ Preferred:
 void updateUser({required String userId, required String name, required int age}) {}
-updateUser(userId: '123', name: 'John',age:30);
 ```
 
 ### 3. Avoid Hardcoded Values
 
-- **Rule**: Avoid magic numbers, inline strings, hardcoded URLs, retry counts,
-  or timeout durations directly within widgets, blocs, or repositories.
-- **Rationale**: Hardcoded values reduce maintainability, hinder testing, and
-  make configuration or localization updates error-prone.
-- **Preferred Pattern**: Extract configuration values, API paths, magic numbers,
-  and durations into constants (`res/constants/`), and use `flutter_translate`
-  for user-facing strings.
-
-**Example**:
-
-```dart
-// ❌ Avoid:
-Future.delayed(const Duration(milliseconds: 300000));
-if (items.length > 50) {}
-
-// ✅ Preferred:
-const Duration cacheTtlThreshold = Duration(minutes: 5);
-Future.delayed(cacheTtlThreshold);
-if (items.length > constants.itemsPerPage) {}
-```
+- **Rule**: Avoid magic numbers, inline strings, or durations in widgets or blocs. Use constants (`res/constants/`) and `flutter_translate`.
 
 ### 4. Explicit `else` Blocks over Early Returns
 
-- **Rule**: Avoid early-return guard clauses in methods. Instead, prefer
-  explicit `else` blocks for handling alternate conditions or error states.
-- **Rationale**: Explicit `else` blocks improve code readability and maintain a
-  clear, structured control flow.
-- **Preferred Pattern**: Wrap the main execution logic inside an `if` condition
-  (e.g. checking validity or state), and place error emission or fallback
-  handling in the corresponding `else` block.
+- **Rule**: Avoid early-return guard clauses. Use explicit `else` blocks for alternate conditions or error states.
 
-**Example**:
+### 5. Strict Dependency Injection & Dependency Inversion
 
-```dart
-// ❌ Avoid (Early return guard clause):
-if (userId.isEmpty && !_isDemo) {
-emit(const UnauthenticatedInvestmentsAccessState(errorMessage: 'User ID not found.'));
-return;
-}
-// ... rest of method ...
+- **Rule**: Never use service locator calls (`GetIt.I.get()`) inside domain services, BLoCs, or repositories. Always inject dependencies via constructor parameters.
 
-// ✅ Preferred (Explicit else block):
-if (userId.isNotEmpty || _isDemo) {
-// ... rest of method ...
-} else {
-emit(const UnauthenticatedInvestmentsAccessState(errorMessage: 'User ID not found.'));
-}
-```
+### 6. Avoid Conversational Prefixes in Dartdoc Comments
+
+- **Rule**: Never use conversational prefixes like `Note:`, `Warning:`, or `Important:` at the beginning of Dartdoc comments.
+
+### 7. Architectural Terminology
+
+- **Rule**: Refer to the application's architecture exclusively as **Onion Architecture**, never as Clean Architecture.
+
+### 8. Avoid Bare `as` Type Casts
+
+- **Rule**: Avoid bare `as` type casts. Always verify types first using an `if` condition (e.g., `if (obj is ExpectedType) { ... }`), allowing Dart's type promotion to safely infer the type without runtime cast exceptions.
+
+### 9. Never Use `null as ...` Type Casts
+
+- **Rule**: Never use `null as dynamic` or any form of `null as T` to bypass constructor parameters or type constraints. Use proper nullable types or pass the exact required data source/dependency.
 
 # This file should never exceed 200 lines of code, meaning, this line should never be below line number 200. If we need to add something to this file, we simply have to remove something less critical or make text less verbose.

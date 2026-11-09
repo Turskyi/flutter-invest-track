@@ -1,6 +1,7 @@
 import 'package:investtrack/domain_services/investments_repository.dart';
 import 'package:investtrack/entities/demo_investments.dart';
 import 'package:investtrack/entities/demo_message_response.dart';
+import 'package:investtrack/infrastructure/data_sources/local/database/app_database.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 
@@ -9,6 +10,10 @@ import 'package:models/models.dart';
 /// without creating an account, satisfying App Store guideline 5.1.1(v).
 class DemoInvestmentsRepository implements InvestmentsRepository {
   const DemoInvestmentsRepository();
+
+  @override
+  AppDatabase get appDatabase =>
+      throw UnsupportedError('Demo repository does not use AppDatabase');
 
   static final List<Investment> _demoInvestments = <Investment>[
     Investment(

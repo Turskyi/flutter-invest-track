@@ -22,6 +22,9 @@ class InvestmentsRepositoryImpl implements InvestmentsRepository {
   final AppDatabase _appDatabase;
 
   @override
+  AppDatabase get appDatabase => _appDatabase;
+
+  @override
   Future<Investments> getInvestments({
     required String userId,
     int page = constants.pageOffset,

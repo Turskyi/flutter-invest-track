@@ -1,8 +1,11 @@
+import 'package:investtrack/infrastructure/data_sources/local/database/app_database.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 
 abstract interface class InvestmentsRepository {
   const InvestmentsRepository();
+
+  AppDatabase get appDatabase;
 
   Future<Investments> getInvestments({
     required String userId,

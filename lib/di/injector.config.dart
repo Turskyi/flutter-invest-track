@@ -55,6 +55,8 @@ import 'package:investtrack/infrastructure/ws/rest/interceptors/logging_intercep
 import 'package:investtrack/infrastructure/ws/rest/retrofit_client/retrofit_client.dart'
     as _i651;
 import 'package:investtrack/infrastructure/xlsx_service.dart' as _i967;
+import 'package:investtrack/services/home_widget_service.dart' as _i172;
+import 'package:investtrack/services/home_widget_service_impl.dart' as _i905;
 import 'package:models/models.dart' as _i669;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:user_repository/user_repository.dart' as _i164;
@@ -93,6 +95,9 @@ extension GetItInjectableX on _i174.GetIt {
           dioHttpClientModule.getDioHttpClient(gh<_i204.LoggingInterceptor>()),
       preResolve: true,
     );
+    gh.lazySingleton<_i172.HomeWidgetService>(
+      () => const _i905.HomeWidgetServiceImpl(),
+    );
     gh.lazySingleton<_i669.RestClient>(
       () => restClientModule.getRestClient(gh<_i361.Dio>()),
     );
@@ -115,9 +120,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i682.MenuBloc>(
       () => _i682.MenuBloc(gh<_i113.SettingsRepository>()),
-    );
-    gh.factory<_i606.ThemeBloc>(
-      () => _i606.ThemeBloc(gh<_i113.SettingsRepository>()),
     );
     gh.lazySingleton<_i223.AuthenticationRepository>(
       () => authenticationRepositoryModule.getAuthenticationRepository(
@@ -145,11 +147,21 @@ extension GetItInjectableX on _i174.GetIt {
         initialPassword: gh<String>(),
       ),
     );
+    gh.factory<_i606.ThemeBloc>(
+      () => _i606.ThemeBloc(
+        gh<_i113.SettingsRepository>(),
+        gh<_i172.HomeWidgetService>(),
+        gh<_i305.InvestmentsRepository>(),
+        gh<_i636.AuthenticationBloc>(),
+      ),
+    );
     gh.factoryParam<_i91.InvestmentsBloc, bool, dynamic>(
       (isDemo, _) => _i91.InvestmentsBloc(
         gh<_i305.InvestmentsRepository>(),
         gh<_i30.ExchangeRateRepository>(),
         gh<_i636.AuthenticationBloc>(),
+        gh<_i172.HomeWidgetService>(),
+        gh<_i113.SettingsRepository>(),
         isDemo: isDemo,
       ),
     );

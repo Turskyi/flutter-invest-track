@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/sign_up/bloc/sign_up_bloc.dart';
 import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
 import 'package:investtrack/ui/sign_up/code_form.dart';
@@ -10,6 +11,7 @@ import 'package:investtrack/ui/widgets/public_theme_wrapper.dart';
 import 'package:nested/nested.dart';
 
 import 'flutter_translate_test_utils.dart';
+import 'mocks/mock_home_widget_service.dart';
 import 'mocks/mock_repositories.dart';
 
 void main() {
@@ -29,7 +31,16 @@ void main() {
             ),
           ),
           BlocProvider<ThemeBloc>(
-            create: (_) => ThemeBloc(MockSettingsRepository()),
+            create: (BuildContext _) {
+              return ThemeBloc(
+                MockSettingsRepository(),
+                MockHomeWidgetService(),
+                MockInvestmentsRepository(),
+                AuthenticationBloc(
+                  authenticationRepository: MockAuthenticationRepository(),
+                ),
+              );
+            },
           ),
         ],
         child: LocalizedApp(

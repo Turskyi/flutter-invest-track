@@ -4,17 +4,18 @@ import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/domain_services/exchange_rate_repository.dart';
 import 'package:investtrack/domain_services/investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/slide_page_route.dart';
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:investtrack/ui/investments/desktop_table.dart';
 import 'package:investtrack/ui/investments/import/xlsx_import_page.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
@@ -40,16 +41,26 @@ class InvestmentsPage extends StatefulWidget {
 
   final bool isDemo;
 
-  static Route<void> route(AuthenticationBloc authenticationBloc) {
+  static Route<void> route({
+    required AuthenticationBloc authenticationBloc,
+    required InvestmentsRepository investmentsRepository,
+    required ExchangeRateRepository exchangeRateRepository,
+    required HomeWidgetService homeWidgetService,
+    required SettingsRepository settingsRepository,
+  }) {
     return PageRouteBuilder<void>(
       settings: RouteSettings(name: AppRoute.investments.path),
       pageBuilder: (BuildContext _, Animation<double> _, Animation<double> _) {
         return BlocProvider<InvestmentsBloc>(
-          create: (_) => InvestmentsBloc(
-            GetIt.I.get<InvestmentsRepository>(),
-            GetIt.I.get<ExchangeRateRepository>(),
-            authenticationBloc,
-          )..add(const LoadInvestments()),
+          create: (BuildContext _) {
+            return InvestmentsBloc(
+              investmentsRepository,
+              exchangeRateRepository,
+              authenticationBloc,
+              homeWidgetService,
+              settingsRepository,
+            )..add(const LoadInvestments());
+          },
           child: const InvestmentsPage(),
         );
       },
@@ -90,21 +101,6 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
       WidgetsBinding.instance.addPostFrameCallback((Duration _) {
         _showDemoBanner();
       });
-    }
-  }
-
-  String _formatLastUpdated(DateTime lastUpdated) {
-    final DateTime now = DateTime.now();
-    final bool isToday =
-        lastUpdated.year == now.year &&
-        lastUpdated.month == now.month &&
-        lastUpdated.day == now.day;
-    if (isToday) {
-      final String timeStr = DateFormat.jm().format(lastUpdated);
-      return '${translate('investments.last_updated_today_at')} $timeStr';
-    } else {
-      final String dateStr = DateFormat('MMM d, y, HH:mm').format(lastUpdated);
-      return '${translate('investments.last_updated_at')} $dateStr';
     }
   }
 
@@ -590,5 +586,22 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
       }
     }
     return false;
+  }
+
+  String _formatLastUpdated(DateTime lastUpdated) {
+    final DateTime now = DateTime.now();
+    final bool isToday =
+        lastUpdated.year == now.year &&
+        lastUpdated.month == now.month &&
+        lastUpdated.day == now.day;
+    if (isToday) {
+      final String timeStr = DateFormat.jm().format(lastUpdated);
+      return '${translate('investments.last_updated_today_at')} $timeStr';
+    } else {
+      final String dateStr = DateFormat(
+        constants.lastUpdatedDateFormat,
+      ).format(lastUpdated);
+      return '${translate('investments.last_updated_at')} $dateStr';
+    }
   }
 }

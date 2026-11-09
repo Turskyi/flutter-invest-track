@@ -11,6 +11,8 @@ import 'package:mockito/mockito.dart';
 import 'package:models/models.dart';
 
 import 'investments_bloc_test.mocks.dart';
+import 'mocks/mock_home_widget_service.dart';
+import 'mocks/mock_repositories.dart' show MockSettingsRepository;
 
 @GenerateMocks(<Type>[
   InvestmentsRepository,
@@ -21,6 +23,8 @@ void main() {
   late MockInvestmentsRepository mockInvestmentsRepository;
   late MockExchangeRateRepository mockExchangeRateRepository;
   late MockAuthenticationBloc mockAuthenticationBloc;
+  late MockHomeWidgetService mockHomeWidgetService;
+  late MockSettingsRepository mockSettingsRepository;
 
   const String userId = 'test-user-id';
 
@@ -60,6 +64,8 @@ void main() {
     mockInvestmentsRepository = MockInvestmentsRepository();
     mockExchangeRateRepository = MockExchangeRateRepository();
     mockAuthenticationBloc = MockAuthenticationBloc();
+    mockHomeWidgetService = MockHomeWidgetService();
+    mockSettingsRepository = MockSettingsRepository();
 
     when(mockAuthenticationBloc.state).thenReturn(
       const AuthenticationState.authenticated(
@@ -98,6 +104,8 @@ void main() {
           mockInvestmentsRepository,
           mockExchangeRateRepository,
           mockAuthenticationBloc,
+          mockHomeWidgetService,
+          mockSettingsRepository,
         );
       },
       seed: () => InvestmentsLoaded(
@@ -142,6 +150,8 @@ void main() {
           mockInvestmentsRepository,
           mockExchangeRateRepository,
           mockAuthenticationBloc,
+          mockHomeWidgetService,
+          mockSettingsRepository,
         );
       },
       seed: () => InvestmentsLoaded(
@@ -185,6 +195,8 @@ void main() {
           mockInvestmentsRepository,
           mockExchangeRateRepository,
           mockAuthenticationBloc,
+          mockHomeWidgetService,
+          mockSettingsRepository,
         );
       },
       seed: () => InvestmentDeleted(
@@ -216,6 +228,8 @@ void main() {
             mockInvestmentsRepository,
             mockExchangeRateRepository,
             mockAuthenticationBloc,
+            mockHomeWidgetService,
+            mockSettingsRepository,
           );
         },
         seed: () {

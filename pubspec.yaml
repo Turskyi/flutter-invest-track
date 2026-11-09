@@ -66,6 +66,7 @@ dependencies:
       ref: master
   formz: ^0.8.1
   get_it: ^9.3.0
+  home_widget: ^0.10.0
   injectable: ^3.0.0
   injectable_generator: ^3.1.3
   intl: ^0.20.3
@@ -87,6 +88,7 @@ dependencies:
   url_launcher_android: ^6.3.33
   user_repository:
     path: core/repositories/user_repository
+  workmanager: ^0.10.10
   yahoo_finance_data_reader: ^1.0.14
 
 dependency_overrides:

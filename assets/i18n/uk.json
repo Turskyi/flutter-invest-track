@@ -313,5 +313,10 @@
     "website_action": "Відвідати наш сайт",
     "error_could_not_launch": "Не вдалося відкрити посилання.",
     "error_copy_action": "Копіювати"
+  },
+  "widget": {
+    "total_portfolio_value": "Загальна вартість портфеля",
+    "invested": "Інвестовано",
+    "top_holdings": "Топ акцій"
   }
 }

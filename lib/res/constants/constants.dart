@@ -26,7 +26,21 @@ const String imagePath = 'assets/images/';
 
 /// Demo user ID constant used in demo mode.
 const String demoUserId = 'demo';
+const String kUserIdKey = 'userId';
 
 /// Blur intensity constant.
 const double blurSigma = 3.0;
 const double maxWidth = 700.0;
+
+/// Native home widget constants.
+const String kAppleAppGroupId = 'group.com.turskyi.investtracks';
+const String kHomeWidgetMethodChannel = 'com.investtracks.home_widget';
+const String kIosWidgetName = 'InvestTrackWidgets';
+const String kAndroidWidgetName = 'InvestTrackWidget';
+const String kQualifiedAndroidWidgetName =
+    'com.turskyi.investtrack.InvestTrackWidget';
+const String kSetAppGroupIdMethod = 'setAppGroupId';
+const String kSaveWidgetDataMethod = 'saveWidgetData';
+const String kUpdateWidgetMethod = 'updateWidget';
+const String kAppGroupIdArgKey = 'appGroupId';
+const String lastUpdatedDateFormat = 'MMM d, y, HH:mm';
