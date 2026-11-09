@@ -40,8 +40,12 @@ Future<void> main() async {
   // Initialize dependency injection and wait for `SharedPreferences`.
   final GetIt dependencies = await di.injectDependencies();
 
+  final SettingsRepository settingsRepository = dependencies
+      .get<SettingsRepository>();
   final LocalizationDelegate localizationDelegate = await localization
-      .getLocalizationDelegate();
+      .getLocalizationDelegate(
+        preferredLanguage: settingsRepository.getLanguage(),
+      );
 
   final AuthenticationRepository authenticationRepository = dependencies
       .get<AuthenticationRepository>();
@@ -57,9 +61,6 @@ Future<void> main() async {
       .get<ExchangeRateRepository>();
   final HomeWidgetService homeWidgetService = dependencies
       .get<HomeWidgetService>();
-  final SettingsRepository settingsRepository = dependencies
-      .get<SettingsRepository>();
-
   final InvestmentsBloc investmentsBloc = dependencies.get<InvestmentsBloc>(
     param1: false,
   );

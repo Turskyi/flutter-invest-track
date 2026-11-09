@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:models/models.dart';
 
 /// A button that allows the user to switch the app language.
@@ -39,8 +41,17 @@ class LanguageSelectorButton extends StatelessWidget {
           ],
         ),
       ),
-      onSelected: (Language language) {
-        changeLocale(context, language.isoLanguageCode);
+      onSelected: (Language language) async {
+        final SettingsRepository? settingsRepository =
+            RepositoryProvider.of<SettingsRepository?>(context);
+        if (settingsRepository != null) {
+          await settingsRepository.saveLanguageIsoCode(
+            language.isoLanguageCode,
+          );
+        }
+        if (context.mounted) {
+          await changeLocale(context, language.isoLanguageCode);
+        }
       },
       itemBuilder: (BuildContext context) => Language.values
           .map(
