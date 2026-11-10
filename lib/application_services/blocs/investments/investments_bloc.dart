@@ -54,7 +54,12 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
     this._settingsRepository, {
     @factoryParam bool isDemo = false,
   }) : _isDemo = isDemo,
-       super(const InvestmentsLoading()) {
+       super(
+         const InvestmentsLoading(
+           lastUpdated: null,
+           investments: <Investment>[],
+         ),
+       ) {
     on<LoadInvestments>(_loadInvestments);
     on<LoadMoreInvestments>(_loadMoreInvestments);
     on<LoadInvestment>(_loadInvestment);
@@ -155,6 +160,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       } else {
         emit(
           InvestmentsLoading(
+            investments: state.investments,
             lastUpdated: state.lastUpdated,
             // Initial load in progress.
             isRefreshing: true,
@@ -198,6 +204,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             emit(
               InvestmentsError(
                 errorMessage: error.toString(),
+                investments: state.investments,
                 lastUpdated: now,
               ),
             );
@@ -442,25 +449,46 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           final int? statusCode = error.response?.statusCode;
           if (statusCode == HttpStatus.tooManyRequests) {
             emit(
-              const InvestmentsError(
-                errorMessage: 'Too many requests - please try again shortly.',
+              InvestmentsError(
+                investments: state.investments,
+                errorMessage: translate('investments.error_too_many_requests'),
+                lastUpdated: state.lastUpdated,
               ),
             );
             return;
           }
+          final String status =
+              statusCode?.toString() ?? translate('error_dialog_title');
+          final String message = error.message ?? '';
           emit(
             InvestmentsError(
-              errorMessage: 'HTTP ${statusCode ?? 'Error'}: ${error.message}',
+              investments: state.investments,
+              errorMessage: translate(
+                'investments.error_http',
+                args: <String, String>{
+                  constants.kStatusKey: status,
+                  constants.kMessageKey: message,
+                },
+              ),
+              lastUpdated: state.lastUpdated,
             ),
           );
         } else {
-          emit(InvestmentsError(errorMessage: error.toString()));
+          emit(
+            InvestmentsError(
+              investments: state.investments,
+              errorMessage: error.toString(),
+              lastUpdated: state.lastUpdated,
+            ),
+          );
         }
       }
     } else {
       emit(
         UnauthenticatedInvestmentsAccessState(
           errorMessage: translate('investments.user_id_not_found'),
+          investments: state.investments,
+          lastUpdated: state.lastUpdated,
         ),
       );
     }
@@ -478,6 +506,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
         emit(
           UnauthenticatedInvestmentsAccessState(
             errorMessage: translate('investments.user_id_not_found'),
+            investments: state.investments,
+            lastUpdated: state.lastUpdated,
           ),
         );
         return;
@@ -502,6 +532,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               ...result.investments,
             ],
             hasReachedMax: result.currentPage >= result.totalPages,
+            lastUpdated: state.lastUpdated,
           ),
         );
       } catch (error, stackTrace) {
@@ -509,7 +540,13 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           'Error while loading more.\n'
           'Stacktrace for an error in $runtimeType: $stackTrace.',
         );
-        emit(InvestmentsError(errorMessage: error.toString()));
+        emit(
+          InvestmentsError(
+            investments: state.investments,
+            errorMessage: error.toString(),
+            lastUpdated: state.lastUpdated,
+          ),
+        );
       }
     }
   }
@@ -527,6 +564,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           selectedInvestment: investment,
           investments: currentState.investments,
           hasReachedMax: currentState.hasReachedMax,
+          lastUpdated: state.lastUpdated,
         ),
       );
 
@@ -538,6 +576,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             selectedInvestment: investment,
             investments: selectedInvestmentsState.investments,
             hasReachedMax: selectedInvestmentsState.hasReachedMax,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -567,6 +606,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             selectedInvestment: investment.copyWith(currentPrice: currentPrice),
             investments: investmentsState.investments,
             hasReachedMax: investmentsState.hasReachedMax,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -598,6 +638,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               investments: investmentsState.investments,
               exchangeRate: cadExchangeRate,
               hasReachedMax: investmentsState.hasReachedMax,
+              lastUpdated: state.lastUpdated,
             ),
           );
         }
@@ -635,6 +676,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               currentPrice: currentPrice,
               exchangeRate: cadExchangeRate,
               hasReachedMax: investmentsState2.hasReachedMax,
+              lastUpdated: state.lastUpdated,
             ),
           );
         }
@@ -664,6 +706,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             currentPrice: currentPrice,
             hasReachedMax: investmentsState3.hasReachedMax,
             priceChange: priceChange,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -700,6 +743,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             currentPrice: currentPrice,
             hasReachedMax: investmentsState4.hasReachedMax,
             changePercentage: changePercentage,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -727,6 +771,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           CreatingInvestment(
             investments: currentState.investments,
             hasReachedMax: currentState.hasReachedMax,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -813,6 +858,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
                 investment: enrichedInvestment,
                 investments: investments,
                 hasReachedMax: currentState.hasReachedMax,
+                lastUpdated: state.lastUpdated,
               ),
             );
           }
@@ -849,6 +895,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               investment: createdInvestment,
               investments: investments,
               hasReachedMax: currentState.hasReachedMax,
+              lastUpdated: state.lastUpdated,
             ),
           );
         }
@@ -862,6 +909,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             investmentId: investment.id,
             investments: currentState.investments,
             hasReachedMax: currentState.hasReachedMax,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -889,6 +937,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               investment: updatedInvestment,
               investments: investments,
               hasReachedMax: currentState.hasReachedMax,
+              lastUpdated: state.lastUpdated,
             ),
           );
         }
@@ -924,6 +973,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           investmentId: investment.id,
           investments: currentState.investments,
           hasReachedMax: currentState.hasReachedMax,
+          lastUpdated: state.lastUpdated,
         ),
       );
     }
@@ -935,6 +985,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       emit(
         UnauthenticatedInvestmentsAccessState(
           errorMessage: translate('investments.user_id_not_found'),
+          investments: state.investments,
+          lastUpdated: state.lastUpdated,
         ),
       );
       return;
@@ -963,6 +1015,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             message: response.message,
             investments: updatedInvestments,
             hasReachedMax: investmentsState.hasReachedMax,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -985,6 +1038,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               message: 'Investment already removed.',
               investments: updatedInvestments,
               hasReachedMax: investmentsState.hasReachedMax,
+              lastUpdated: state.lastUpdated,
             ),
           );
         }
@@ -1002,6 +1056,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
               investment: investment,
               investments: currentInvestments,
               hasReachedMax: currentState.hasReachedMax,
+              lastUpdated: state.lastUpdated,
             ),
           );
         }
@@ -1020,6 +1075,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             investment: investment,
             investments: currentInvestments,
             hasReachedMax: currentState.hasReachedMax,
+            lastUpdated: state.lastUpdated,
           ),
         );
       }
@@ -1046,6 +1102,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           errorMessage: '$error',
           investment: investment,
           hasReachedMax: currentState.hasReachedMax,
+          lastUpdated: state.lastUpdated,
         ),
       );
     }
@@ -1138,6 +1195,8 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
       emit(
         UnauthenticatedInvestmentsAccessState(
           errorMessage: translate('investments.user_id_not_found'),
+          investments: state.investments,
+          lastUpdated: state.lastUpdated,
         ),
       );
     } else {
@@ -1159,6 +1218,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           hasReachedMax: hasReachedMax,
           current: 0,
           total: total,
+          lastUpdated: state.lastUpdated,
         ),
       );
 
@@ -1171,6 +1231,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
             hasReachedMax: hasReachedMax,
             current: i,
             total: total,
+            lastUpdated: state.lastUpdated,
           ),
         );
 
@@ -1238,6 +1299,7 @@ class InvestmentsBloc extends Bloc<InvestmentsEvent, InvestmentsState> {
           hasReachedMax: hasReachedMax,
           importedCount: successCount,
           failedCount: failCount,
+          lastUpdated: state.lastUpdated,
         ),
       );
     }

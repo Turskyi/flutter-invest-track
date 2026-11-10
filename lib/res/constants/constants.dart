@@ -27,6 +27,8 @@ const String imagePath = 'assets/images/';
 /// Demo user ID constant used in demo mode.
 const String demoUserId = 'demo';
 const String kUserIdKey = 'userId';
+const String kStatusKey = 'status';
+const String kMessageKey = 'message';
 
 /// Blur intensity constant.
 const double blurSigma = 3.0;

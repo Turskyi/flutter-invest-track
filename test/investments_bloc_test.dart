@@ -108,10 +108,13 @@ void main() {
           mockSettingsRepository,
         );
       },
-      seed: () => InvestmentsLoaded(
-        investments: <Investment>[investment1, investment2],
-        hasReachedMax: true,
-      ),
+      seed: () {
+        return InvestmentsLoaded(
+          investments: <Investment>[investment1, investment2],
+          hasReachedMax: true,
+          lastUpdated: DateTime.now(),
+        );
+      },
       act: (InvestmentsBloc bloc) async {
         // Trigger background load
         bloc.add(LoadInvestment(investment1));
@@ -154,10 +157,13 @@ void main() {
           mockSettingsRepository,
         );
       },
-      seed: () => InvestmentsLoaded(
-        investments: <Investment>[investment1],
-        hasReachedMax: true,
-      ),
+      seed: () {
+        return InvestmentsLoaded(
+          investments: <Investment>[investment1],
+          hasReachedMax: true,
+          lastUpdated: DateTime.now(),
+        );
+      },
       act: (InvestmentsBloc bloc) async {
         // Rapidly add two delete events
         bloc.add(DeleteInvestmentEvent(investment1));
@@ -199,12 +205,15 @@ void main() {
           mockSettingsRepository,
         );
       },
-      seed: () => InvestmentDeleted(
-        investment: investment1,
-        message: 'Deleted',
-        investments: <Investment>[investment2], // List without investment1
-        hasReachedMax: true,
-      ),
+      seed: () {
+        return InvestmentDeleted(
+          investment: investment1,
+          message: 'Deleted',
+          investments: <Investment>[investment2], // List without investment1
+          hasReachedMax: true,
+          lastUpdated: DateTime.now(),
+        );
+      },
       act: (InvestmentsBloc bloc) {
         // If an update was triggered earlier and finishes now,
         // it should check _isInvestmentStillValid(1) and fail.
@@ -241,10 +250,12 @@ void main() {
           return InvestmentsLoaded(
             investments: <Investment>[updatedInvestment1, investment2],
             hasReachedMax: true,
+            lastUpdated: DateTime.now(),
           );
         },
-        act: (InvestmentsBloc bloc) =>
-            bloc.add(DeleteInvestmentEvent(investment1)),
+        act: (InvestmentsBloc bloc) {
+          bloc.add(DeleteInvestmentEvent(investment1));
+        },
         verify: (InvestmentsBloc bloc) {
           final List<Investment> investments = bloc.state.investments;
           expect(investments.length, 1);

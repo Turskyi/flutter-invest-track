@@ -199,9 +199,10 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               },
             );
           } else if (state is InvestmentsError && state.investments.isEmpty) {
-            final bool isRateLimit = state.errorMessage.contains(
-              '${HttpStatus.tooManyRequests}',
-            );
+            final bool isRateLimit =
+                state.errorMessage ==
+                    translate('investments.error_too_many_requests') ||
+                state.errorMessage.contains('${HttpStatus.tooManyRequests}');
 
             content = Center(
               child: Column(

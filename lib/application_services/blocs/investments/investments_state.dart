@@ -3,8 +3,8 @@ part of 'investments_bloc.dart';
 @immutable
 sealed class InvestmentsState {
   const InvestmentsState({
-    this.investments = const <Investment>[],
-    this.lastUpdated,
+    required this.investments,
+    required this.lastUpdated,
     this.isRefreshing = false,
   });
 
@@ -43,14 +43,18 @@ sealed class InvestmentsState {
 }
 
 final class InvestmentsLoading extends InvestmentsState {
-  const InvestmentsLoading({super.lastUpdated, super.isRefreshing});
+  const InvestmentsLoading({
+    required super.investments,
+    required super.lastUpdated,
+    super.isRefreshing,
+  });
 }
 
 final class InvestmentsError extends InvestmentsState {
   const InvestmentsError({
     required this.errorMessage,
-    super.investments,
-    super.lastUpdated,
+    required super.investments,
+    required super.lastUpdated,
     super.isRefreshing,
   });
 
@@ -60,7 +64,8 @@ final class InvestmentsError extends InvestmentsState {
 final class UnauthenticatedInvestmentsAccessState extends InvestmentsError {
   const UnauthenticatedInvestmentsAccessState({
     required super.errorMessage,
-    super.lastUpdated,
+    required super.investments,
+    required super.lastUpdated,
     super.isRefreshing,
   });
 }
@@ -68,8 +73,8 @@ final class UnauthenticatedInvestmentsAccessState extends InvestmentsError {
 final class InvestmentsLoaded extends InvestmentsState {
   const InvestmentsLoaded({
     required this.hasReachedMax,
-    super.investments,
-    super.lastUpdated,
+    required super.investments,
+    required super.lastUpdated,
     super.isRefreshing,
     this.isLoadingMore = false,
   });
@@ -100,8 +105,8 @@ final class InvestmentsUpdated extends InvestmentsLoaded {
   const InvestmentsUpdated({
     required super.hasReachedMax,
     required super.investments,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
     super.isRefreshing,
   });
 }
@@ -110,8 +115,8 @@ final class CreatingInvestment extends InvestmentsLoaded {
   const CreatingInvestment({
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
   });
 }
 
@@ -119,9 +124,9 @@ base class SubmittingInvestment extends InvestmentsLoaded {
   const SubmittingInvestment({
     required this.investmentId,
     required super.investments,
+    required super.lastUpdated,
     super.hasReachedMax = false,
     super.isLoadingMore = false,
-    super.lastUpdated,
   });
 
   final int investmentId;
@@ -132,8 +137,8 @@ final class UpdatingInvestment extends SubmittingInvestment {
     required super.investmentId,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
   });
 }
 
@@ -142,8 +147,8 @@ final class InvestmentDeleting extends SubmittingInvestment {
     required super.investmentId,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
   });
 }
 
@@ -153,8 +158,8 @@ final class InvestmentDeleted extends InvestmentsLoaded {
     required super.investments,
     required this.message,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
   });
 
   final String message;
@@ -166,8 +171,8 @@ final class SelectedInvestmentState extends InvestmentsLoaded {
     required this.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
     super.isRefreshing,
   });
 
@@ -179,8 +184,8 @@ final class ValueLoadingState extends SelectedInvestmentState {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
     super.isRefreshing,
   });
 }
@@ -191,8 +196,8 @@ final class CurrentValueLoaded extends ValueLoadingState {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
     super.isRefreshing,
   });
 
@@ -206,8 +211,8 @@ final class ExchangeRateLoaded extends CurrentValueLoaded {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
-    super.lastUpdated,
     super.isRefreshing,
   });
 
@@ -220,12 +225,12 @@ final class InvestmentUpdated extends SelectedInvestmentState {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     this.exchangeRate,
     this.purchasePrice,
     super.isLoadingMore = false,
     this.priceChange = 0,
     this.changePercentage = 0,
-    super.lastUpdated,
     super.isRefreshing,
   });
 
@@ -270,6 +275,7 @@ final class InvestmentSubmitted extends InvestmentsLoaded {
     required this.investment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 
@@ -282,6 +288,7 @@ final class InvestmentError extends InvestmentsLoaded {
     required this.investment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 
@@ -294,6 +301,7 @@ final class ImportingInvestments extends InvestmentsLoaded {
   const ImportingInvestments({
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     required this.current,
     required this.total,
     super.isLoadingMore = false,
@@ -313,6 +321,7 @@ final class ImportCompleted extends InvestmentsLoaded {
     required super.hasReachedMax,
     required this.importedCount,
     required this.failedCount,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 
