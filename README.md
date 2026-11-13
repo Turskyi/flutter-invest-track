@@ -7,6 +7,7 @@
 [![Codemagic build status](https://api.codemagic.io/apps/6775c76403822966ad61431e/6775c76403822966ad61431d/status_badge.svg)](https://codemagic.io/app/6775c76403822966ad61431e/6775c76403822966ad61431d/latest_build)
 [![Deploy to Firebase Hosting on PR](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-pull-request.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-pull-request.yml)
 [![Deploy to Firebase Hosting on merge](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml)
+[![wakatime](https://wakatime.com/badge/user/f9df5074-b4ea-4c17-b001-fff428ab82aa/project/2a0cd8c5-0818-4627-a0b0-4dd11cbf40dd.svg)](https://wakatime.com/badge/user/f9df5074-b4ea-4c17-b001-fff428ab82aa/project/2a0cd8c5-0818-4627-a0b0-4dd11cbf40dd)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/flutter-invest-track">
 
 # InvestTracks (Flutter Version).

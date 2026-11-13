@@ -8,8 +8,8 @@ on:
       - completed
 
 concurrency:
-  # Cancel in-progress runs for the same workflow and workflow run.
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.id }}
+  # Cancel in-progress runs for the same workflow and branch.
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.event.workflow_run.id }}
   cancel-in-progress: true
 
 jobs:
