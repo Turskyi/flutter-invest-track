@@ -177,7 +177,7 @@ const Map<String, Object?> _enTestTranslations = <String, Object?>{
 
 // Minimal Ukrainian translations for use in widget tests.
 const Map<String, Object?> _ukTestTranslations = <String, Object?>{
-  'title': 'InvestTrack',
+  'title': 'InvestTracks',
 };
 
 Future<LocalizationDelegate> setUpFlutterTranslateForTests({

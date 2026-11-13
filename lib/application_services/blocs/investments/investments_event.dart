@@ -6,7 +6,9 @@ sealed class InvestmentsEvent {
 }
 
 final class LoadInvestments extends InvestmentsEvent {
-  const LoadInvestments();
+  const LoadInvestments({this.forceRefresh = false});
+
+  final bool forceRefresh;
 }
 
 final class LoadMoreInvestments extends InvestmentsEvent {

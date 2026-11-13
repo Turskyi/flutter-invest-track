@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/ui/sign_in/language_selector_button.dart';
 import 'package:investtrack/ui/support/support_channel.dart';
+import 'package:investtrack/ui/widgets/app_version_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SupportPage extends StatelessWidget {
@@ -65,6 +66,8 @@ class SupportPage extends StatelessWidget {
                 uri: Uri.parse(constants.website),
               ),
             ),
+            const SizedBox(height: 32),
+            const Center(child: AppVersionText()),
           ],
         ),
       ),

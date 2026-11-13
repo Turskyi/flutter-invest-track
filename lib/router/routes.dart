@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart';
 import 'package:investtrack/application_services/repositories/demo_investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:investtrack/router/app_route.dart';
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
 import 'package:investtrack/ui/investments/investments_page.dart';
 import 'package:investtrack/ui/marketing/marketing_url_page.dart';
@@ -24,7 +27,9 @@ Map<String, WidgetBuilder> getRouteMap({
         create: (BuildContext _) {
           return investmentsBloc..add(const LoadInvestments());
         },
-        child: const InvestmentsPage(),
+        child: InvestmentsPage(
+          homeWidgetService: GetIt.I.get<HomeWidgetService>(),
+        ),
       );
     },
     AppRoute.signIn.path: (BuildContext _) =>
@@ -48,9 +53,14 @@ Map<String, WidgetBuilder> getRouteMap({
         const DemoInvestmentsRepository(),
         const DemoExchangeRateRepository(),
         authenticationBloc,
+        GetIt.I.get<HomeWidgetService>(),
+        GetIt.I.get<SettingsRepository>(),
         isDemo: true,
       )..add(const LoadInvestments()),
-      child: const InvestmentsPage(isDemo: true),
+      child: InvestmentsPage(
+        homeWidgetService: GetIt.I.get<HomeWidgetService>(),
+        isDemo: true,
+      ),
     ),
   };
 }

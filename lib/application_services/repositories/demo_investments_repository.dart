@@ -1,6 +1,7 @@
 import 'package:investtrack/domain_services/investments_repository.dart';
 import 'package:investtrack/entities/demo_investments.dart';
 import 'package:investtrack/entities/demo_message_response.dart';
+import 'package:investtrack/infrastructure/data_sources/local/database/app_database.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 
@@ -10,10 +11,14 @@ import 'package:models/models.dart';
 class DemoInvestmentsRepository implements InvestmentsRepository {
   const DemoInvestmentsRepository();
 
+  @override
+  AppDatabase get appDatabase =>
+      throw UnsupportedError('Demo repository does not use AppDatabase');
+
   static final List<Investment> _demoInvestments = <Investment>[
     Investment(
       id: 1,
-      userId: 'demo',
+      userId: constants.demoUserId,
       ticker: 'AAPL',
       companyName: 'Apple Inc.',
       currency: 'USD',
@@ -34,7 +39,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
     ),
     Investment(
       id: 2,
-      userId: 'demo',
+      userId: constants.demoUserId,
       ticker: 'MSFT',
       companyName: 'Microsoft Corporation',
       currency: 'USD',
@@ -55,7 +60,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
     ),
     Investment(
       id: 3,
-      userId: 'demo',
+      userId: constants.demoUserId,
       ticker: 'NVDA',
       companyName: 'NVIDIA Corporation',
       currency: 'USD',
@@ -75,7 +80,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
     ),
     Investment(
       id: 4,
-      userId: 'demo',
+      userId: constants.demoUserId,
       ticker: 'TSLA',
       companyName: 'Tesla, Inc.',
       currency: 'USD',
@@ -96,7 +101,7 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
     ),
     Investment(
       id: 5,
-      userId: 'demo',
+      userId: constants.demoUserId,
       ticker: 'GOOGL',
       companyName: 'Alphabet Inc.',
       currency: 'USD',
@@ -140,4 +145,51 @@ class DemoInvestmentsRepository implements InvestmentsRepository {
 
   @override
   Future<double> fetchChangePercentage(String ticker) async => 0.0;
+
+  @override
+  Future<double> fetchFinance({required String ticker, String? date}) async {
+    return 0.0;
+  }
+
+  @override
+  Stream<List<Investment>> watchLocalInvestments(String userId) {
+    return Stream<List<Investment>>.value(_demoInvestments);
+  }
+
+  @override
+  Future<List<Investment>> getLocalInvestments(String userId) async {
+    return _demoInvestments;
+  }
+
+  @override
+  Future<void> saveLocalInvestments({
+    required String userId,
+    required List<Investment> investments,
+  }) async {
+    // No-op: Demo repository is read-only and uses in-memory demo data.
+  }
+
+  @override
+  Future<void> saveLocalInvestment(Investment investment) async {
+    // No-op: Demo repository is read-only and uses in-memory demo data.
+  }
+
+  @override
+  Future<void> deleteLocalInvestment({
+    required int id,
+    required String userId,
+  }) async {
+    // No-op: Demo repository is read-only and uses in-memory demo data.
+  }
+
+  @override
+  Future<DateTime?> getLastFetchedAt(String userId) async => DateTime.now();
+
+  @override
+  Future<void> setLastFetchedAt({
+    required String userId,
+    required DateTime time,
+  }) async {
+    // No-op: Demo repository is read-only and uses in-memory demo data.
+  }
 }

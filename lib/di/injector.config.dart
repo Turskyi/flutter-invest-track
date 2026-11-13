@@ -37,6 +37,7 @@ import 'package:investtrack/application_services/repositories/investments_reposi
 import 'package:investtrack/application_services/repositories/settings_repository_impl.dart'
     as _i803;
 import 'package:investtrack/di/authentication_repository_module.dart' as _i828;
+import 'package:investtrack/di/database_module.dart' as _i585;
 import 'package:investtrack/di/dio_http_client_module.dart' as _i617;
 import 'package:investtrack/di/preferences_module.dart' as _i270;
 import 'package:investtrack/di/rest_client_module.dart' as _i939;
@@ -47,11 +48,15 @@ import 'package:investtrack/domain_services/exchange_rate_repository.dart'
 import 'package:investtrack/domain_services/investments_repository.dart'
     as _i305;
 import 'package:investtrack/domain_services/settings_repository.dart' as _i113;
+import 'package:investtrack/infrastructure/data_sources/local/database/app_database.dart'
+    as _i449;
 import 'package:investtrack/infrastructure/ws/rest/interceptors/logging_interceptor.dart'
     as _i204;
 import 'package:investtrack/infrastructure/ws/rest/retrofit_client/retrofit_client.dart'
     as _i651;
 import 'package:investtrack/infrastructure/xlsx_service.dart' as _i967;
+import 'package:investtrack/services/home_widget_service.dart' as _i172;
+import 'package:investtrack/services/home_widget_service_impl.dart' as _i905;
 import 'package:models/models.dart' as _i669;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:user_repository/user_repository.dart' as _i164;
@@ -64,6 +69,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final sharedPreferencesModule = _$SharedPreferencesModule();
+    final databaseModule = _$DatabaseModule();
     final dioHttpClientModule = _$DioHttpClientModule();
     final restClientModule = _$RestClientModule();
     final retrofitHttpClientModule = _$RetrofitHttpClientModule();
@@ -83,22 +89,20 @@ extension GetItInjectableX on _i174.GetIt {
       () => const _i204.LoggingInterceptor(),
     );
     gh.factory<_i967.XlsxService>(() => _i967.XlsxService());
+    gh.singleton<_i449.AppDatabase>(() => databaseModule.appDatabase);
     await gh.factoryAsync<_i361.Dio>(
       () =>
           dioHttpClientModule.getDioHttpClient(gh<_i204.LoggingInterceptor>()),
       preResolve: true,
+    );
+    gh.lazySingleton<_i172.HomeWidgetService>(
+      () => const _i905.HomeWidgetServiceImpl(),
     );
     gh.lazySingleton<_i669.RestClient>(
       () => restClientModule.getRestClient(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i651.RetrofitClient>(
       () => retrofitHttpClientModule.getRetrofitHttpClient(gh<_i361.Dio>()),
-    );
-    gh.factory<_i305.InvestmentsRepository>(
-      () => _i233.InvestmentsRepositoryImpl(
-        gh<_i669.RestClient>(),
-        gh<_i460.SharedPreferences>(),
-      ),
     );
     gh.lazySingleton<_i164.UserRepository>(
       () =>
@@ -107,11 +111,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i113.SettingsRepository>(
       () => _i803.SettingsRepositoryImpl(gh<_i460.SharedPreferences>()),
     );
+    gh.factory<_i305.InvestmentsRepository>(
+      () => _i233.InvestmentsRepositoryImpl(
+        gh<_i669.RestClient>(),
+        gh<_i460.SharedPreferences>(),
+        gh<_i449.AppDatabase>(),
+      ),
+    );
     gh.factory<_i682.MenuBloc>(
       () => _i682.MenuBloc(gh<_i113.SettingsRepository>()),
-    );
-    gh.factory<_i606.ThemeBloc>(
-      () => _i606.ThemeBloc(gh<_i113.SettingsRepository>()),
     );
     gh.lazySingleton<_i223.AuthenticationRepository>(
       () => authenticationRepositoryModule.getAuthenticationRepository(
@@ -135,6 +143,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i445.SignUpBloc>(
       () => _i445.SignUpBloc(
         authenticationRepository: gh<_i223.AuthenticationRepository>(),
+        initialEmail: gh<String>(),
+        initialPassword: gh<String>(),
+      ),
+    );
+    gh.factory<_i606.ThemeBloc>(
+      () => _i606.ThemeBloc(
+        gh<_i113.SettingsRepository>(),
+        gh<_i172.HomeWidgetService>(),
+        gh<_i305.InvestmentsRepository>(),
+        gh<_i636.AuthenticationBloc>(),
       ),
     );
     gh.factoryParam<_i91.InvestmentsBloc, bool, dynamic>(
@@ -142,6 +160,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i305.InvestmentsRepository>(),
         gh<_i30.ExchangeRateRepository>(),
         gh<_i636.AuthenticationBloc>(),
+        gh<_i172.HomeWidgetService>(),
+        gh<_i113.SettingsRepository>(),
         isDemo: isDemo,
       ),
     );
@@ -150,6 +170,8 @@ extension GetItInjectableX on _i174.GetIt {
 }
 
 class _$SharedPreferencesModule extends _i270.SharedPreferencesModule {}
+
+class _$DatabaseModule extends _i585.DatabaseModule {}
 
 class _$DioHttpClientModule extends _i617.DioHttpClientModule {}
 

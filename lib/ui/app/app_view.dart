@@ -4,10 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/theme/theme_bloc.dart';
+import 'package:investtrack/domain_services/exchange_rate_repository.dart';
+import 'package:investtrack/domain_services/investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/theme/app_themes.dart' as app_themes;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/public_routes.dart';
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:investtrack/ui/app/current_route_observer.dart';
 import 'package:investtrack/ui/investments/investments_page.dart';
 import 'package:investtrack/ui/not_found_page.dart';
@@ -28,11 +32,19 @@ class AppView extends StatefulWidget {
   const AppView({
     required this.routeMap,
     required this.authenticationBloc,
+    required this.investmentsRepository,
+    required this.exchangeRateRepository,
+    required this.homeWidgetService,
+    required this.settingsRepository,
     super.key,
   });
 
   final AuthenticationBloc authenticationBloc;
   final Map<String, WidgetBuilder> routeMap;
+  final InvestmentsRepository investmentsRepository;
+  final ExchangeRateRepository exchangeRateRepository;
+  final HomeWidgetService homeWidgetService;
+  final SettingsRepository settingsRepository;
 
   @override
   State<AppView> createState() => _AppViewState();
@@ -125,7 +137,13 @@ class _AppViewState extends State<AppView> {
         );
       case AuthenticatedStatus():
         _navigator?.pushAndRemoveUntil<void>(
-          InvestmentsPage.route(widget.authenticationBloc),
+          InvestmentsPage.route(
+            authenticationBloc: widget.authenticationBloc,
+            investmentsRepository: widget.investmentsRepository,
+            exchangeRateRepository: widget.exchangeRateRepository,
+            homeWidgetService: widget.homeWidgetService,
+            settingsRepository: widget.settingsRepository,
+          ),
           (Route<void> route) => false,
         );
       case UnauthenticatedStatus():

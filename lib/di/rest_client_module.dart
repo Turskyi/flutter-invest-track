@@ -7,6 +7,7 @@ import 'package:models/models.dart';
 @module
 abstract class RestClientModule {
   @lazySingleton
-  RestClient getRestClient(Dio dio) =>
-      RetrofitClient(dio, baseUrl: constants.apiBaseUrl);
+  RestClient getRestClient(Dio dio) {
+    return RetrofitClient(dio, baseUrl: constants.apiBaseUrl);
+  }
 }

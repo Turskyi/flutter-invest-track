@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:authentication_repository/src/authentication_status.dart';
 import 'package:authentication_repository/src/env/env.dart';
+import 'package:authentication_repository/src/in_memory_persistor.dart';
 import 'package:authentication_repository/src/shared_prefs_persistor.dart';
 import 'package:clerk_auth/clerk_auth.dart' as clerk;
 import 'package:clerk_auth/clerk_auth.dart';
@@ -316,7 +317,7 @@ class AuthenticationRepository {
           publishableKey: Env.clerkPublishableKey,
           persistor: _keepMeSignedIn
               ? SharedPrefsPersistor(_preferences)
-              : Persistor.none,
+              : InMemoryPersistor(),
         ),
       );
       await _auth?.initialize();

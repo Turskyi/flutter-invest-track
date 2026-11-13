@@ -22,6 +22,7 @@ import 'package:user_repository/user_repository.dart';
 
 import 'flutter_translate_test_utils.dart';
 import 'mocks/mock_blocs.dart';
+import 'mocks/mock_home_widget_service.dart';
 import 'mocks/mock_repositories.dart';
 
 void main() {
@@ -41,22 +42,34 @@ void main() {
   final MockExchangeRepository exchangeRateRepository =
       MockExchangeRepository();
   final MockSettingsRepository settingsRepository = MockSettingsRepository();
+  final MockHomeWidgetService homeWidgetService = MockHomeWidgetService();
 
   final AuthenticationBloc authenticationBloc = AuthenticationBloc(
     authenticationRepository: authenticationRepository,
   );
   final MockMenuBloc menuBloc = MockMenuBloc();
-  final ThemeBloc themeBloc = ThemeBloc(settingsRepository);
+  final ThemeBloc themeBloc = ThemeBloc(
+    settingsRepository,
+    homeWidgetService,
+    investmentsRepository,
+    authenticationBloc,
+  );
 
   final Map<String, WidgetBuilder> routeMap = <String, WidgetBuilder>{
-    AppRoute.investments.path: (_) => BlocProvider<InvestmentsBloc>(
-      create: (_) => InvestmentsBloc(
-        investmentsRepository,
-        exchangeRateRepository,
-        authenticationBloc,
-      )..add(const LoadInvestments()),
-      child: const InvestmentsPage(),
-    ),
+    AppRoute.investments.path: (BuildContext _) {
+      return BlocProvider<InvestmentsBloc>(
+        create: (BuildContext _) {
+          return InvestmentsBloc(
+            investmentsRepository,
+            exchangeRateRepository,
+            authenticationBloc,
+            homeWidgetService,
+            settingsRepository,
+          )..add(const LoadInvestments());
+        },
+        child: InvestmentsPage(homeWidgetService: homeWidgetService),
+      );
+    },
     AppRoute.signIn.path: (_) => const SignInPage(),
     AppRoute.privacyPolity.path: (_) => const PrivacyPolicyPage(),
     AppRoute.support.path: (_) => const SupportPage(),
@@ -88,8 +101,11 @@ void main() {
             authenticationRepository: authenticationRepository,
             authenticationBloc: authenticationBloc,
             menuBloc: menuBloc,
-            // Provide the mock MenuBloc
             themeBloc: themeBloc,
+            investmentsRepository: investmentsRepository,
+            exchangeRateRepository: exchangeRateRepository,
+            homeWidgetService: homeWidgetService,
+            settingsRepository: settingsRepository,
           ),
         ),
         localizationDelegate,

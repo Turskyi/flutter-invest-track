@@ -7,11 +7,12 @@
 [![Codemagic build status](https://api.codemagic.io/apps/6775c76403822966ad61431e/6775c76403822966ad61431d/status_badge.svg)](https://codemagic.io/app/6775c76403822966ad61431e/6775c76403822966ad61431d/latest_build)
 [![Deploy to Firebase Hosting on PR](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-pull-request.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-pull-request.yml)
 [![Deploy to Firebase Hosting on merge](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/Turskyi/flutter-invest-track/actions/workflows/firebase-hosting-merge.yml)
+[![wakatime](https://wakatime.com/badge/user/f9df5074-b4ea-4c17-b001-fff428ab82aa/project/2a0cd8c5-0818-4627-a0b0-4dd11cbf40dd.svg)](https://wakatime.com/badge/user/f9df5074-b4ea-4c17-b001-fff428ab82aa/project/2a0cd8c5-0818-4627-a0b0-4dd11cbf40dd)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/flutter-invest-track">
 
-# InvestTrack (Flutter Version).
+# InvestTracks (Flutter Version).
 
-InvestTrack is a cross-platform Flutter application that helps users track
+InvestTracks is a cross-platform Flutter application that helps users track
 their stock portfolios in real-time. It fetches live stock prices, displays
 investment performance, and calculates gains or losses in multiple
 currencies.  
@@ -23,7 +24,7 @@ their investments on the go.
 ### Accessing the application:
 
 - [Official Web Version](https://investtracks.com): This is the primary web
-  version of **InvestTrack**, built with Next.js. It shares the same backend as
+  version of **InvestTracks**, built with Next.js. It shares the same backend as
   this Flutter application and also provides links to the mobile apps.
 - [Flutter Web Version](https://invest-track-application.web.app/):
   This is a web build of the Flutter application, demonstrating the

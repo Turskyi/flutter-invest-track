@@ -4,6 +4,7 @@
 *.pyc
 *.swp
 .DS_Store
+.artifacts/
 .atom/
 .build/
 .buildlog/
@@ -66,3 +67,4 @@ android/app/.cxx
 /.firebase/
 core/repositories/authentication_repository/build/
 android/.kotlin/sessions/
+/android/build/reports/problems/problems-report.html

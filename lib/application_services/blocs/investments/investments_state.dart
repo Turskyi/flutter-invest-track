@@ -2,29 +2,80 @@ part of 'investments_bloc.dart';
 
 @immutable
 sealed class InvestmentsState {
-  const InvestmentsState({this.investments = const <Investment>[]});
+  const InvestmentsState({
+    required this.investments,
+    required this.lastUpdated,
+    this.isRefreshing = false,
+  });
 
+  /// The list of investments currently loaded in state.
   final List<Investment> investments;
+
+  /// The timestamp when investment and market price data were
+  /// last successfully updated.
+  ///
+  /// ### Why is this nullable?
+  /// It is nullable (`DateTime?`) because:
+  /// - **Initial State (`null`)**: When the app first launches or enters
+  ///   [InvestmentsLoading] before any network request has completed,
+  ///   no timestamp exists yet.
+  /// - **Error State (`null` or preserved)**: If initial loading fails,
+  ///   no timestamp is established.
+  ///
+  /// ### What does `null` mean?
+  /// A `null` value indicates that data has not yet been fetched or
+  /// refreshed during the current session, or that no successful update
+  /// timestamp has been recorded.
+  ///
+  /// ### How is it handled?
+  /// - **In UI**: The presentation layer (`InvestmentsPage`) checks
+  ///   `if (state.lastUpdated != null)` before attempting to render the
+  ///   "Last updated" subtitle in the app bar. If `null`, the subtitle
+  ///   is omitted.
+  /// - **In Bloc / State Transitions**: When data is loaded or refreshed
+  ///   in `InvestmentsBloc`, `DateTime.now()` is assigned to `lastUpdated`
+  ///   and propagated across state updates via `copyWith` to maintain
+  ///   freshness context.
+  final DateTime? lastUpdated;
+
+  /// Indicates whether background data refresh is currently in progress.
+  final bool isRefreshing;
 }
 
 final class InvestmentsLoading extends InvestmentsState {
-  const InvestmentsLoading();
+  const InvestmentsLoading({
+    required super.investments,
+    required super.lastUpdated,
+    super.isRefreshing,
+  });
 }
 
 final class InvestmentsError extends InvestmentsState {
-  const InvestmentsError({required this.errorMessage, super.investments});
+  const InvestmentsError({
+    required this.errorMessage,
+    required super.investments,
+    required super.lastUpdated,
+    super.isRefreshing,
+  });
 
   final String errorMessage;
 }
 
 final class UnauthenticatedInvestmentsAccessState extends InvestmentsError {
-  const UnauthenticatedInvestmentsAccessState({required super.errorMessage});
+  const UnauthenticatedInvestmentsAccessState({
+    required super.errorMessage,
+    required super.investments,
+    required super.lastUpdated,
+    super.isRefreshing,
+  });
 }
 
 final class InvestmentsLoaded extends InvestmentsState {
   const InvestmentsLoaded({
     required this.hasReachedMax,
-    super.investments,
+    required super.investments,
+    required super.lastUpdated,
+    super.isRefreshing,
     this.isLoadingMore = false,
   });
 
@@ -37,11 +88,15 @@ final class InvestmentsLoaded extends InvestmentsState {
     bool? isLoadingMore,
     bool? hasReachedMax,
     List<Investment>? investments,
+    DateTime? lastUpdated,
+    bool? isRefreshing,
   }) {
     return InvestmentsLoaded(
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       investments: investments ?? this.investments,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
     );
   }
 }
@@ -50,7 +105,9 @@ final class InvestmentsUpdated extends InvestmentsLoaded {
   const InvestmentsUpdated({
     required super.hasReachedMax,
     required super.investments,
+    required super.lastUpdated,
     super.isLoadingMore = false,
+    super.isRefreshing,
   });
 }
 
@@ -58,6 +115,7 @@ final class CreatingInvestment extends InvestmentsLoaded {
   const CreatingInvestment({
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 }
@@ -66,6 +124,7 @@ base class SubmittingInvestment extends InvestmentsLoaded {
   const SubmittingInvestment({
     required this.investmentId,
     required super.investments,
+    required super.lastUpdated,
     super.hasReachedMax = false,
     super.isLoadingMore = false,
   });
@@ -78,6 +137,7 @@ final class UpdatingInvestment extends SubmittingInvestment {
     required super.investmentId,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 }
@@ -87,6 +147,7 @@ final class InvestmentDeleting extends SubmittingInvestment {
     required super.investmentId,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 }
@@ -97,6 +158,7 @@ final class InvestmentDeleted extends InvestmentsLoaded {
     required super.investments,
     required this.message,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 
@@ -109,7 +171,9 @@ final class SelectedInvestmentState extends InvestmentsLoaded {
     required this.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
+    super.isRefreshing,
   });
 
   final Investment selectedInvestment;
@@ -120,7 +184,9 @@ final class ValueLoadingState extends SelectedInvestmentState {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
+    super.isRefreshing,
   });
 }
 
@@ -130,7 +196,9 @@ final class CurrentValueLoaded extends ValueLoadingState {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
+    super.isRefreshing,
   });
 
   final double currentPrice;
@@ -143,7 +211,9 @@ final class ExchangeRateLoaded extends CurrentValueLoaded {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
+    super.isRefreshing,
   });
 
   final double exchangeRate;
@@ -155,11 +225,13 @@ final class InvestmentUpdated extends SelectedInvestmentState {
     required super.selectedInvestment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     this.exchangeRate,
     this.purchasePrice,
     super.isLoadingMore = false,
     this.priceChange = 0,
     this.changePercentage = 0,
+    super.isRefreshing,
   });
 
   final double? purchasePrice;
@@ -179,6 +251,8 @@ final class InvestmentUpdated extends SelectedInvestmentState {
     double? changePercentage,
     Investment? selectedInvestment,
     List<Investment>? investments,
+    DateTime? lastUpdated,
+    bool? isRefreshing,
   }) {
     return InvestmentUpdated(
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
@@ -190,6 +264,8 @@ final class InvestmentUpdated extends SelectedInvestmentState {
       changePercentage: changePercentage ?? this.changePercentage,
       selectedInvestment: selectedInvestment ?? this.selectedInvestment,
       investments: investments ?? this.investments,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
     );
   }
 }
@@ -199,6 +275,7 @@ final class InvestmentSubmitted extends InvestmentsLoaded {
     required this.investment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 
@@ -211,6 +288,7 @@ final class InvestmentError extends InvestmentsLoaded {
     required this.investment,
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 
@@ -223,6 +301,7 @@ final class ImportingInvestments extends InvestmentsLoaded {
   const ImportingInvestments({
     required super.investments,
     required super.hasReachedMax,
+    required super.lastUpdated,
     required this.current,
     required this.total,
     super.isLoadingMore = false,
@@ -242,6 +321,7 @@ final class ImportCompleted extends InvestmentsLoaded {
     required super.hasReachedMax,
     required this.importedCount,
     required this.failedCount,
+    required super.lastUpdated,
     super.isLoadingMore = false,
   });
 

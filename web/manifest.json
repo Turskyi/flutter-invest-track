@@ -1,11 +1,11 @@
 {
-    "name": "investtrack",
-    "short_name": "investtrack",
+    "name": "investtracks",
+    "short_name": "investtracks",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "InvestTrack is a cross-platform Flutter application that helps users track their stock portfolios in real-time.    It fetches live stock prices, displays investment performance, and calculates gains or losses in multiple currencies.    The app is primarily designed for Web, iOS, and Android, but it includes support for Linux, macOS, and Windows,    with potential for future testing and official support on these platforms. Perfect for anyone looking to monitor their investments on the go.",
+    "description": "InvestTracks is a cross-platform Flutter application that helps users track their stock portfolios in real-time.    It fetches live stock prices, displays investment performance, and calculates gains or losses in multiple currencies.    The app is primarily designed for Web, iOS, and Android, but it includes support for Linux, macOS, and Windows,    with potential for future testing and official support on these platforms. Perfect for anyone looking to monitor their investments on the go.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

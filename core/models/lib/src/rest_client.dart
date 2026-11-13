@@ -28,4 +28,23 @@ abstract interface class RestClient {
   Future<PriceChange> fetchPriceChange(String ticker);
 
   Future<ChangePercentage> fetchChangePercentage(String ticker);
+
+  /// Fetches financial data (current or historical stock price)
+  /// from the backend API.
+  ///
+  /// **Request Example**:
+  /// `GET /api/finance?ticker=BMV&date=2023-06-02`
+  /// or
+  /// `GET /api/finance?ticker=AAPL`
+  ///
+  /// **Response Example**:
+  /// ```json
+  /// {
+  ///   "currentPrice": 253.5
+  /// }
+  /// ```
+  Future<FinanceResult> fetchFinance({
+    required String ticker,
+    String? date,
+  });
 }

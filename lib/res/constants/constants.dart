@@ -7,7 +7,7 @@ const String telegramSupportUrl = 'https://t.me/+rkZH9QPzYOpjNTQy';
 const String githubIssuesUrl =
     'https://github.com/Turskyi/flutter-invest-track/issues';
 const String companyDomain = 'turskyi.com';
-const String appName = 'InvestTrack';
+const String appName = 'InvestTracks';
 const String authServiceLink = 'https://clerk.com';
 const String authServiceName = 'Clerk';
 const String remoteDbServiceName = 'Vercel Postgres';
@@ -24,6 +24,25 @@ const int itemsPerPage = 6;
 const int pageOffset = 1;
 const String imagePath = 'assets/images/';
 
+/// Demo user ID constant used in demo mode.
+const String demoUserId = 'demo';
+const String kUserIdKey = 'userId';
+const String kStatusKey = 'status';
+const String kMessageKey = 'message';
+
 /// Blur intensity constant.
 const double blurSigma = 3.0;
 const double maxWidth = 700.0;
+
+/// Native home widget constants.
+const String kAppleAppGroupId = 'group.com.turskyi.investtracks';
+const String kHomeWidgetMethodChannel = 'com.investtracks.home_widget';
+const String kIosWidgetName = 'InvestTrackWidgets';
+const String kAndroidWidgetName = 'InvestTrackWidget';
+const String kQualifiedAndroidWidgetName =
+    'com.turskyi.investtrack.InvestTrackWidget';
+const String kSetAppGroupIdMethod = 'setAppGroupId';
+const String kSaveWidgetDataMethod = 'saveWidgetData';
+const String kUpdateWidgetMethod = 'updateWidget';
+const String kAppGroupIdArgKey = 'appGroupId';
+const String lastUpdatedDateFormat = 'MMM d, y, HH:mm';

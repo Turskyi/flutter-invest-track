@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="just_now">Щойно</string>
+    <string name="total_portfolio_value">Загальна вартість портфеля</string>
+    <string name="invested_0_00">Інвестовано: $0,00</string>
+    <string name="investtracks">InvestTracks</string>
+    <string name="zero_amount">$0,00</string>
+    <string name="zero_gain_loss">+$0,00 (+0,00%)</string>
+</resources>

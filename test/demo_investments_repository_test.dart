@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:investtrack/application_services/repositories/demo_exchange_rate_repository.dart';
 import 'package:investtrack/application_services/repositories/demo_investments_repository.dart';
+import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:models/models.dart';
 
 void main() {
@@ -81,7 +82,7 @@ void main() {
 
     test('create returns the investment unchanged', () async {
       final Investments result = await repository.getInvestments(
-        userId: 'demo',
+        userId: constants.demoUserId,
       );
       final Investment original = result.investments.first;
 
@@ -92,7 +93,7 @@ void main() {
 
     test('update returns the investment unchanged', () async {
       final Investments result = await repository.getInvestments(
-        userId: 'demo',
+        userId: constants.demoUserId,
       );
       final Investment original = result.investments.first;
 
@@ -103,7 +104,7 @@ void main() {
 
     test('delete returns a non-empty message', () async {
       final Investments result = await repository.getInvestments(
-        userId: 'demo',
+        userId: constants.demoUserId,
       );
       final Investment investment = result.investments.first;
 

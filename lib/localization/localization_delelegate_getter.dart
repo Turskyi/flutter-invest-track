@@ -3,7 +3,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:models/models.dart';
 
-Future<LocalizationDelegate> getLocalizationDelegate() async {
+Future<LocalizationDelegate> getLocalizationDelegate({
+  Language? preferredLanguage,
+}) async {
   // Get the singleton instance of the `PlatformDispatcher`.
   final PlatformDispatcher platformDispatcher = PlatformDispatcher.instance;
 
@@ -15,6 +17,8 @@ Future<LocalizationDelegate> getLocalizationDelegate() async {
   final String fallbackLocale = Language.fromIsoLanguageCode(
     deviceIsoLanguageCode,
   ).isoLanguageCode;
+  final String initialLanguageCode =
+      preferredLanguage?.isoLanguageCode ?? fallbackLocale;
   final LocalizationDelegate localizationDelegate =
       await LocalizationDelegate.create(
         fallbackLocale: fallbackLocale,
@@ -22,5 +26,48 @@ Future<LocalizationDelegate> getLocalizationDelegate() async {
             .map((Language language) => language.isoLanguageCode)
             .toList(),
       );
+
+  final Locale initialLocale = Locale(initialLanguageCode);
+  if (localizationDelegate.currentLocale.languageCode != initialLanguageCode) {
+    await localizationDelegate.changeLocale(initialLocale);
+  }
+
+  // Apply subdomain override on Web.
+  final String? subdomainCode = _getSubdomainLanguageCode();
+
+  if (subdomainCode != null) {
+    final Locale subdomainLocale = Locale(subdomainCode);
+
+    if (localizationDelegate.currentLocale.languageCode != subdomainCode) {
+      await localizationDelegate.changeLocale(subdomainLocale);
+    }
+  }
+
   return localizationDelegate;
+}
+
+String? _getSubdomainLanguageCode() {
+  if (kIsWeb) {
+    final String host = Uri.base.host;
+    final List<String> hostParts = host.split('.');
+
+    // Check for at least [subdomain, domain, tld] e.g. uk.investtracks.com
+    if (hostParts.length >= 3) {
+      final String subdomain = hostParts.first.toLowerCase();
+
+      final bool isSupported = Language.values.any(
+        (Language l) => l.isoLanguageCode == subdomain,
+      );
+
+      if (isSupported) {
+        return subdomain;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
 }

@@ -4,16 +4,18 @@ import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:investtrack/application_services/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:investtrack/application_services/blocs/investments/investments_bloc.dart';
 import 'package:investtrack/application_services/blocs/menu/menu_bloc.dart';
 import 'package:investtrack/domain_services/exchange_rate_repository.dart';
 import 'package:investtrack/domain_services/investments_repository.dart';
+import 'package:investtrack/domain_services/settings_repository.dart';
 import 'package:investtrack/res/constants/constants.dart' as constants;
 import 'package:investtrack/res/constants/hero_tags.dart' as hero_tags;
 import 'package:investtrack/router/app_route.dart';
 import 'package:investtrack/router/slide_page_route.dart';
+import 'package:investtrack/services/home_widget_service.dart';
 import 'package:investtrack/ui/investments/desktop_table.dart';
 import 'package:investtrack/ui/investments/import/xlsx_import_page.dart';
 import 'package:investtrack/ui/investments/investment/add_edit_investment_page.dart';
@@ -35,21 +37,36 @@ import 'package:models/models.dart';
 /// `context.select((AuthenticationBloc bloc) => bloc.state.user.id)` will
 /// trigger updates if the user id changes.
 class InvestmentsPage extends StatefulWidget {
-  const InvestmentsPage({super.key, this.isDemo = false});
+  const InvestmentsPage({
+    required this.homeWidgetService,
+    super.key,
+    this.isDemo = false,
+  });
 
+  final HomeWidgetService homeWidgetService;
   final bool isDemo;
 
-  static Route<void> route(AuthenticationBloc authenticationBloc) {
+  static Route<void> route({
+    required AuthenticationBloc authenticationBloc,
+    required InvestmentsRepository investmentsRepository,
+    required ExchangeRateRepository exchangeRateRepository,
+    required HomeWidgetService homeWidgetService,
+    required SettingsRepository settingsRepository,
+  }) {
     return PageRouteBuilder<void>(
       settings: RouteSettings(name: AppRoute.investments.path),
       pageBuilder: (BuildContext _, Animation<double> _, Animation<double> _) {
         return BlocProvider<InvestmentsBloc>(
-          create: (_) => InvestmentsBloc(
-            GetIt.I.get<InvestmentsRepository>(),
-            GetIt.I.get<ExchangeRateRepository>(),
-            authenticationBloc,
-          )..add(const LoadInvestments()),
-          child: const InvestmentsPage(),
+          create: (BuildContext _) {
+            return InvestmentsBloc(
+              investmentsRepository,
+              exchangeRateRepository,
+              authenticationBloc,
+              homeWidgetService,
+              settingsRepository,
+            )..add(const LoadInvestments());
+          },
+          child: InvestmentsPage(homeWidgetService: homeWidgetService),
         );
       },
       transitionsBuilder:
@@ -108,21 +125,58 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(translate('title')),
+            Expanded(
+              child: BlocBuilder<InvestmentsBloc, InvestmentsState>(
+                builder: (BuildContext context, InvestmentsState state) {
+                  final DateTime? lastUpdated = state.lastUpdated;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(translate('title')),
+                      if (lastUpdated != null)
+                        Text(
+                          _formatLastUpdated(lastUpdated),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.6),
+                                fontSize: 11,
+                              ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ),
           ],
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: translate('investments.refresh_tooltip'),
+            onPressed: () {
+              context.read<InvestmentsBloc>().add(
+                const LoadInvestments(forceRefresh: true),
+              );
+            },
+          ),
+        ],
       ),
       drawer: widget.isDemo
           ? null
           : BlocListener<MenuBloc, MenuState>(
               listener: _menuStateListener,
-              child: const AppDrawer(),
+              child: AppDrawer(homeWidgetService: widget.homeWidgetService),
             ),
       body: BlocConsumer<InvestmentsBloc, InvestmentsState>(
         listener: _handleInvestmentsState,
         builder: (BuildContext context, InvestmentsState state) {
-          if (state is InvestmentsLoading) {
-            return LayoutBuilder(
+          Widget content;
+
+          if (state is InvestmentsLoading && state.investments.isEmpty) {
+            content = LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 if (constraints.maxWidth > 800.0) {
                   return const ShimmerDesktopTable();
@@ -144,12 +198,13 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 }
               },
             );
-          } else if (state is InvestmentsError) {
-            final bool isRateLimit = state.errorMessage.contains(
-              '${HttpStatus.tooManyRequests}',
-            );
+          } else if (state is InvestmentsError && state.investments.isEmpty) {
+            final bool isRateLimit =
+                state.errorMessage ==
+                    translate('investments.error_too_many_requests') ||
+                state.errorMessage.contains('${HttpStatus.tooManyRequests}');
 
-            return Center(
+            content = Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -163,30 +218,27 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context.read<InvestmentsBloc>().add(
-                      const LoadInvestments(),
+                      const LoadInvestments(forceRefresh: true),
                     ),
                     child: Text(translate('investments.retry_button')),
                   ),
                 ],
               ),
             );
-          } else if (state.investments.isEmpty) {
+          } else if (state.investments.isEmpty && !state.isRefreshing) {
             final ThemeData themeData = Theme.of(context);
-            return Center(
+            content = Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    // Illustration
                     Icon(
                       Icons.trending_down,
                       size: 80,
                       color: themeData.colorScheme.onSurface.withOpacity(0.4),
                     ),
                     const SizedBox(height: 24),
-
-                    // Message
                     Text(
                       translate('investments.no_investments'),
                       style: themeData.textTheme.titleLarge?.copyWith(
@@ -205,7 +257,6 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
-
                     ElevatedButton.icon(
                       onPressed: _navigateToAddEditPage,
                       icon: const Icon(Icons.add),
@@ -242,21 +293,30 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 ),
               ),
             );
-          } else if (state is InvestmentsLoaded) {
+          } else {
             final List<Investment> allInvestments = state.investments;
 
-            return RefreshIndicator(
+            content = RefreshIndicator(
               onRefresh: () async {
-                context.read<InvestmentsBloc>().add(const LoadInvestments());
+                context.read<InvestmentsBloc>().add(
+                  const LoadInvestments(forceRefresh: true),
+                );
               },
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
+                  final bool isLoadingMore =
+                      state is InvestmentsLoaded && state.isLoadingMore;
+                  final bool canLoadMore =
+                      state is InvestmentsLoaded && state.canLoadMore;
+                  final bool hasReachedMax = state is InvestmentsLoaded
+                      ? state.hasReachedMax
+                      : true;
+
                   if (constraints.maxWidth > 800.0) {
                     return DesktopTable(
                       investments: allInvestments,
-                      showLoader:
-                          state is CreatingInvestment || state.isLoadingMore,
-                      canLoadMore: state.canLoadMore,
+                      showLoader: state is CreatingInvestment || isLoadingMore,
+                      canLoadMore: canLoadMore,
                       onLoadMore: () {
                         context.read<InvestmentsBloc>().add(
                           const LoadMoreInvestments(),
@@ -278,7 +338,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                             ? allInvestments.length + 1
                             : allInvestments.length +
                                   // Add extra item for loader.
-                                  (state.hasReachedMax ? 0 : 1),
+                                  (hasReachedMax ? 0 : 1),
                         itemBuilder: (BuildContext _, int index) {
                           if (state is CreatingInvestment &&
                               index == allInvestments.length) {
@@ -312,12 +372,20 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 },
               ),
             );
-          } else {
-            // All sealed subclasses of InvestmentsState are covered above;
-            // this branch is unreachable at runtime.
-            assert(false, 'Unexpected InvestmentsState: $state');
-            return const SizedBox();
           }
+
+          return Stack(
+            children: <Widget>[
+              content,
+              if (state.isRefreshing)
+                const Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: LinearProgressIndicator(minHeight: 3),
+                ),
+            ],
+          );
         },
       ),
       floatingActionButton: BlurredFabWithBorder(
@@ -513,14 +581,33 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
   bool _handleScrollNotification({
     required ScrollNotification scrollInfo,
-    required InvestmentsLoaded state,
+    required InvestmentsState state,
   }) {
-    if (scrollInfo.metrics.axis == Axis.vertical &&
-        scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
-        !state.isLoadingMore &&
-        !state.hasReachedMax) {
-      context.read<InvestmentsBloc>().add(const LoadMoreInvestments());
+    if (state is InvestmentsLoaded) {
+      if (scrollInfo.metrics.axis == Axis.vertical &&
+          scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+          !state.isLoadingMore &&
+          !state.hasReachedMax) {
+        context.read<InvestmentsBloc>().add(const LoadMoreInvestments());
+      }
     }
     return false;
+  }
+
+  String _formatLastUpdated(DateTime lastUpdated) {
+    final DateTime now = DateTime.now();
+    final bool isToday =
+        lastUpdated.year == now.year &&
+        lastUpdated.month == now.month &&
+        lastUpdated.day == now.day;
+    if (isToday) {
+      final String timeStr = DateFormat.jm().format(lastUpdated);
+      return '${translate('investments.last_updated_today_at')} $timeStr';
+    } else {
+      final String dateStr = DateFormat(
+        constants.lastUpdatedDateFormat,
+      ).format(lastUpdated);
+      return '${translate('investments.last_updated_at')} $dateStr';
+    }
   }
 }

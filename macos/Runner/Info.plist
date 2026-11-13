@@ -34,7 +34,7 @@
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.finance</string>
         <key>NSPhotoLibraryUsageDescription</key>
-        <string>InvestTrack needs access to your photo library only if you choose an import file stored there while importing investment data.</string>
+        <string>InvestTracks needs access to your photo library only if you choose an import file stored there while importing investment data.</string>
         <key>ITSAppUsesNonExemptEncryption</key>
         <false />
     </dict>
