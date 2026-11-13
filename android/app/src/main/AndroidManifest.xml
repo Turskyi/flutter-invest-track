@@ -7,6 +7,13 @@
     <!-- We need this only for `clerk_auth` to work in release mode. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+    Remove Advertising ID permission merged from third-party dependencies
+    -->
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
     <!--suppress AndroidDomInspection -->
     <application
         android:name="${applicationName}"
@@ -25,9 +32,10 @@
             tools:ignore="ObsoleteSdkInt"
             tools:targetApi="11">
             <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
+                 the Android process has started. This theme is visible to the
+                 user while the Flutter UI initializes. After that, this theme
+                 continues to determine the Window background behind the
+                 Flutter UI. -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -37,7 +45,9 @@
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+             This is used by the Flutter tool to generate
+             GeneratedPluginRegistrant.java
+             -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
@@ -58,7 +68,9 @@
          https://developer.android.com/training/package-visibility and
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+         In particular, this is used by the Flutter engine in
+         io.flutter.plugin.text.ProcessTextPlugin.
+         -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
